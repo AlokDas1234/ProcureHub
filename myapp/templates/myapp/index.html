@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+        #messageInput {
+            width: 80%;
+        }
+        #sendButton {
+            width: 18%;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Chat Room</h1>
+    <p>{{user.username}}</p>
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; color: white; background-color: #222; border-radius: 2px; font-size: 16px; width: 100%;">
+        <div style="flex: 1; text-align: left;">
+            <h1 style="color: white;">Requirements</h1>
+            <div id="requirements-container"></div>
+        </div>
+        <div style="flex: 1; text-align: right;">
+            <h1 style="color: white;">Bids</h1>
+            <div id="bids_container"></div>
+        </div>
+    </div>
+
+    <script>
+        let allGroupedBids = {};
+        let latestUserRanks = [];
+
+        const roomName = "room1";
+        const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${roomName}/`);
+
+        socket.onopen = function(event) {
+    console.log("WebSocket is open now.");
+
+    // Automatically request requirements and grouped bids
+    socket.send(JSON.stringify({ action: "load_requirements" }));
+    socket.send(JSON.stringify({ type: "grouped_bid" }));
+    };
+
+
+        function submitBid(reqId) {
+            const button = document.querySelector(`#submitbid_${reqId}`);
+            const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);
+
+            if (bidAmtInput) {
+                const bidValue = bidAmtInput.value.trim();
+
+                if (bidValue) {
+                    button.disabled = true;
+                    socket.send(JSON.stringify({
+                        type: 'submit_bid',
+                        req_id: reqId,
+                        bid_amt: bidValue
+                    }));
+
+                    setTimeout(() => {
+                        button.disabled = false;
+                        bidAmtInput.value = "";
+                        socket.send(JSON.stringify({ type: 'grouped_bid' })); // live refresh
+                    }, 10);
+                } else {
+                    console.log("No bid amount entered.");
+                }
+            } else {
+                console.log("Bid input not found");
+            }
+        }
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log("Received from server:", data);
+
+            if (data.type === 'requirements') {
+                const requirements = data.data;
+                const container = document.getElementById('requirements-container');
+                const container_bids = document.getElementById('bids_container');
+
+                container.innerHTML = '';
+                container_bids.innerHTML = '';
+
+                requirements.forEach(req => {
+                    const item = document.createElement('div');
+                    item.innerHTML = `
+                        <p><strong>Req Id:</strong> ${req.id}</p>
+                        <p><strong>Loading Point:</strong> ${req.loading_point}</p>
+                        <p><strong>Unloading Point:</strong> ${req.unloading_point}</p>
+                        <p><strong>Loading Point Full Address:</strong> ${req.loading_point_full_address}</p>
+                        <p><strong>Unloading Point Full Address:</strong> ${req.unloading_point_full_address}</p>
+                        <p><strong>Truck Type:</strong> ${req.truck_type}</p>
+                        <p><strong>No of Drums:</strong> ${req.no_of_trucks}</p>
+                        <p><strong>Quantity:</strong> ${req.qty}</p>
+                        <p><strong>Product:</strong> ${req.product}</p>
+                        <p><strong>Notes:</strong> ${req.notes}</p>
+                        <p><strong>Drum Type & No of Drums:</strong> ${req.drum_type_no_of_drums}</p>
+                        <p><strong>Weight Per Drum:</strong> ${req.weight_per_drum}</p>
+                        <p><strong>Types:</strong> ${req.types}</p>
+                        <hr/>
+                    `;
+                    container.appendChild(item);
+                });
+
+                requirements.forEach(req => {
+                    const item = document.createElement('div');
+                    item.innerHTML = `
+                        <p><strong>Req Id:</strong> ${req.id}</p>
+                        <p id="previous_bids_${req.id}" style="color: yellow;"></p>
+                        <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
+                        <label for="bid_amt_${req.id}">Enter Your Bid Amt:</label>
+                        <input type="number" id="bid_amt_${req.id}">
+                        <br>
+                        <button id="submitbid_${req.id}" onclick="submitBid(${req.id})">Submit Bid</button>
+                        <hr/>
+                    `;
+                    container_bids.appendChild(item);
+
+                    if (allGroupedBids[req.id]) {
+                        const field = document.getElementById(`previous_bids_${req.id}`);
+                        field.textContent = `Previous Bids: ${allGroupedBids[req.id].join(' >> ')}`;
+                    }
+
+                    const userRank = latestUserRanks.find(rank => rank.bid_id === req.id);
+                    if (userRank) {
+                        const field = document.getElementById(`user_rank_${req.id}`);
+                        if (field) {
+                            field.textContent = `Your Rank: ${userRank.rank} (Bid: ₹${userRank.bid_rate})`;
+                        }
+                    }
+                });
+            }
+
+            else if (data.type === 'grouped_bid') {
+                console.log("grouped_bid is called");
+
+                const grouped = data.bid_group_data.bids;
+                latestUserRanks = data.bid_group_data.user_ranks;  // FIXED: global update
+
+                const now = new Date();
+                const timestamp = now.toLocaleTimeString();
+                console.log(`[${timestamp}] Grouped Bid Data:`, grouped);
+                console.log("Received User Ranks:", latestUserRanks);
+
+                if (!grouped || grouped.length === 0) {
+                    console.warn(`[${timestamp}] No grouped bids received. Retrying...`);
+                    setTimeout(() => {
+                        socket.send(JSON.stringify({ type: 'grouped_bid' }));
+                    }, 500);
+                    return;
+                }
+                  if (!latestUserRanks || latestUserRanks.length === 0) {
+                    setTimeout(() => {
+                        socket.send(JSON.stringify({ type: 'grouped_bid' }));
+                    }, 500);
+                    return;
+                }
+
+                const groupedByReqId = {};
+                grouped.forEach(bid => {
+                    if (!groupedByReqId[bid.id]) {
+                        groupedByReqId[bid.id] = [];
+                    }
+                    groupedByReqId[bid.id].push(bid.rate);
+                });
+
+                allGroupedBids = groupedByReqId;
+
+                Object.keys(groupedByReqId).forEach(reqId => {
+                    const field = document.getElementById(`previous_bids_${reqId}`);
+                    if (field) {
+                        field.textContent = `Previous Bids: ${groupedByReqId[reqId].join(' >> ')}`;
+                    }
+                });
+
+                latestUserRanks.forEach(rank => {
+                    const field = document.getElementById(`user_rank_${rank.bid_id}`);
+                    if (field) {
+                        field.textContent = `Your Rank: ${rank.rank} (Bid: ₹${rank.bid_rate})`;
+                    }
+                });
+            }
+        };
+
+        socket.onclose = function(event) {
+            console.log("WebSocket is closed now.");
+        };
+
+        socket.onerror = function(error) {
+            console.log("WebSocket error:", error);
+        };
+    </script>
+
+    <a href="{% url 'logout' %}">Logout</a>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <title>Admin Dashboard</title>
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
+
+<!-- Bootstrap JS + jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/js/bootstrap-select.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px;
+        }
+        .left,.middle, .right {
+            width: 70%;
+            padding: 2px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .left h2, .right h2 {
+            text-align: center;
+        }
+        p {
+            margin: 5px 0;
+        }
+
+.requirement-card {
+    display: flex;
+    align-items: stretch; /* Ensure children take full height */
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.vertical-label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    background-color: #1f4061;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    display: flex;
+    align-items: center;   /* Center text vertically in strip */
+    justify-content: center; /* Center text horizontally in strip */
+    padding: 0 10px;
+    height: 100%;           /* Take full height of parent */
+    min-width: 50px;        /* Consistent strip width */
+    font-size: 30px;
+}
+
+
+    </style>
+</head>
+<body>
+<h1>Admin Dashboard</h1>
+<p>{{ user.username }}</p>
+<a href="{% url 'logout' %}">Logout</a>
+<!-- Include Bootstrap CSS in your <head> -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<form id="requisition-update" method="POST" action="{% url 'requirements' %}">
+    {% csrf_token %}
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-4 mb-4">
+                <div class="form-group">
+                    <label for="loading_point_full_address">Loading Point Full Address</label>
+                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="5" placeholder="Enter full loading address" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="unloading_point_full_address">Unloading Point Full Address</label>
+                    <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="5" placeholder="Enter full unloading address" required></textarea>
+                </div>
+            </div>
+
+            <!-- Middle Column -->
+            <div class="col-md-4 mb-4">
+                <div class="form-group">
+                    <label for="loading_point">Loading Point</label>
+                    <input type="text" class="form-control" name="loading_point" id="loading_point" required>
+                </div>
+                <div class="form-group">
+                    <label for="unloading_point">Unloading Point</label>
+                    <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
+                </div>
+                <div class="form-group">
+                    <label for="truck_type">Truck Type</label>
+                    <input type="text" class="form-control" name="truck_type" required>
+                </div>
+                <div class="form-group">
+                    <label for="no_of_trucks">No of Trucks</label>
+                    <input type="number" class="form-control" name="no_of_trucks" required>
+                </div>
+                <div class="form-group">
+                    <label for="qty">Quantity</label>
+                    <input type="number" class="form-control" name="qty" required>
+                </div>
+                <div class="form-group">
+                    <label for="product">Product Type</label>
+                    <input type="text" class="form-control" name="product" required>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-4 mb-4">
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="drum_type_no_of_drums">Drum Type & No of Drums</label>
+                    <input type="text" class="form-control" name="drum_type_no_of_drums" required>
+                </div>
+                <div class="form-group">
+                    <label for="weight_per_drum">Weight per Drum</label>
+                    <input type="text" class="form-control" name="weight_per_drum">
+                </div>
+                <div class="form-group">
+                    <label for="types">Types</label>
+                    <input type="text" class="form-control" name="types">
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+     <div class="d-flex justify-content-center">
+    <button style="width: 50%;" id="requisition-btn" type="submit" class="btn btn-primary px-5">Submit</button>
+</div>
+
+</form>
+
+<!-- Bulk Upload Section -->
+<hr>
+
+
+
+
+<h3>Grant Access to View Requirements</h3>
+
+<form method="POST" action="{% url 'admin_dashboard' %}">
+    {% csrf_token %}
+<h5>Post Requirement</h5>
+<input type="radio" id="Yes" name="access" value="yes">
+  <label for="Yes">Yes</label><br>
+
+<input type="radio" id="No" name="access" value="no">
+  <label for="No">No</label><br>
+
+    <h5>User Access</h5>
+
+    <div >
+        <label for="user">Select Users:</label>
+<!--        The values are comming from the id userDropdown-->
+        <select id="userDropdown" name="user" multiple class="selectpicker form-control" data-live-search="true" data-actions-box="true">
+            <!-- Options will be added by JavaScript -->
+        </select>
+    </div>
+    <div class="d-flex justify-content-center">
+    <button style="width: 50%;" class="btn btn-primary px-5" type="submit" class="btn btn-primary">Grant Access</button>
+        </div>
+</form>
+ </div>
+
+
+
+
+<h3>Bulk Upload Requirements</h3>
+    <!-- Button to download template from the dynamic view -->
+    <a href="{% url 'download_template' %}">
+        <button type="button">Download Template</button>
+    </a>
+    &nbsp
+    &nbsp
+    &nbsp
+    <input type="file" id="csvUpload" accept=".csv,.xlsx" style="display:none;" onchange="handleFileUpload(this.files[0])">
+
+<input type="file" id="bulk-file" accept=".csv, .xlsx">
+
+<button id="bulk-upload-btn">Bulk Upload</button>
+
+
+
+
+<div id="bulk-upload-status" style="margin-top: 15px;"></div>
+{% if data.users %}
+{% for user in data.users %}
+<p>{{ user }}</p>
+{% endfor %}
+{% endif %}
+
+
+
+<div id="upload-modal" style="
+    display: none;
+    position: fixed;
+    top: 10%;
+    left: 10%;
+    width: 40%;
+    height: 40%;
+    background: white;
+    border: 2px solid #888;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    overflow-y: auto;
+    z-index: 1000;
+    padding: 20px;
+    border-radius: 8px;
+">
+    <button onclick="closeModal()" style="
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    ">×</button>
+
+    <div id="upload-result">
+        <!-- Upload results will appear here -->
+    </div>
+</div>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container-fluid">
+    {% for requirement in requirements %}
+    <div class="row mb-3 align-items-stretch">
+
+        <!-- LEFT: Requirement -->
+        <div class="col-md-6">
+            <div class="requirement-card h-100"
+                 style="display: flex; background-color: #CED6D4; border-radius: 8px; overflow: hidden;">
+                <div class="vertical-label">
+                    <span>#REQUIREMENT {{ forloop.counter }}</span>
+                </div>
+                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; padding-bottom: 0; padding-top: 0;">
+                <div style="background-color: #1d2443; color: white; border-radius: 1px; margin-top: 0; padding: 0.5rem;">
+                    <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> {{ requirement.id }}</h2>
+                </div>
+                    <div class="p-1">
+                    <p style="background-color: {% if not requirement.loading_point %}#EFADF0{% else %}transparent{% endif %};">
+                        <strong>Loading:</strong> {{ requirement.loading_point }}
+                    </p>
+                        <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">
+                            <strong>Unloading:</strong> {{ requirement.unloading_point }}
+                        </p>
+                    <p><strong>Loading Point Full Address:</strong> {{ requirement.loading_point_full_address }}</p>
+            <p>
+                <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.loading_point_full_address|urlencode }}" target="_blank">
+                    📍 View Loading Address on Map
+                </a>
+            </p>
+            <p><strong>Unloading Point Full Address:</strong> {{ requirement.unloading_point_full_address }}</p>
+            <p>
+                <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.unloading_point_full_address|urlencode }}" target="_blank">
+                    📍 View Unloading Address on Map
+                </a>
+            </p>
+            <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
+                <strong>Truck:</strong> {{ requirement.truck_type }}
+            </p>
+            <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
+                <strong>No of Truck:</strong> {{ requirement.no_of_trucks }}
+            </p>
+           <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">
+                <strong>Qty:</strong> {{ requirement.qty }}
+            </p>
+            <p><strong>Product Type:</strong> {{ requirement.product }}</p>
+            <p><strong>Notes:</strong> {{ requirement.notes }}</p>
+            <p><strong>Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
+            <p><strong>Weight Per Drum:</strong> {{ requirement.weight_per_drum }}</p>
+            <p><strong>Types:</strong> {{ requirement.types }}</p>
+                        </div>
+
+                    <button style="width: 100%; margin-top: auto; border-radius: 1px; margin-bottom: 0; padding-bottom: 0;"
+        onclick="delReq({{ requirement.id }})"
+        class="btn btn-sm btn-danger">Delete</button>
+
+                    <!-- other fields here -->
+                </div>
+
+            </div>
+          <button
+    id="delAllReq"
+    onclick="delReq('delAll')"
+    class="btn btn-danger btn-lg"
+    style="width: 100%; margin-top: 1rem;">
+    Delete All Requirements
+        </button>
+
+        </div>
+
+
+        <!-- RIGHT: Empty bid card (hidden until JS fills it) -->
+        <div class="col-md-6">
+            <div id="bid-card-{{ requirement.id }}"
+                 class="bid-card h-100"
+                 style="background-color:#f1f1f1; border-radius:8px; padding:1rem; display:none;">
+                <!-- JS will insert bids here -->
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+</div>
+
+
+
+
+<script>
+    const user = "{{ user.username }}";
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/room1/");
+
+    const bidGroups = {}; // Store grouped bids
+
+    socket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'bids_per_requirement') {
+            const bidReq = data.bid_req;
+            const reqId = bidReq.id;
+            const bidder = data.bids_by;
+            const bidRate = data.bid_rate;
+
+            if (!bidGroups[reqId]) {
+                bidGroups[reqId] = {
+                    info: bidReq,
+                    bidders: {}
+                };
+            }
+
+            if (!bidGroups[reqId].bidders[bidder]) {
+                bidGroups[reqId].bidders[bidder] = [];
+            }
+
+            bidGroups[reqId].bidders[bidder].push(bidRate);
+            renderBids();
+        }
+
+       if (data.type === "normal_user") {
+    console.log("These are normal users who can see the requirements:", data.users);
+
+    const dropdown = document.getElementById("userDropdown");
+
+    // Clear existing options
+    dropdown.innerHTML = "";
+
+    // Add new options
+    data.users.forEach(user => {
+        const option = document.createElement("option");
+        option.value = user;
+        option.textContent = user;
+        dropdown.appendChild(option);
+    });
+
+    // Refresh Bootstrap-select (if you're using it)
+    if (typeof $ !== 'undefined' && typeof $('.selectpicker').selectpicker === 'function') {
+        $('.selectpicker').selectpicker('refresh');
+    }
+}
+
+    };
+
+
+
+function renderBids() {
+    Object.keys(bidGroups).forEach(reqId => {
+        const group = bidGroups[reqId];
+        const req = group.info;
+
+        // Find the matching bid div
+        const bidDiv = document.getElementById(`bid-card-${req.id}`);
+        if (!bidDiv) return; // No matching requirement
+
+        // Start fresh
+        bidDiv.innerHTML = `
+            <p><strong>Bid Req ID:</strong> ${req.id}</p>
+            <p><strong>Loading:</strong> ${req.loading_point}</p>
+            <p><strong>Unloading:</strong> ${req.unloading_point}</p>
+        `;
+
+        const biddersArray = Object.entries(group.bidders);
+
+        // Sort by lowest rate
+        biddersArray.sort((a, b) => {
+            const minA = Math.min(...a[1]);
+            const minB = Math.min(...b[1]);
+            return minA - minB;
+        });
+
+        // Show top 3 bidders
+        biddersArray.slice(0, 3).forEach(([bidder, rates], i) => {
+            const rateStr = rates.join(" >> ₹");
+            bidDiv.innerHTML += `
+                <p><strong>Rank: L${i + 1}</strong></p>
+                <p><strong>Bidder:</strong> ${bidder}</p>
+                <p><strong>Rate:</strong> ₹${rateStr}</p>
+            `;
+        });
+
+        // Show the bid card
+        bidDiv.style.display = "block";
+    });
+}
+
+
+   socket.onopen = function(event) {
+            console.log("WebSocket is open now.");
+<!--            socket.send(JSON.stringify({ type: 'grouped_bid' }));-->
+
+        };
+
+    socket.onclose = () => console.log("WebSocket closed.");
+    socket.onerror = err => console.error("WebSocket error:", err);
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("requisition-update");
+        const button = document.getElementById("requisition-btn");
+
+        form.addEventListener("submit", () => {
+            button.disabled = true;
+            button.innerText = "Submitting...";
+        });
+    });
+
+                function delReq(reqId) {
+                       if (reqId === 'delAll') {
+                    const confirmedAll = confirm("Do you want to delete ALL requirements?");
+                    if (!confirmedAll) {
+                        return; // User canceled
+                    }
+                } else {
+                    const confirmed = confirm(`Do you want to delete "${reqId}" requirement?`);
+                    if (!confirmed) {
+                        return; // User canceled
+                    }
+                }
+
+        console.log("reqId:", reqId);
+        const newForm = new FormData();
+        newForm.append("reqId", reqId);
+
+        fetch("{% url 'delId' %}", {
+            method: "POST",
+            body: newForm,
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        })
+        .then(res => res.text())
+        .then(data => {
+            console.log("Deleted response:", data);
+            // Optionally remove the DOM element or reload
+            location.reload(); // or dynamically remove the element
+
+        })
+        .catch(error => {
+            console.error("Error deleting:", error);
+        });
+    }
+
+
+     function editReq(reqId) {
+        console.log("reqId:", reqId);
+        const newForm = new FormData();
+        newForm.append("reqId", reqId);
+
+        fetch("{% url 'editId' %}", {
+            method: "POST",
+            body: newForm,
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        })
+<!--        .then(res => res.text())-->
+<!--Since your server is returning JSON, but you’re parsing it as text, this will break:-->
+        .then(res => res.json())
+        .then(data => {
+        document.getElementById("loading_point").value=data.loading_point;
+            console.log("Edited :", data);
+            // Optionally remove the DOM element or reload
+            location.reload(); // or dynamically remove the element
+
+        })
+        .catch(error => {
+            console.error("Error deleting:", error);
+        });
+    }
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+   <script>
+document.getElementById("bulk-upload-btn").addEventListener("click", () => {
+    const fileInput = document.getElementById("bulk-file");
+    const file = fileInput.files[0];
+    if (!file) {
+        alert("Please select a file first.");
+        return;
+    }
+
+    const reader = new FileReader();
+    const status = document.getElementById("bulk-upload-status");
+
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { defval: null });
+
+        fetch("{% url 'bulk_upload_requirements' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ data: jsonData })
+        })
+        .then(response => response.json())
+        .then(result => {
+            const modal = document.getElementById("upload-modal");
+            const output = document.getElementById("upload-result");
+
+            output.innerHTML = ""; // Clear previous messages
+
+            // ✅ Success message
+            const success = document.createElement("p");
+            success.style.color = "green";
+            success.textContent = `${result.count} row(s) uploaded successfully.`;
+            output.appendChild(success);
+
+            // ❌ Error messages
+            if (result.bulk_upload_exception.length > 0) {
+                const errTitle = document.createElement("h4");
+                errTitle.style.color = "red";
+<!--                errTitle.textContent = "Some rows could not be uploaded:";-->
+                output.appendChild(errTitle);
+
+                result.bulk_upload_exception.forEach(ex => {
+                    const p = document.createElement("p");
+                    p.style.color = "red";
+                    p.textContent = `Row ${ex.index}: ${ex.Exception}`;
+                    output.appendChild(p);
+                });
+            }
+
+            modal.style.display = "block";
+        })
+        .catch(error => {
+            console.error("Upload error:", error);
+            status.style.color = "red";
+            status.textContent = "Upload failed. Please try again.";
+        });
+    };
+
+    reader.readAsArrayBuffer(file);
+});
+</script>
+
+
+<script>
+<!--function loadPost() {-->
+<!--    if (socket.readyState === WebSocket.OPEN) {-->
+<!--        socket.send(JSON.stringify({ action: "load_requirements" }));-->
+<!--    } else {-->
+<!--        alert("WebSocket not ready");-->
+<!--    }-->
+<!--}-->
+
+function closeModal() {
+    document.getElementById("upload-modal").style.display = "none";
+    location.reload();  // Optional: refresh to reflect uploaded data
+}
+</script>
+
+
+<!--<script>-->
+<!--    $(document).ready(function () {-->
+<!--        $('.selectpicker').selectpicker();-->
+<!--    });-->
+<!--</script>-->
+
+
+
+
+</body>
+</html>
