@@ -253,9 +253,25 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .models import UserAccess
 from .models import GeneralAccess
-
+from channels.layers import  get_channel_layer
+from asgiref.sync import async_to_sync,sync_to_async
+import time
+from datetime import datetime, timedelta
 def admin_dashboard(request):
     if request.method == "POST":
+        start_time=request.POST.get("start_time")
+        minute=request.POST.get("minute")
+
+        current_time=time.strftime("%H:%M")
+        print("Current Time:",current_time)
+        print("Start_time Time:",start_time)
+        if start_time:
+            start_time=datetime.strptime(start_time,"%H:%M")
+            minute=int(minute)
+
+            end_time=start_time+timedelta(minutes=minute)
+
+            print("Bidding End  Time:", end_time.strftime("%H:%M"))
         selected_usernames = request.POST.getlist("user")
         general_access = request.POST.getlist("access")
         print("General Access  of select field:", general_access)
@@ -283,6 +299,20 @@ def admin_dashboard(request):
                 else:
                     user_access.can_view_requirements = False
                 user_access.save()
+                access, _ = GeneralAccess.objects.get_or_create(id=1)
+                access.minutes =minute
+                access.end_time =end_time
+                access.save()
+
+                # bid_end_time=str(end_time.strftime("%H:%M"))
+                # channel_layer=get_channel_layer()
+                # async_to_sync(channel_layer.group_send)(
+                #     "chat_room1",
+                #     {
+                #         "type": "bid_end_time",
+                #         "message": bid_end_time
+                #     }
+                # )
 
             # return JsonResponse({"success": True})
             return redirect("/")

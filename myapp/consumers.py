@@ -1,3 +1,6 @@
+import asyncio
+from sys import exception
+
 from django.contrib.auth.models import User
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -6,6 +9,7 @@ from asgiref.sync import async_to_sync, sync_to_async
 import pandas as pd
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    auction_end_status=False
     async def connect(self):
         print("Connecting WebSocket...")
         if self.scope['user'].is_authenticated:
@@ -38,13 +42,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }
                     )
             if self.scope['user'].is_superuser:
-                '''This is used to get all users except superuser'''
+                '''This is used to get all users except superuser but admin can do it'''
                 users = await self.get_bid_users()
                 print("Users:",users)
                 await self.send(text_data=json.dumps({
                     "type": "normal_user",
                     "users": [user["username"] for user in users]
                 }))
+
+
                 # general_access = await self.get_general_access()
                 # if general_access:
                 #     await self.send(text_data=json.dumps({
@@ -67,23 +73,71 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 ))
 
             access, created = await req_view_access(self.scope['user'])
-            general_access = await self.get_general_access()
+            general_access,minutes,end_time= await self.get_general_access()
             print("General Access from con:",general_access)
+            import time
+            from datetime import datetime, date
 
-            if access.can_view_requirements and general_access==True:
-                user=self.scope['user']
-                print("Access granted for: ", user.username)
 
-                reqs = await sync_to_async(get_all_requirements)()
+            today = date.today()
+            current_tim = datetime.now().time()
+            # If end_time is a time object already:
+            current_dt = datetime.combine(today, current_tim)
+            end_dt = datetime.combine(today, end_time)
+            remaining = end_dt - current_dt
 
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        'type': 'load_requirements',
-                        'requirements': reqs,
-                        'len_reqs': len(reqs)
-                    }
-                )
+            current_tim = time.strftime("%H:%M")
+
+            print("Auction  End Time: ", end_time)
+            print("Auction  End Time  type: ",type( end_time))
+            current_time = datetime.strptime(current_tim, "%H:%M").time()
+            auction_end_status=False
+
+            print("Remaining:",remaining)
+            if current_time >= end_time:
+                print("Auction Ended")
+                auction_end_status=True
+
+
+
+            if auction_end_status==False:
+                if self.scope['user'].is_superuser:
+                    self.timer_task=asyncio.create_task(self.send_remaining_time())
+
+                if access.can_view_requirements  and general_access == True :
+
+                    user = self.scope['user']
+                    # print("Access granted for: ", user.username)
+                    # print("General Access minutes: ", minutes)
+                    # print("General Access end_time: ", end_time)
+
+                    reqs = await sync_to_async(get_all_requirements)()
+
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            'type': 'load_requirements',
+                            'requirements': reqs,
+                            'len_reqs': len(reqs),
+
+
+                        }
+                    )
+
+
+            else:
+
+
+                if hasattr(self, "timer_task") and not self.timer_task.done():
+                    self.timer_task.cancel()
+                    try:
+                        await self.timer_task
+                    except asyncio.CancelledError:
+                        print("Cancelled timer task")
+                print("Auction Ended")
+
+
+
         else:
             await self.send(text_data=json.dumps({"message": "Login"}))
 
@@ -99,15 +153,43 @@ class ChatConsumer(AsyncWebsocketConsumer):
             req_id = text_data_json.get("req_id")
             bid_amt = text_data_json.get("bid_amt")
             requirement = await sync_to_async(Requirements.objects.get)(id=req_id)
-            general_access = await self.get_general_access()
-
+            general_access,minutes,end_time = await self.get_general_access()
+            print("Received Bid amount:",bid_amt)
+            print("Bid Req Id:",req_id)
             existing_bids = await sync_to_async(Bid.objects.filter(user=user, req=requirement).count)()
-            if existing_bids < 5 and general_access==True :
-                bid_instance = await sync_to_async(Bid.objects.create)(
-                    user=user,
-                    req=requirement,
-                    rate=bid_amt
-                )
+            print("Existing_bids:",existing_bids)
+            print("General Access to save data to server:",general_access)
+
+            #Start
+            import time
+            from datetime import datetime, date
+
+            today = date.today()
+            current_tim = datetime.now().time()
+            # If end_time is a time object already:
+            current_dt = datetime.combine(today, current_tim)
+            end_dt = datetime.combine(today, end_time)
+            remaining = end_dt - current_dt
+
+            current_tim = time.strftime("%H:%M")
+
+            print("Auction  End Time: ", end_time)
+            print("Auction  End Time  type: ", type(end_time))
+            current_time = datetime.strptime(current_tim, "%H:%M").time()
+            #end
+
+            print("Remaining:", remaining)
+            if not  current_time >= end_time:
+                if existing_bids < 5 and general_access == True:
+                    bid_instance = await sync_to_async(Bid.objects.create)(
+                        user=user,
+                        req=requirement,
+                        rate=bid_amt
+                    )
+
+
+
+
 
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -174,6 +256,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'type': 'requirements',
             'data': event['requirements'],
             'len_reqs': event['len_reqs']
+
         }))
 
     async def bids_per_requirement(self, event):
@@ -193,9 +276,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_general_access(self):
         try:
             general_access=GeneralAccess.objects.get(pk=1)
-            return general_access.general_access
+            return general_access.general_access,general_access.minutes,general_access.end_time
         except:
             pass
+
+
+
+
+
+    # async def bid_end_time(self,event):
+    #     message=event["message"]
+    #     print("Bid End Time from consumers:",message)
+    #     await self.send(text_data=json.dumps({
+    #         "type":"bid_end_time",
+    #         "message":message
+    #     }))
+
+
 
 
 
@@ -228,27 +325,76 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 })
         return result
 
+    # @sync_to_async
+    # def get_all_bid_group(self, username):
+    #     print(f"get_all_bid_group called by: {username}")
+    #     result = []
+    #     user = User.objects.get(username=username)
+    #     bids = Bid.objects.select_related('user', 'req').all().order_by('req__id', 'rate')
+    #     rank_bid = []
+    #
+    #     for bid in bids:
+    #         rank_bid.append({"bid_id": bid.req.id, "bid_by": bid.user.username, "bid_rate": bid.rate})
+    #
+    #     if rank_bid:
+    #         df = pd.DataFrame(rank_bid)
+    #         df['rank'] = df.groupby('bid_id')['bid_rate'].rank(method='dense').astype(int)
+    #
+    #         user_rank_df = df[df['bid_by'] == username]
+    #         user_rank_df = user_rank_df.loc[user_rank_df.groupby('bid_id')['bid_rate'].idxmin()]
+    #         user_result = user_rank_df[['bid_id', 'bid_rate', 'rank']].to_dict(orient='records')
+    #     else:
+    #         user_result = []
+    #
+    #     user_bids = Bid.objects.filter(user=user)
+    #     for bid in user_bids:
+    #         result.append({
+    #             "id": bid.req.id,
+    #             "rate": bid.rate
+    #         })
+    #
+    #     return {
+    #         "bids": result,
+    #         "user_ranks": user_result
+    #     }
     @sync_to_async
     def get_all_bid_group(self, username):
         print(f"get_all_bid_group called by: {username}")
         result = []
         user = User.objects.get(username=username)
-        bids = Bid.objects.select_related('user', 'req').all().order_by('req__id', 'rate')
-        rank_bid = []
 
+        # Order by req_id, then rate, then created_at so earlier bids get priority
+        bids = Bid.objects.select_related('user', 'req') \
+            .all() \
+            .order_by('req__id', 'rate', 'created_at')
+
+        rank_bid = []
         for bid in bids:
-            rank_bid.append({"bid_id": bid.req.id, "bid_by": bid.user.username, "bid_rate": bid.rate})
+            rank_bid.append({
+                "bid_id": bid.req.id,
+                "bid_by": bid.user.username,
+                "bid_rate": bid.rate,
+                "bid_time": bid.created_at  # assuming you have a timestamp
+            })
 
         if rank_bid:
+            import pandas as pd
             df = pd.DataFrame(rank_bid)
-            df['rank'] = df.groupby('bid_id')['bid_rate'].rank(method='dense').astype(int)
 
+            # Sort by rate and time to break ties
+            df = df.sort_values(['bid_id', 'bid_rate', 'bid_time'], ascending=[True, True, True])
+
+            # Assign rank based on sorted position
+            df['rank'] = df.groupby('bid_id').cumcount() + 1
+
+            # Get the current user's best rank per requirement
             user_rank_df = df[df['bid_by'] == username]
             user_rank_df = user_rank_df.loc[user_rank_df.groupby('bid_id')['bid_rate'].idxmin()]
             user_result = user_rank_df[['bid_id', 'bid_rate', 'rank']].to_dict(orient='records')
         else:
             user_result = []
 
+        # Gather all user's bids for display
         user_bids = Bid.objects.filter(user=user)
         for bid in user_bids:
             result.append({
@@ -260,3 +406,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "bids": result,
             "user_ranks": user_result
         }
+
+    async def send_remaining_time(self):
+        import asyncio
+        from datetime import datetime, date
+        while True:
+            general_access, minutes, end_time = await self.get_general_access()
+            today = date.today()
+            now_dt = datetime.now()
+            end_dt = datetime.combine(today, end_time)
+            remaining = end_dt - now_dt
+            # If auction ended, stop the loop
+            if remaining.total_seconds() <= 0:
+                print("Auction time reached, stopping timer.")
+                break
+
+            # Send only the time update
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'timer_update',
+                    'minutes': str(remaining),
+
+                    'end_time': str(end_time)
+                }
+            )
+            await asyncio.sleep(1)  # Update every minute
+
+    async def timer_update(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'timer_update',
+            'minutes': event['minutes'],
+            'end_time': event['end_time']
+        }))

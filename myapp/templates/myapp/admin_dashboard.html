@@ -60,76 +60,144 @@
 }
 
 
-    </style>
+.access-toggle {
+    display: flex;
+    border-radius: 50px;
+    overflow: hidden;
+    border: 2px solid #ccc;
+    background: #eaeaea;
+    width: fit-content;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 10px 30px;
+    border: none;
+    background: transparent;
+    color: #555;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn.active.yes {
+    background: #28a745;
+    color: white;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+}
+
+.toggle-btn.active.no {
+    background: #dc3545;
+    color: white;
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.6);
+}
+
+.toggle-btn:not(.active) {
+    opacity: 0.6;
+}
+</style>
+
+
 </head>
 <body>
-<h1>Admin Dashboard</h1>
-<p>{{ user.username }}</p>
-<a href="{% url 'logout' %}">Logout</a>
+<h1 style="text-align:center"><strong>PROCURE HUB</strong></h1>
+   <style>
+.gradient-hr {
+    height: 4px;
+    border: none;
+    background: linear-gradient(to right, #4dddf0, #4b93eb);
+    border-radius: 2px;
+}
+</style>
+
+<hr class="gradient-hr">
+
+
+<div class="d-flex justify-content-end align-items-center mb-1">
+    <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random&color=fff"
+         alt="{{ user.username }}"
+         class="rounded-circle"
+         width="30" height="30">
+    <p class="ml-2 mb-0">{{ user.username }}</p>
+</div>
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'logout' %}" >Logout</a>
+</div>
+
+
+
 <!-- Include Bootstrap CSS in your <head> -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<form id="requisition-update" method="POST" action="{% url 'requirements' %}">
+<form  class="col-10 mx-auto card p-3 shadow-sm" id="requisition-update" method="POST" action="{% url 'requirements' %}">
     {% csrf_token %}
 
     <div class="container-fluid mt-4">
+
+         <h3 class="mb-4 text-primary font-weight-bold">1.SINGLE REQUIREMENT ENTRY:</h3>
+                <hr>
         <div class="row">
+
             <!-- Left Column -->
             <div class="col-md-4 mb-4">
+
                 <div class="form-group">
-                    <label for="loading_point_full_address">Loading Point Full Address</label>
-                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="5" placeholder="Enter full loading address" required></textarea>
+                    <div class="form-group">
+                    <label for="loading_point">1. Loading Point</label>
+                    <input type="text" class="form-control" name="loading_point" id="loading_point" required>
                 </div>
                 <div class="form-group">
-                    <label for="unloading_point_full_address">Unloading Point Full Address</label>
-                    <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="5" placeholder="Enter full unloading address" required></textarea>
+                    <label for="unloading_point">2. Unloading Point</label>
+                    <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
+                </div>
+                    <label for="loading_point_full_address">3. Loading Point Full Address</label>
+                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="unloading_point_full_address">4. Unloading Point Full Address</label>
+                    <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>
                 </div>
             </div>
 
             <!-- Middle Column -->
             <div class="col-md-4 mb-4">
+
                 <div class="form-group">
-                    <label for="loading_point">Loading Point</label>
-                    <input type="text" class="form-control" name="loading_point" id="loading_point" required>
-                </div>
-                <div class="form-group">
-                    <label for="unloading_point">Unloading Point</label>
-                    <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
-                </div>
-                <div class="form-group">
-                    <label for="truck_type">Truck Type</label>
+                    <label for="truck_type">5. Truck Type</label>
                     <input type="text" class="form-control" name="truck_type" required>
                 </div>
                 <div class="form-group">
-                    <label for="no_of_trucks">No of Trucks</label>
+                    <label for="no_of_trucks">6. No of Trucks</label>
                     <input type="number" class="form-control" name="no_of_trucks" required>
                 </div>
                 <div class="form-group">
-                    <label for="qty">Quantity</label>
+                    <label for="qty">7. Quantity</label>
                     <input type="number" class="form-control" name="qty" required>
                 </div>
                 <div class="form-group">
-                    <label for="product">Product Type</label>
+                    <label for="product">8. Product Type</label>
                     <input type="text" class="form-control" name="product" required>
+                </div>
+                 <div class="form-group">
+                    <label for="notes">9. Notes</label>
+                    <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>
                 </div>
             </div>
 
             <!-- Right Column -->
             <div class="col-md-4 mb-4">
+
                 <div class="form-group">
-                    <label for="notes">Notes</label>
-                    <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="drum_type_no_of_drums">Drum Type & No of Drums</label>
+                    <label for="drum_type_no_of_drums">10. Drum Type & No of Drums</label>
                     <input type="text" class="form-control" name="drum_type_no_of_drums" required>
                 </div>
                 <div class="form-group">
-                    <label for="weight_per_drum">Weight per Drum</label>
+                    <label for="weight_per_drum">11. Weight per Drum</label>
                     <input type="text" class="form-control" name="weight_per_drum">
                 </div>
                 <div class="form-group">
-                    <label for="types">Types</label>
+                    <label for="types">12. Types</label>
                     <input type="text" class="form-control" name="types">
                 </div>
             </div>
@@ -148,37 +216,10 @@
 
 
 
+<div class=" card p-4 mt-2 mx-auto border-1">
+<h3 class="mb-4 text-primary font-weight-bold">2.BULK UPLOAD REQUIREMENTS:</h3>
 
-<h3>Grant Access to View Requirements</h3>
-
-<form method="POST" action="{% url 'admin_dashboard' %}">
-    {% csrf_token %}
-<h5>Post Requirement</h5>
-<input type="radio" id="Yes" name="access" value="yes">
-  <label for="Yes">Yes</label><br>
-
-<input type="radio" id="No" name="access" value="no">
-  <label for="No">No</label><br>
-
-    <h5>User Access</h5>
-
-    <div >
-        <label for="user">Select Users:</label>
-<!--        The values are comming from the id userDropdown-->
-        <select id="userDropdown" name="user" multiple class="selectpicker form-control" data-live-search="true" data-actions-box="true">
-            <!-- Options will be added by JavaScript -->
-        </select>
-    </div>
-    <div class="d-flex justify-content-center">
-    <button style="width: 50%;" class="btn btn-primary px-5" type="submit" class="btn btn-primary">Grant Access</button>
-        </div>
-</form>
- </div>
-
-
-
-
-<h3>Bulk Upload Requirements</h3>
+    <hr>
     <!-- Button to download template from the dynamic view -->
     <a href="{% url 'download_template' %}">
         <button type="button">Download Template</button>
@@ -189,10 +230,13 @@
     <input type="file" id="csvUpload" accept=".csv,.xlsx" style="display:none;" onchange="handleFileUpload(this.files[0])">
 
 <input type="file" id="bulk-file" accept=".csv, .xlsx">
+       &nbsp
+    &nbsp
+    &nbsp
 
-<button id="bulk-upload-btn">Bulk Upload</button>
+<button id="bulk-upload-btn" class="btn btn-primary w-100 mb-2">Bulk Upload</button>
 
-
+</div>
 
 
 <div id="bulk-upload-status" style="margin-top: 15px;"></div>
@@ -235,9 +279,55 @@
 </div>
 
 
+
+<div class="container-fluid mt-4 mb-4">
+    <form class=" col-8 card p-4 mx-auto border-2  .bg-primary.bg-gradient" method="POST" action="{% url 'admin_dashboard' %}">
+        <h3 class="mb-4 text-primary font-weight-bold">3. USER PERMISSION & POST REQUIREMENTS:</h3>
+        <hr>
+        {% csrf_token %}
+        <div class="container mt-4">
+         <label for="start_time"><strong>1.Bidding Start Time:</strong> </label>
+       <input type="time" name="start_time" id="start_time" required>
+          <label for="minute"> <strong> 2.Bidding Time in Minute:</strong> </label>
+       <input type="number" name="minute" id="minute" required>
+        </div>
+
+       <h5 class="mb-3">3. Post Requirement</h5>
+        <div class="access-toggle mb-4">
+            <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>
+            <button type="button" class="toggle-btn no" data-value="no">NO</button>
+        </div>
+        <input type="hidden" name="access" id="accessInput" value="yes">
+
+
+        <h5 class="mb-3">4. Individual User Access</h5>
+        <div class="form-group">
+            <label for="user">Select Users:</label>
+            <select id="userDropdown" name="user" multiple class="selectpicker"
+                    data-live-search="true" data-actions-box="true">
+                <!-- Options will be added by JavaScript -->
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            <button class="btn btn-primary px-5" type="submit" style="border-radius: 30px;">
+                Grant Access/Post
+            </button>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<div class="container-fluid">
+<div class="container-fluid mt-1">
+    <h3 class="mb-4 text-primary font-weight-bold">4. UPLOADED REQUIREMENTS & USER BIDS:</h3>
+    <hr>
+
     {% for requirement in requirements %}
     <div class="row mb-3 align-items-stretch">
 
@@ -247,44 +337,51 @@
                  style="display: flex; background-color: #CED6D4; border-radius: 8px; overflow: hidden;">
                 <div class="vertical-label">
                     <span>#REQUIREMENT {{ forloop.counter }}</span>
+
                 </div>
+
                 <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; padding-bottom: 0; padding-top: 0;">
                 <div style="background-color: #1d2443; color: white; border-radius: 1px; margin-top: 0; padding: 0.5rem;">
                     <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> {{ requirement.id }}</h2>
+
                 </div>
                     <div class="p-1">
                     <p style="background-color: {% if not requirement.loading_point %}#EFADF0{% else %}transparent{% endif %};">
-                        <strong>Loading:</strong> {{ requirement.loading_point }}
+                        <strong>1. Loading:</strong> {{ requirement.loading_point }}
                     </p>
                         <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">
-                            <strong>Unloading:</strong> {{ requirement.unloading_point }}
+                            <strong>2.Unloading:</strong> {{ requirement.unloading_point }}
                         </p>
-                    <p><strong>Loading Point Full Address:</strong> {{ requirement.loading_point_full_address }}</p>
+                    <p><strong>3. Loading Point Full Address:</strong> {{ requirement.loading_point_full_address }}</p>
             <p>
                 <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.loading_point_full_address|urlencode }}" target="_blank">
                     📍 View Loading Address on Map
                 </a>
             </p>
-            <p><strong>Unloading Point Full Address:</strong> {{ requirement.unloading_point_full_address }}</p>
+            <p><strong>4. Unloading Point Full Address:</strong> {{ requirement.unloading_point_full_address }}</p>
             <p>
                 <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.unloading_point_full_address|urlencode }}" target="_blank">
                     📍 View Unloading Address on Map
                 </a>
             </p>
             <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
-                <strong>Truck:</strong> {{ requirement.truck_type }}
+                <strong>5.Truck:</strong> {{ requirement.truck_type }}
             </p>
             <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
-                <strong>No of Truck:</strong> {{ requirement.no_of_trucks }}
+                <strong>6. No of Truck:</strong> {{ requirement.no_of_trucks }}
             </p>
            <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">
-                <strong>Qty:</strong> {{ requirement.qty }}
+                <strong>7. Qty:</strong> {{ requirement.qty }}
             </p>
-            <p><strong>Product Type:</strong> {{ requirement.product }}</p>
-            <p><strong>Notes:</strong> {{ requirement.notes }}</p>
-            <p><strong>Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
-            <p><strong>Weight Per Drum:</strong> {{ requirement.weight_per_drum }}</p>
-            <p><strong>Types:</strong> {{ requirement.types }}</p>
+            <p><strong>8. Product Type:</strong> {{ requirement.product }}</p>
+
+             <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">
+                <strong>7.Notes:</strong> {{ requirement.notes }}
+            </p>
+
+            <p><strong>10. Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
+            <p><strong>11.Weight Per Drum:</strong> {{ requirement.weight_per_drum }}</p>
+            <p><strong>12. Types:</strong> {{ requirement.types }}</p>
                         </div>
 
                     <button style="width: 100%; margin-top: auto; border-radius: 1px; margin-bottom: 0; padding-bottom: 0;"
@@ -330,6 +427,17 @@
 
     socket.onmessage = function (e) {
         const data = JSON.parse(e.data);
+          if (data.type === 'timer_update') {
+        console.log("Update Timer:", data.minutes);
+
+        // Loop over all requirements and update each timer
+       Object.keys(bidGroups).forEach(reqId => {
+        const timerEl = document.getElementById(`remaining-time-${reqId}`);
+        if (timerEl) {
+            timerEl.textContent = `Remaining Time: ${data.minutes}`;
+        }
+    });
+    }
         if (data.type === 'bids_per_requirement') {
             const bidReq = data.bid_req;
             const reqId = bidReq.id;
@@ -388,9 +496,15 @@ function renderBids() {
 
         // Start fresh
         bidDiv.innerHTML = `
+            <h1>RECEIVED BIDS:</h1>
+            <hr>
+
+           <h4 id="remaining-time-${req.id}"></h4>
+             <hr>
             <p><strong>Bid Req ID:</strong> ${req.id}</p>
-            <p><strong>Loading:</strong> ${req.loading_point}</p>
-            <p><strong>Unloading:</strong> ${req.unloading_point}</p>
+            <p><strong>1.Loading:</strong> ${req.loading_point}</p>
+            <p><strong>2.Unloading:</strong> ${req.unloading_point}</p>
+            <hr>
         `;
 
         const biddersArray = Object.entries(group.bidders);
@@ -406,9 +520,10 @@ function renderBids() {
         biddersArray.slice(0, 3).forEach(([bidder, rates], i) => {
             const rateStr = rates.join(" >> ₹");
             bidDiv.innerHTML += `
-                <p><strong>Rank: L${i + 1}</strong></p>
-                <p><strong>Bidder:</strong> ${bidder}</p>
-                <p><strong>Rate:</strong> ₹${rateStr}</p>
+                <p><strong>1.Rank: L${i + 1}</strong></p>
+                <p><strong>2.Bidder:</strong> ${bidder}</p>
+                <p><strong>3.Rate:</strong> ₹${rateStr}</p>
+                <hr>
             `;
         });
 
@@ -595,6 +710,15 @@ function closeModal() {
 <!--</script>-->
 
 
+<script>
+document.querySelectorAll(".toggle-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+        document.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+        document.getElementById("accessInput").value = this.dataset.value;
+    });
+});
+</script>
 
 
 </body>
