@@ -52,8 +52,8 @@ class UserAccess(models.Model):
 class GeneralAccess(models.Model):
     general_access=models.BooleanField(default=False)
     minutes = models.IntegerField(default=0)
-    end_time = models.TimeField(null=True, blank=True)  # or DateTimeField if it includes the date
+    start_time = models.DateTimeField(null=True, blank=True)  # or DateTimeField if it includes the date
 
     def __str__(self):
-        return f"{self.general_access}"
+        return f"{self.general_access,self.minutes,self.start_time}"
 

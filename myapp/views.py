@@ -255,23 +255,30 @@ from .models import UserAccess
 from .models import GeneralAccess
 from channels.layers import  get_channel_layer
 from asgiref.sync import async_to_sync,sync_to_async
-import time
-from datetime import datetime, timedelta
+from datetime import datetime
+from django.utils.timezone import make_aware
+import pytz
 def admin_dashboard(request):
     if request.method == "POST":
-        start_time=request.POST.get("start_time")
+        start_time_str=request.POST.get("start_time")
         minute=request.POST.get("minute")
+        print("Start_time Time:", start_time_str)
 
-        current_time=time.strftime("%H:%M")
-        print("Current Time:",current_time)
-        print("Start_time Time:",start_time)
-        if start_time:
-            start_time=datetime.strptime(start_time,"%H:%M")
-            minute=int(minute)
+        if start_time_str:
+            # Parse the datetime-local string into a datetime object
+            start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M")
 
-            end_time=start_time+timedelta(minutes=minute)
+            # Make it timezone-aware in Asia/Kolkata
+            india_tz = pytz.timezone('Asia/Kolkata')
+            start_time = india_tz.localize(start_time)
 
-            print("Bidding End  Time:", end_time.strftime("%H:%M"))
+            # Store only the time part in the DB
+            access, _ = GeneralAccess.objects.get_or_create(id=1)
+            access.minutes = minute
+            access.start_time = start_time
+            access.save()
+
+            # print("Bidding End  Time:", end_time.strftime("%H:%M"))
         selected_usernames = request.POST.getlist("user")
         general_access = request.POST.getlist("access")
         print("General Access  of select field:", general_access)
@@ -287,6 +294,10 @@ def admin_dashboard(request):
         else:
             print("No access option selected")
 
+        # access, _ = GeneralAccess.objects.get_or_create(id=1)
+        # access.minutes = minute
+        # access.end_time = end_time
+        # access.save()
         '''This is for individual  and all user access'''
         try:
             all_users = User.objects.filter(is_superuser=False, is_staff=False)
@@ -299,10 +310,7 @@ def admin_dashboard(request):
                 else:
                     user_access.can_view_requirements = False
                 user_access.save()
-                access, _ = GeneralAccess.objects.get_or_create(id=1)
-                access.minutes =minute
-                access.end_time =end_time
-                access.save()
+
 
                 # bid_end_time=str(end_time.strftime("%H:%M"))
                 # channel_layer=get_channel_layer()

@@ -73,32 +73,43 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 ))
 
             access, created = await req_view_access(self.scope['user'])
-            general_access,minutes,end_time= await self.get_general_access()
-            print("General Access from con:",general_access)
-            import time
-            from datetime import datetime, date
+            # general_access,minutes,end_time= await self.get_general_access()
+            # print("General Access from con:",general_access)
+            # import time
+            # from datetime import datetime, date
+            #
+            #
+            # today = date.today()
+            # current_tim = datetime.now().time()
+            # # If end_time is a time object already:
+            # current_dt = datetime.combine(today, current_tim)
+            # end_dt = datetime.combine(today, end_time)
+            # remaining = end_dt - current_dt
+            #
+            # current_tim = time.strftime("%H:%M")
+            #
+            # print("Auction  End Time: ", end_time)
+            # print("Auction  End Time  type: ",type( end_time))
+            # current_time = datetime.strptime(current_tim, "%H:%M").time()
+            # auction_end_status=False
+            #
+            # print("Remaining:",remaining)
+            # if current_time >= end_time:
+            #     print("Auction Ended")
+            #     auction_end_status=True
+            from django.utils import timezone
+            from datetime import datetime
+            """If auction ends requirements will not be shows"""
+            general_access, minutes, start_time = await self.get_general_access()
+            print("General Access from connect:", general_access)
+            print("General Access minutes from connect:", minutes)
+            print("General Access end_time from connect:", start_time)
 
 
-            today = date.today()
-            current_tim = datetime.now().time()
-            # If end_time is a time object already:
-            current_dt = datetime.combine(today, current_tim)
-            end_dt = datetime.combine(today, end_time)
-            remaining = end_dt - current_dt
-
-            current_tim = time.strftime("%H:%M")
-
-            print("Auction  End Time: ", end_time)
-            print("Auction  End Time  type: ",type( end_time))
-            current_time = datetime.strptime(current_tim, "%H:%M").time()
-            auction_end_status=False
-
-            print("Remaining:",remaining)
-            if current_time >= end_time:
-                print("Auction Ended")
-                auction_end_status=True
-
-
+            auction_end_status = False
+            # if now_dt >= end_dt:
+            #     print("Auction Ended")
+            #     auction_end_status = True
 
             if auction_end_status==False:
                 if self.scope['user'].is_superuser:
@@ -153,43 +164,77 @@ class ChatConsumer(AsyncWebsocketConsumer):
             req_id = text_data_json.get("req_id")
             bid_amt = text_data_json.get("bid_amt")
             requirement = await sync_to_async(Requirements.objects.get)(id=req_id)
-            general_access,minutes,end_time = await self.get_general_access()
-            print("Received Bid amount:",bid_amt)
-            print("Bid Req Id:",req_id)
-            existing_bids = await sync_to_async(Bid.objects.filter(user=user, req=requirement).count)()
-            print("Existing_bids:",existing_bids)
-            print("General Access to save data to server:",general_access)
+            # general_access,minutes,end_time = await self.get_general_access()
+            # print("Received Bid amount:",bid_amt)
+            # print("Bid Req Id:",req_id)
+            # existing_bids = await sync_to_async(Bid.objects.filter(user=user, req=requirement).count)()
+            # print("Existing_bids:",existing_bids)
+            # print("General Access to save data to server:",general_access)
+            #
+            # #Start
+            # import time
+            # from datetime import datetime, date
+            #
+            # today = date.today()
+            # current_tim = datetime.now().time()
+            # # If end_time is a time object already:
+            # current_dt = datetime.combine(today, current_tim)
+            # end_dt = datetime.combine(today, end_time)
+            # remaining = end_dt - current_dt
+            #
+            # current_tim = time.strftime("%H:%M")
+            #
+            # print("Auction  End Time: ", end_time)
+            # print("Auction  End Time  type: ", type(end_time))
+            # current_time = datetime.strptime(current_tim, "%H:%M").time()
+            # #end
+            #
+            # print("Remaining:", remaining)
+            # if not  current_time >= end_time:
+            #     if existing_bids < 5 and general_access == True:
+            #         bid_instance = await sync_to_async(Bid.objects.create)(
+            #             user=user,
+            #             req=requirement,
+            #             rate=bid_amt
+            #         )
+            from django.utils import timezone
+            from datetime import datetime
 
-            #Start
-            import time
-            from datetime import datetime, date
+            general_access, minutes, start_time = await self.get_general_access()
+            print("Received Bid amount:", bid_amt)
+            print("Bid Req Id:", req_id)
 
-            today = date.today()
-            current_tim = datetime.now().time()
-            # If end_time is a time object already:
-            current_dt = datetime.combine(today, current_tim)
+            existing_bids = await sync_to_async(
+                Bid.objects.filter(user=user, req=requirement).count
+            )()
+            print("Existing_bids:", existing_bids)
+            print("General Access to save data to server:", general_access)
+
+            # --- Timezone-safe auction end check ---
+            now_dt = timezone.localtime()
+            today = timezone.localdate()
+
+            # Combine today's date with the end_time from DB
             end_dt = datetime.combine(today, end_time)
-            remaining = end_dt - current_dt
 
-            current_tim = time.strftime("%H:%M")
+            # Make timezone-aware
+            end_dt = timezone.make_aware(end_dt, timezone.get_current_timezone())
 
-            print("Auction  End Time: ", end_time)
-            print("Auction  End Time  type: ", type(end_time))
-            current_time = datetime.strptime(current_tim, "%H:%M").time()
-            #end
+            remaining = end_dt - now_dt
 
+            print("Auction End Time:", end_time)
+            print("Auction End Time type:", type(end_time))
+            print("Current Time:", now_dt.time())
             print("Remaining:", remaining)
-            if not  current_time >= end_time:
-                if existing_bids < 5 and general_access == True:
+
+            # Only allow bid if current time < end time
+            if now_dt < end_dt:
+                if existing_bids < 5 and general_access:
                     bid_instance = await sync_to_async(Bid.objects.create)(
                         user=user,
                         req=requirement,
                         rate=bid_amt
                     )
-
-
-
-
 
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -276,9 +321,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_general_access(self):
         try:
             general_access=GeneralAccess.objects.get(pk=1)
-            return general_access.general_access,general_access.minutes,general_access.end_time
-        except:
-            pass
+            return general_access.general_access,general_access.minutes,general_access.start_time
+        except Exception as e:
+            print("General Access eException:",e)
+
 
 
 
@@ -407,15 +453,69 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "user_ranks": user_result
         }
 
+    # async def send_remaining_time(self):
+    #     import asyncio
+    #     from datetime import datetime, date
+    #     while True:
+    #         general_access, minutes, end_time = await self.get_general_access()
+    #         today = date.today()
+    #         now_dt = datetime.now()
+    #         end_dt = datetime.combine(today, end_time)
+    #         remaining = end_dt - now_dt
+    #         # If auction ended, stop the loop
+    #         if remaining.total_seconds() <= 0:
+    #             print("Auction time reached, stopping timer.")
+    #             break
+    #
+    #         # Send only the time update
+    #         await self.channel_layer.group_send(
+    #             self.room_group_name,
+    #             {
+    #                 'type': 'timer_update',
+    #                 'minutes': str(remaining),
+    #
+    #                 'end_time': str(end_time)
+    #             }
+    #         )
+    #         await asyncio.sleep(1)  # Update every minute
+    #
+    async def timer_update(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'timer_update',
+            'minutes': event['minutes'],
+            'end_time': event['end_time']
+        }))
+
     async def send_remaining_time(self):
+        from django.utils import timezone
+        from datetime import datetime
+
         import asyncio
-        from datetime import datetime, date
+
         while True:
-            general_access, minutes, end_time = await self.get_general_access()
-            today = date.today()
-            now_dt = datetime.now()
-            end_dt = datetime.combine(today, end_time)
-            remaining = end_dt - now_dt
+            general_access, minutes, start_time = await self.get_general_access()
+            from datetime import datetime, timedelta
+            import pytz
+
+            get_india = pytz.timezone('Asia/Kolkata')
+            clt = datetime.now(get_india)
+            print("Current Local  Time:", clt)
+            print("Current Local  Time Type:", type(clt))
+            print("Start_time Type:", type(start_time))
+            print("Start_time Type:", start_time)
+            print("Minutes:",minutes)
+
+
+
+            minute = timedelta(minutes=minutes)
+            end_times = start_time + minute
+            print("End Time:", end_times)
+            print("End Time Type:", type(end_times))
+
+            remaining = end_times- clt
+            print("Remaining:", remaining)
+            print("Remaining type:", type(remaining))
+
             # If auction ended, stop the loop
             if remaining.total_seconds() <= 0:
                 print("Auction time reached, stopping timer.")
@@ -427,15 +527,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'timer_update',
                     'minutes': str(remaining),
-
-                    'end_time': str(end_time)
+                    'end_time': str(end_times)
                 }
             )
-            await asyncio.sleep(1)  # Update every minute
 
-    async def timer_update(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'timer_update',
-            'minutes': event['minutes'],
-            'end_time': event['end_time']
-        }))
+            await asyncio.sleep(1)  # update every second

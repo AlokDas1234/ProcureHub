@@ -108,7 +108,9 @@
     let allGroupedBids = {};
     let latestUserRanks = [];
 
-    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/room1/`);
+<!--    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/room1/`);-->
+let wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room1/`);
 
     socket.onopen = () => {
         console.log("WebSocket connected");

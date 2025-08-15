@@ -287,7 +287,7 @@
         {% csrf_token %}
         <div class="container mt-4">
          <label for="start_time"><strong>1.Bidding Start Time:</strong> </label>
-       <input type="time" name="start_time" id="start_time" required>
+       <input type="datetime-local" name="start_time" id="start_time" required>
           <label for="minute"> <strong> 2.Bidding Time in Minute:</strong> </label>
        <input type="number" name="minute" id="minute" required>
         </div>
@@ -421,8 +421,9 @@
 
 <script>
     const user = "{{ user.username }}";
-    const socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/room1/");
-
+<!--    const socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/room1/");-->
+let wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room1/`);
     const bidGroups = {}; // Store grouped bids
 
     socket.onmessage = function (e) {
