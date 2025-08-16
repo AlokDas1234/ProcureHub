@@ -67,6 +67,21 @@
     margin:0px;
     font-size: 30px;
 }
+        .progress {
+    background-color: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.5s ease, background-color 0.5s ease;
+}
+
+.progress-bar.green { background-color: green; }
+.progress-bar.orange { background-color: orange; }
+.progress-bar.red { background-color: red; }
+
 
     </style>
 </head>
@@ -116,6 +131,9 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
         console.log("WebSocket connected");
         socket.send(JSON.stringify({ action: "load_requirements" }));
         socket.send(JSON.stringify({ type: "grouped_bid" }));
+
+
+
     };
 
     function submitBid(reqId) {
@@ -134,7 +152,7 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
                 button.disabled = false;
                 bidAmtInput.value = "";
                 socket.send(JSON.stringify({ type: 'grouped_bid' }));
-            }, 200);
+            }, 300);
         }
     }
 
@@ -143,31 +161,61 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
     socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         console.log("From server:", data);
+
+
+
 if (data.type === 'timer_update') {
     console.log("Update Timer:", data.minutes);
 
-    // If server sends a specific requirement ID
-    if (data.req_id) {
-        const timerEl = document.getElementById(`remaining-time-${data.req_id}`);
-        if (timerEl) {
-            timerEl.textContent = `Remaining Time: ${data.minutes}`;
+    // Convert HH:MM:SS to seconds
+    function parseTimeToSeconds(timeStr) {
+        const parts = timeStr.split(':').map(Number);
+        if (parts.length === 3) { // HH:MM:SS
+            return parts[0] * 3600 + parts[1] * 60 + parts[2];
+        } else if (parts.length === 2) { // MM:SS
+            return parts[0] * 60 + parts[1];
         }
-    } else {
-        // Update timer for all requirements
-        document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {
-            timerEl.textContent = `Remaining Time: ${data.minutes}`;
-        });
+        return 0;
     }
+
+    const remainingSeconds = parseTimeToSeconds(data.minutes);
+    const totalSeconds = window.totalAuctionSeconds || 600; // default 10 min
+    const percent = Math.max(0, (remainingSeconds / totalSeconds) * 100);
+
+    // Update all timers
+    document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {
+        timerEl.textContent = `Remaining Time: ${data.minutes}`;
+    });
+
+    // Update all progress bars
+    document.querySelectorAll('[id^="progress-bar-"]').forEach(progressEl => {
+        progressEl.style.width = `${percent}%`;
+
+        // Remove old color classes
+        progressEl.classList.remove('green', 'orange', 'red');
+
+        // Add new color based on percentage
+        if (percent > 50) {
+            progressEl.classList.add('green');
+        } else if (percent > 20) {
+            progressEl.classList.add('orange');
+        } else {
+            progressEl.classList.add('red');
+        }
+    });
 }
 
 
 
+
+
         if (data.type === 'requirements') {
-
-
             renderRequirements(data.data);
-        } else if (data.type === 'grouped_bid') {
+        }
+
+         if (data.type === 'grouped_bid') {
             latestUserRanks = data.bid_group_data.user_ranks;
+            console.log("LatestUserRanks:",latestUserRanks);
             allGroupedBids = {};
             data.bid_group_data.bids.forEach(bid => {
                 if (!allGroupedBids[bid.id]) {
@@ -252,6 +300,17 @@ if (data.type === 'timer_update') {
                     </div>
 
                   <h3 id="remaining-time-${req.id}"></h3>
+                  <div class="progress" style="height: 20px; margin-bottom: 10px;">
+                   <div id="progress-bar-${req.id}"
+                     class="progress-bar green"
+
+                         role="progressbar"
+                         style="width: 100%;"
+                         aria-valuenow="100"
+                         aria-valuemin="0"
+                         aria-valuemax="100">
+                    </div>
+                </div>
                 <hr>
 
                 <p id="previous_bids_${req.id}" style="color: yellow;"></p>
@@ -262,6 +321,8 @@ if (data.type === 'timer_update') {
                  <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount">
                     <button id="submitbid_${req.id}" onclick="submitBid(${req.id})">Submit Bid</button>
                     <button onclick="window.location.reload();">Refresh</button>
+                    <button onclick="load_rank()">Send Grouped Bid</button>
+
                 </div>
 
             `;
@@ -289,6 +350,14 @@ if (data.type === 'timer_update') {
             }
         });
     }
+
+
+function load_rank(){
+
+    socket.send(JSON.stringify({ type: "grouped_bid" }));
+    console.log("Sent grouped_bid to server");
+
+}
 </script>
 
 </body>
