@@ -331,7 +331,7 @@ if (data.type === 'timer_update') {
                  <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount">
                     <button id="submitbid_${req.id}" onclick="submitBid(${req.id})">Submit Bid</button>
                     <button onclick="window.location.reload();">Refresh</button>
-                    <button onclick="load_rank()">Send Grouped Bid</button>
+<!--                    <button onclick="load_rank()">Send Grouped Bid</button>-->
 
                 </div>
 
@@ -389,12 +389,12 @@ function updateBids() {
 
 
 
-function load_rank(){
+<!--function load_rank(){-->
 
-    socket.send(JSON.stringify({ type: "grouped_bid" }));
-    console.log("Sent grouped_bid to server");
+<!--    socket.send(JSON.stringify({ type: "grouped_bid" }));-->
+<!--    console.log("Sent grouped_bid to server");-->
 
-}
+<!--}-->
 </script>
 
 </body>

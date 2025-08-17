@@ -90,6 +90,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             auction_end_status = False
             if clt >= end_times:
                 print("Auction Ended")
+                auction_started=True
                 auction_end_status = True
 
             if auction_start==False:
@@ -170,8 +171,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 print("Auction Not Started")
                 auction_end_status = True
 
-            if  auction_end_status==False and existing_bids < 5 and general_access:
-                # ✅ Only save bid if within auction time and limit
+            # print("User:",user)
+            # print("User Name:",user.username)
+            user_ = await sync_to_async(User.objects.get)(username=user.username)
+            try:
+                user_exist = await sync_to_async(UserAccess.objects.get)(user=user_)
+                user_access = user_exist.can_view_requirements
+            except UserAccess.DoesNotExist:
+                user_access = False
+
+            # ✅ Only use user_access (boolean), don’t check user_exist == True
+            if (
+                    auction_end_status is False
+                    and existing_bids < 5
+                    and general_access
+                    and user_access  # True/False
+            ):
                 bid_instance = await sync_to_async(Bid.objects.create)(
                     user=user,
                     req=requirement,
