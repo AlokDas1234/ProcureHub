@@ -15,10 +15,10 @@ from django.forms.models import model_to_dict
 def index(request):
     # If logged in, go to dashboard
     if request.user.is_authenticated:
-        print("The User from views:", request.user.is_superuser)
+        # print("The User from views:", request.user.is_superuser)
         if request.user.is_superuser:
             requirements = Requirements.objects.all()
-            print("The Requirements from views:", requirements)
+            # print("The Requirements from views:", requirements)
 
             return render(request, "myapp/admin_dashboard.html", {"requirements": requirements})
 
@@ -236,9 +236,9 @@ def edit_requirement(request):
         reqid = request.POST.get("reqId")
         try:
             requirement = Requirements.objects.get(pk=reqid)  # ✅ Use .get() instead of .filter()
-            print("Edit Requirement:", requirement)
+            # print("Edit Requirement:", requirement)
             re=JsonResponse(model_to_dict(requirement))
-            print("Edit Requirement json:", re)
+            # print("Edit Requirement json:", re)
             return JsonResponse(model_to_dict(requirement))
         except Requirements.DoesNotExist:
             return JsonResponse({"status": "error", "message": "Requirement not found"}, status=404)
@@ -262,7 +262,7 @@ def admin_dashboard(request):
     if request.method == "POST":
         start_time_str=request.POST.get("start_time")
         minute=request.POST.get("minute")
-        print("Start_time Time:", start_time_str)
+        # print("Start_time Time:", start_time_str)
 
         if start_time_str:
             # Parse the datetime-local string into a datetime object
@@ -281,7 +281,7 @@ def admin_dashboard(request):
             # print("Bidding End  Time:", end_time.strftime("%H:%M"))
         selected_usernames = request.POST.getlist("user")
         general_access = request.POST.getlist("access")
-        print("General Access  of select field:", general_access)
+        # print("General Access  of select field:", general_access)
         if general_access and general_access[0]=="yes":
             '''This is for general singleton GeneralAccess instance'''
             access, _ = GeneralAccess.objects.get_or_create(id=1)

@@ -122,6 +122,7 @@
 
     let allGroupedBids = {};
     let latestUserRanks = [];
+    let userBids = [];   // ✅ declare here
 
 <!--    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/room1/`);-->
 let wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
@@ -166,6 +167,7 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
 if (data.type === 'timer_update') {
     console.log("Update Timer:", data.minutes);
+     console.log("Auction Status:", data.auction_started);
 
     // Convert HH:MM:SS to seconds
     function parseTimeToSeconds(timeStr) {
@@ -213,19 +215,27 @@ if (data.type === 'timer_update') {
             renderRequirements(data.data);
         }
 
-         if (data.type === 'grouped_bid') {
-            latestUserRanks = data.bid_group_data.user_ranks;
-            console.log("LatestUserRanks:",latestUserRanks);
-            allGroupedBids = {};
-            data.bid_group_data.bids.forEach(bid => {
-                if (!allGroupedBids[bid.id]) {
-                    allGroupedBids[bid.id] = [];
-                }
-                allGroupedBids[bid.id].push(bid.rate);
-            });
-            updateBids();
-        }
-    };
+<!--         if (data.type === 'grouped_bid') {-->
+<!--            latestUserRanks = data.bid_group_data.user_ranks;-->
+<!--            console.log("LatestUserRanks:",latestUserRanks);-->
+<!--            allGroupedBids = {};-->
+<!--            data.bid_group_data.bids.forEach(bid => {-->
+<!--                if (!allGroupedBids[bid.id]) {-->
+<!--                    allGroupedBids[bid.id] = [];-->
+<!--                }-->
+<!--                allGroupedBids[bid.id].push(bid.rate);-->
+<!--            });-->
+<!--            updateBids();-->
+<!--        }-->
+<!--    };-->
+           if (data.type === "grouped_bid") {
+        latestUserRanks = data.bid_group_data.user_ranks; // user’s best ranks
+        userBids = data.bid_group_data.bids; // only this user’s bids
+        console.log("latestUserRanks:",latestUserRanks);
+        console.log("userBids:",userBids);
+        updateBids();
+    }
+        };
 
 
 
@@ -335,21 +345,48 @@ if (data.type === 'timer_update') {
         updateBids();
     }
 
-    function updateBids() {
-        Object.keys(allGroupedBids).forEach(reqId => {
-            const field = document.getElementById(`previous_bids_${reqId}`);
-            if (field) {
-                field.textContent = `Previous Bids: ${allGroupedBids[reqId].join(' >> ')}`;
-            }
-        });
+<!--    function updateBids() {-->
+<!--        Object.keys(allGroupedBids).forEach(reqId => {-->
+<!--            const field = document.getElementById(`previous_bids_${reqId}`);-->
+<!--            if (field) {-->
+<!--                field.textContent = `Previous Bids: ${allGroupedBids[reqId].join(' >> ')}`;-->
+<!--            }-->
+<!--        });-->
 
-        latestUserRanks.forEach(rank => {
-            const field = document.getElementById(`user_rank_${rank.bid_id}`);
-            if (field) {
-                field.textContent = `Your Rank: ${rank.rank} (Bid: ₹${rank.bid_rate})`;
-            }
-        });
-    }
+<!--        latestUserRanks.forEach(rank => {-->
+<!--            const field = document.getElementById(`user_rank_${rank.bid_id}`);-->
+<!--            if (field) {-->
+<!--                field.textContent = `Your Rank: ${rank.rank} (Bid: ₹${rank.bid_rate})`;-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+function updateBids() {
+    // Group this user’s bids by requirement
+    const bidsByReq = {};
+    userBids.forEach(bid => {
+        if (!bidsByReq[bid.id]) {   // ✅ use `id` instead of `req_id`
+            bidsByReq[bid.id] = [];
+        }
+        bidsByReq[bid.id].push(bid.rate);
+    });
+
+    // Show bid history
+    Object.keys(bidsByReq).forEach(reqId => {
+        const field = document.getElementById(`previous_bids_${reqId}`);
+        if (field) {
+            field.textContent = `Rates History: ${bidsByReq[reqId].join(" >> ")}`;
+        }
+    });
+
+    // Show rank
+    latestUserRanks.forEach(rank => {
+        const field = document.getElementById(`user_rank_${rank.bid_id}`);  // ✅ use bid_id
+        if (field) {
+            field.textContent = `Rank: ${rank.rank} (Best Bid: ₹${rank.bid_rate})`;
+        }
+    });
+}
+
 
 
 function load_rank(){
