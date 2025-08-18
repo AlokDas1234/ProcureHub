@@ -90,23 +90,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             auction_end_status = False
             if clt >= end_times:
                 print("Auction Ended")
-                auction_started=True
+
                 auction_end_status = True
 
             if auction_start==False:
                 print("auction_start False: executed")
-                auction_started=False
-                self.timer_task = asyncio.create_task(self.send_remaining_time(auction_started))
+
+                self.timer_task = asyncio.create_task(self.send_remaining_time())
 
 
 
 
 
             elif auction_end_status == False:
-                auction_started = True
+
                 print("auction_end_status False: executed")
                 if self.scope['user'].is_superuser:
-                    self.timer_task = asyncio.create_task(self.send_remaining_time(auction_started))
+                    self.timer_task = asyncio.create_task(self.send_remaining_time())
 
                 if access.can_view_requirements and general_access == True:
                     user = self.scope['user']
@@ -507,7 +507,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #
     #         await asyncio.sleep(1)  # update every second
 
-    async def send_remaining_time(self,auction_started):
+    async def send_remaining_time(self):
 
         from django.utils import timezone
         from datetime import datetime
@@ -524,14 +524,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 break
 
             # Send only the time update
-            print("auction_started status:", auction_started)
+
+            if clt <= start_time:
+                print("Auction Not Started")
+                auction_start = False
+            else:
+                auction_start = True
+
+            print("auction_started status:", auction_start)
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'timer_update',
                     'minutes': str(remaining),
                     'end_time': str(end_times),
-                    'auction_started': auction_started
+                    'auction_started': auction_start
                 }
             )
 

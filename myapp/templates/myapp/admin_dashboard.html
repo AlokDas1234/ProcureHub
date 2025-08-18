@@ -130,6 +130,8 @@
 <!-- Include Bootstrap CSS in your <head> -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
+
 <form  class="col-10 mx-auto card p-3 shadow-sm" id="requisition-update" method="POST" action="{% url 'requirements' %}">
     {% csrf_token %}
 
@@ -325,7 +327,20 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <div class="container-fluid mt-1">
-    <h3 class="mb-4 text-primary font-weight-bold">4. UPLOADED REQUIREMENTS & USER BIDS:</h3>
+
+ <h3 class="mb-4 text-primary font-weight-bold">4.AUCTION STATUS:</h3>
+    <h4 id="start_status"></h4>
+<div id="refresh-container" style="text-align:center;">
+
+     <div class="d-flex justify-content-center mt-4">
+            <button onclick="window.location.reload();" class="btn btn-primary px-5"  style="border-radius: 30px;">
+               Refresh
+            </button>
+        </div>
+</div>
+
+        <h3 class="mb-4 text-primary font-weight-bold">5. UPLOADED REQUIREMENTS & USER BIDS:</h3>
+
     <hr>
 
     {% for requirement in requirements %}
@@ -473,6 +488,35 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
             }
         });
     }
+
+     if (data.type === 'timer_update' && data.auction_started === false) {
+    console.log("Update Timer:", data.minutes);
+    console.log("Auction Status:",  data.auction_started);
+
+    let timer = document.getElementById("start_status");
+    timer.innerText = `Auction will start in: ${data.minutes}`;
+
+    console.log("Auction Status:", data.auction_started);
+}
+
+    else if (data.type === 'timer_update' && data.auction_started === true) {
+    console.log("Update Timer:", data.minutes);
+    console.log("Auction Status:",  data.auction_started);
+
+   let timer = document.getElementById("start_status");
+  timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;
+
+    console.log("Auction Status:", data.auction_started);
+}
+
+
+else   {
+
+    let timer = document.getElementById("start_status");
+    timer.innerText = `Auction Ended !`;
+
+
+}
         if (data.type === 'bids_per_requirement') {
             const bidReq = data.bid_req;
             const reqId = bidReq.id;

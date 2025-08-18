@@ -98,7 +98,7 @@
 </style>
 
 <hr class="gradient-hr">
-
+<div  class="container col-6 mx-auto p-2 shadow-lg" >
 
 <header>
     <div class="user-info">
@@ -112,13 +112,25 @@
         <a href="{% url 'logout' %}">Logout</a>
     </div>
 </header>
+ <h1 style="text-align:center;">BIDDER DASHBOARD</h1>
 
 
+<h1 id="start_status" style="text-align:center;"></h1>
+
+<div id="refresh-container" style="text-align:center;">
+  <button id="refreshBtn" style="width:30%;">Refresh</button>
+</div>
+
+</div>
 <div id="main-container" class="container"></div>
 
 
 
 <script>
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+  location.reload();
+});
+
 
     let allGroupedBids = {};
     let latestUserRanks = [];
@@ -165,9 +177,13 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
 
 
-if (data.type === 'timer_update') {
+if (data.type === 'timer_update' && data.auction_started===true) {
     console.log("Update Timer:", data.minutes);
      console.log("Auction Status:", data.auction_started);
+
+       let timer = document.getElementById("start_status");
+  timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;
+
 
     // Convert HH:MM:SS to seconds
     function parseTimeToSeconds(timeStr) {
@@ -179,6 +195,8 @@ if (data.type === 'timer_update') {
         }
         return 0;
     }
+
+
 
     const remainingSeconds = parseTimeToSeconds(data.minutes);
     const totalSeconds = window.totalAuctionSeconds || 600; // default 10 min
@@ -206,10 +224,22 @@ if (data.type === 'timer_update') {
         }
     });
 }
+// Inside your onmessage
+else if (data.type === 'timer_update' && data.auction_started === false) {
+    console.log("Update Timer:", data.minutes);
+
+    let timer = document.getElementById("start_status");
+    timer.innerText = `Auction will start in: ${data.minutes}`;
+
+    console.log("Auction Status:", data.auction_started);
+}
+else   {
+
+    let timer = document.getElementById("start_status");
+    timer.innerText = `Auction Ended !`;
 
 
-
-
+}
 
         if (data.type === 'requirements') {
             renderRequirements(data.data);
@@ -244,8 +274,11 @@ if (data.type === 'timer_update') {
         console.log("requirements:", requirements);
 
         const container = document.getElementById('main-container');
-        container.innerHTML = '';
-          container.innerHTML=` <h2 style="text-align:center";>BIDDER DASHBOARD</h2>`;
+<!--        const container = document.getElementById('main-container');-->
+        container.innerHTML = `
+
+
+        `;
 
         requirements.forEach((req, index) => {  // <-- index is here
             const row = document.createElement('div');
