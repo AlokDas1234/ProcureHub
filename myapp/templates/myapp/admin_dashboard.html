@@ -173,10 +173,10 @@
                     <label for="no_of_trucks">6. No of Trucks</label>
                     <input type="number" class="form-control" name="no_of_trucks" required>
                 </div>
-                <div class="form-group">
-                    <label for="qty">7. Quantity</label>
-                    <input type="number" class="form-control" name="qty" required>
-                </div>
+<!--                <div class="form-group">-->
+<!--                    <label for="qty">7. Quantity</label>-->
+<!--                    <input type="number" class="form-control" name="qty" required>-->
+<!--                </div>-->
                 <div class="form-group">
                     <label for="product">8. Product Type</label>
                     <input type="text" class="form-control" name="product" required>
@@ -201,6 +201,10 @@
                 <div class="form-group">
                     <label for="types">12. Types</label>
                     <input type="text" class="form-control" name="types">
+                </div>
+                <div class="form-group mb-0">
+                    <label for="types">13. Ceiling Price</label>
+                    <input type="number" class="form-control" name="cel_price">
                 </div>
             </div>
         </div>
@@ -367,7 +371,12 @@
                         <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">
                             <strong>2.Unloading:</strong> {{ requirement.unloading_point }}
                         </p>
+                        
                     <p><strong>3. Loading Point Full Address:</strong> {{ requirement.loading_point_full_address }}</p>
+
+<!--                    <label  for="loading_point_full">3. Loading Point Full Address</label>-->
+<!--                    <textarea class="form-control" name="loading_point_full"  rows="4" placeholder="Enter full loading address" required>"{{ requirement.loading_point_full_address }}"</textarea>-->
+
             <p>
                 <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.loading_point_full_address|urlencode }}" target="_blank">
                     📍 View Loading Address on Map
@@ -385,19 +394,22 @@
             <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
                 <strong>6. No of Truck:</strong> {{ requirement.no_of_trucks }}
             </p>
-           <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">
-                <strong>7. Qty:</strong> {{ requirement.qty }}
-            </p>
+<!--           <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">-->
+<!--                <strong>7. Qty:</strong> {{ requirement.qty }}-->
+<!--            </p>-->
             <p><strong>8. Product Type:</strong> {{ requirement.product }}</p>
 
-             <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">
+             <p style="background-color: {% if not requirement.notes %}#EFADF0{% else %}transparent{% endif %};">
                 <strong>7.Notes:</strong> {{ requirement.notes }}
             </p>
 
             <p><strong>10. Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
-            <p><strong>11.Weight Per Drum:</strong> {{ requirement.weight_per_drum }}</p>
+            <p><strong>11.Weight Per Drum(kg):</strong> {{ requirement.weight_per_drum }}</p>
             <p><strong>12. Types:</strong> {{ requirement.types }}</p>
+            <p><strong>13. Ceiling Price:</strong> {{ requirement.cel_price }}</p>
                         </div>
+
+
 
                     <button style="width: 100%; margin-top: auto; border-radius: 1px; margin-bottom: 0; padding-bottom: 0;"
         onclick="delReq({{ requirement.id }})"
@@ -642,41 +654,45 @@ function renderBids() {
         });
     });
 
-                function delReq(reqId) {
-                       if (reqId === 'delAll') {
-                    const confirmedAll = confirm("Do you want to delete ALL requirements?");
-                    if (!confirmedAll) {
+                function delReq(reqId)
+                {
+
+                   if (reqId === 'delAll')
+                    {
+                        const confirmedAll = confirm("Do you want to delete ALL requirements?");
+                        if (!confirmedAll) {
                         return; // User canceled
+                                           }
                     }
-                } else {
+                   else {
                     const confirmed = confirm(`Do you want to delete "${reqId}" requirement?`);
                     if (!confirmed) {
                         return; // User canceled
-                    }
+                                     }
+                         }
+
+                    console.log("reqId:", reqId);
+                    const newForm = new FormData();
+                    newForm.append("reqId", reqId);
+
+                    fetch("{% url 'delId' %}", {
+                        method: "POST",
+                        body: newForm,
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        }
+                    })
+                    .then(res => res.text())
+                    .then(data => {
+                        console.log("Deleted response:", data);
+                        // Optionally remove the DOM element or reload
+                        location.reload(); // or dynamically remove the element
+
+                    })
+                    .catch(error => {
+                        console.error("Error deleting:", error);
+                    });
                 }
-
-        console.log("reqId:", reqId);
-        const newForm = new FormData();
-        newForm.append("reqId", reqId);
-
-        fetch("{% url 'delId' %}", {
-            method: "POST",
-            body: newForm,
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}"
-            }
-        })
-        .then(res => res.text())
-        .then(data => {
-            console.log("Deleted response:", data);
-            // Optionally remove the DOM element or reload
-            location.reload(); // or dynamically remove the element
-
-        })
-        .catch(error => {
-            console.error("Error deleting:", error);
-        });
-    }
 
 
      function editReq(reqId) {

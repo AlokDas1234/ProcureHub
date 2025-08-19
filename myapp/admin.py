@@ -16,7 +16,7 @@ class GeneralAccessAdmin(admin.ModelAdmin):
 
 @admin.register(Requirements)
 class RequirementsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'loading_point', 'unloading_point', 'truck_type', 'qty', 'product')
+    list_display = ('id', 'loading_point', 'unloading_point', 'truck_type',  'product')
     inlines = [BidInline]
 
 

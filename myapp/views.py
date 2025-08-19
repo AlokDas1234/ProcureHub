@@ -77,14 +77,15 @@ def create_requirement(request):
 
         truck_type = request.POST.get("truck_type")
         no_of_trucks=request.POST.get("no_of_trucks")
-        qty = request.POST.get("qty")
+        # qty = request.POST.get("qty")
         product = request.POST.get("product")
         notes = request.POST.get("notes")
         drum_type_no_of_drums = request.POST.get("drum_type_no_of_drums")
         weight_per_drum = request.POST.get("weight_per_drum")
         types = request.POST.get("types")
+        cel_price= request.POST.get("cel_price")
         Requirements.objects.create(loading_point=loading_point, unloading_point=unloading_point,loading_point_full_address=loading_point_full_address,unloading_point_full_address=unloading_point_full_address, truck_type=truck_type,no_of_trucks=no_of_trucks,
-                                    qty=qty, product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,types=types)
+                                     product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,types=types,cel_price=cel_price)
         return redirect('requirements')  # <-- Redirect to avoid re-submission on refresh
 
     requirements = Requirements.objects.all()
@@ -204,12 +205,13 @@ def bulk_upload_requirements(request):
                     unloading_point_full_address=row.get("unloading_point_full_address", ""),
                     product=row.get("product", ""),
                     truck_type=row.get("truck_type", ""),
-                    qty=int(row.get("qty") or 0),
+                    # qty=int(row.get("qty") or 0),
                     no_of_trucks=int(row.get("no_of_trucks") or 0),
                     notes=row.get("notes", ""),
                     drum_type_no_of_drums=row.get("drum_type_no_of_drums", ""),
                     weight_per_drum=float(row.get("weight_per_drum") or 0),
-                    types=row.get("types", "")
+                    types=row.get("types", ""),
+                    cel_price=int(row.get("cel_price")or 0)
                 ))
             except Exception as e:
                 bulk_upload_exception.append({"index": index, "Exception": str(e)})

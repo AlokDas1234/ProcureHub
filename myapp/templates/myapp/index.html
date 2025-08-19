@@ -175,7 +175,12 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
         const data = JSON.parse(e.data);
         console.log("From server:", data);
 
+if(data.type==='valid_bid')
+{
+console.log("valid_bid",data.valid_bid)
+alert(data.valid_bid);
 
+}
 
 if (data.type === 'timer_update' && data.auction_started===true) {
     console.log("Update Timer:", data.minutes);
@@ -297,6 +302,7 @@ else   {
                         <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> ${req.id}</h2>
                     </div>
                     <div class="p-1" style="margin-left:0.25rem;">
+
                         <p><strong style="color: ${!req.loading_point ? '#EFADF0' : 'inherit'};">1. Loading:</strong> ${req.loading_point || ''}</p>
                         <p><strong style="color: ${!req.unloading_point ? '#EFADF0' : 'inherit'};">2. Unloading:</strong> ${req.unloading_point || ''}</p>
                         &nbsp
@@ -319,8 +325,8 @@ else   {
                         &nbsp
                         <p><strong style="color: ${!req.no_of_trucks ? '#EFADF0' : 'inherit'};">6. No of Truck:</strong> ${req.no_of_trucks || ''}</p>
                         &nbsp
-                        <p><strong style="color: ${!req.qty ? '#EFADF0' : 'inherit'};">7. Qty:</strong> ${req.qty || ''}</p>
-                        &nbsp
+<!--                        <p><strong style="color: ${!req.qty ? '#EFADF0' : 'inherit'};">7. Qty:</strong> ${req.qty || ''}</p>-->
+<!--                        &nbsp-->
                         <p><strong>8. Product Type:</strong> ${req.product || ''}</p>
                         &nbsp
                         <p><strong style="color: ${!req.notes ? '#EFADF0' : 'inherit'};">9. Notes:</strong> ${req.notes || ''}</p>
@@ -330,6 +336,8 @@ else   {
                         <p><strong>11. Weight Per Drum:</strong> ${req.weight_per_drum || ''}</p>
                         &nbsp
                         <p><strong>12. Types:</strong> ${req.types || ''}</p>
+                          &nbsp
+                        <p><strong>13. Ceiling Price:</strong> ${req.cel_price || ''}</p>
                     </div>
                 </div>
                 </div>
@@ -340,6 +348,7 @@ else   {
             rightCol.innerHTML = `
             <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">
                         <h2 style="margin: 0;"><strong>BIDDER REQUIREMENT ID:</strong> ${req.id}</h2>
+                        <p>Maximum 5 bids can be placed</p>
                     </div>
 
                   <h3 id="remaining-time-${req.id}"></h3>

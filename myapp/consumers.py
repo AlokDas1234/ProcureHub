@@ -67,8 +67,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             def get_all_requirements():
                 return list(Requirements.objects.all().values(
                     'id', 'loading_point', 'unloading_point', 'loading_point_full_address',
-                    'unloading_point_full_address', 'truck_type', 'qty', 'product', 'no_of_trucks', 'notes',
-                    'drum_type_no_of_drums', 'weight_per_drum', 'types'
+                    'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
+                    'drum_type_no_of_drums', 'weight_per_drum', 'types','cel_price'
                 ))
 
             access, created = await req_view_access(self.scope['user'])
@@ -163,6 +163,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             existing_bids = await sync_to_async(
                 Bid.objects.filter(user=user, req=requirement).count
             )()
+
             auction_end_status = False
             if clt >= end_times:
                 print("Auction Ended")
@@ -174,6 +175,40 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # print("User:",user)
             # print("User Name:",user.username)
             user_ = await sync_to_async(User.objects.get)(username=user.username)
+            user_bid = await sync_to_async(list)(Bid.objects.filter(user=user_, req=requirement.id))
+            req_ = await sync_to_async(Requirements.objects.get)(id=requirement.id)
+
+            print("Req ceiling price:",req_.cel_price)
+            if int(bid_amt) < req_.cel_price:
+                print("valid_bid_cel_price  if executed")
+                valid_bid_cel_price = True
+            else:
+                valid_bid_cel_price = False
+
+            if not valid_bid_cel_price:
+                await self.send(text_data=json.dumps({
+                    'type': 'valid_bid',
+                    'valid_bid': "Place lowest bid price than ceiling price {}".format(req_.cel_price),
+                }))
+
+            # print("user_bid from receive:", user_bid)
+            print("bid_amt",bid_amt)
+            print("bid_amt type",type(bid_amt))
+            valid_bid = True
+            for rate in user_bid:
+                print("Submitted Rate", rate.rate)
+                print("Submitted Rate Type", type(rate.rate))
+                if int(bid_amt)< rate.rate:
+                    valid_bid=True
+                else:
+                    valid_bid=False
+
+            if not valid_bid:
+                await self.send(text_data=json.dumps({
+                    'type': 'valid_bid',
+                    'valid_bid':"Enter lowest bid amount",
+                }))
+
             try:
                 user_exist = await sync_to_async(UserAccess.objects.get)(user=user_)
                 user_access = user_exist.can_view_requirements
@@ -186,6 +221,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     and existing_bids < 5
                     and general_access
                     and user_access  # True/False
+                    and valid_bid
+                    and valid_bid_cel_price
+
             ):
                 bid_instance = await sync_to_async(Bid.objects.create)(
                     user=user,
@@ -213,12 +251,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'unloading_point_full_address': requirement.unloading_point_full_address,
                             'truck_type': requirement.truck_type,
                             'no_of_trucks': requirement.no_of_trucks,
-                            'qty': requirement.qty,
+                            # 'qty': requirement.qty,
                             'notes': requirement.notes,
                             'drum_type_no_of_drums': requirement.drum_type_no_of_drums,
                             'product': requirement.product,
                             'weight_per_drum': requirement.weight_per_drum,
                             'types': requirement.types,
+                            'cel_price': requirement.cel_price,
                         },
                         'bid_rate': bid_amt
                     }
@@ -356,12 +395,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'unloading_point_full_address': bid.req.unloading_point_full_address,
                         'truck_type': bid.req.truck_type,
                         'no_of_trucks': bid.req.no_of_trucks,
-                        'qty': bid.req.qty,
+                        # 'qty': bid.req.qty,
                         'product': bid.req.product,
                         'notes': bid.req.notes,
                         'drum_type_no_of_drums': bid.req.drum_type_no_of_drums,
                         'weight_per_drum': bid.req.weight_per_drum,
                         'types': bid.req.types,
+                        'cel_price': bid.req.cel_price,
                     },
                     'bid_rate': bid.rate
                 })

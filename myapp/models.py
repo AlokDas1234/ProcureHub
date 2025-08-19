@@ -18,17 +18,18 @@ class Requirements(models.Model):
     loading_point_full_address=models.TextField(null=True,blank=True)
     unloading_point_full_address=models.TextField(null=True,blank=True)
 
-    product = models.CharField(max_length=100)
-    truck_type=models.CharField(max_length=100)
-    qty=models.IntegerField(default=0)
+    product = models.CharField(max_length=100,null=True,blank=True)
+    truck_type=models.CharField(max_length=100,null=True,blank=True)
+    # qty=models.IntegerField(default=0,null=True,blank=True)
     no_of_trucks=models.IntegerField(null=True,blank=True)
     notes=models.TextField(null=True,blank=True)
     drum_type_no_of_drums=models.CharField(max_length=100,null=True,blank=True)
     weight_per_drum=models.FloatField(null=True,blank=True)
     types=models.CharField(max_length=100,null=True,blank=True)
+    cel_price = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
-        return f" From {self.loading_point}  to {self.unloading_point} Truck: {self.truck_type} {self.truck_type} Quantity:{self.qty} Material:{self.product}"
+        return f" From {self.loading_point}  to {self.unloading_point} Truck: {self.truck_type} {self.truck_type}  Material:{self.product}"
 
 class Bid(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='bid_user',null=True,blank=True)
