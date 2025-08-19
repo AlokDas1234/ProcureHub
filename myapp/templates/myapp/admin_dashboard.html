@@ -144,15 +144,17 @@
             <!-- Left Column -->
             <div class="col-md-4 mb-4">
 
-                <div class="form-group">
+                <div  class="form-group">
                     <div class="form-group">
                     <label for="loading_point">1. Loading Point</label>
                     <input type="text" class="form-control" name="loading_point" id="loading_point" required>
                 </div>
-                <div class="form-group">
-                    <label for="unloading_point">2. Unloading Point</label>
-                    <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
-                </div>
+                    <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="unloading_point">2. Unloading Point</label>
+                                <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
+                            </div>
+                    </div>
                     <label for="loading_point_full_address">3. Loading Point Full Address</label>
                     <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>
                 </div>
@@ -365,13 +367,19 @@
 
                 </div>
                     <div class="p-1">
-                    <p style="background-color: {% if not requirement.loading_point %}#EFADF0{% else %}transparent{% endif %};">
-                        <strong>1. Loading:</strong> {{ requirement.loading_point }}
-                    </p>
-                        <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">
-                            <strong>2.Unloading:</strong> {{ requirement.unloading_point }}
-                        </p>
-                        
+                        <div class="row">
+                            <div class="col md-6">
+
+                                <p style="background-color: {% if not requirement.loading_point %}#EFADF0{% else %}transparent{% endif %};">
+                                    <strong>1. Loading:</strong> {{ requirement.loading_point }}
+                                </p>
+                            </div>
+                              <div class="col md-6">
+                                <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">
+                                    <strong>2.Unloading:</strong> {{ requirement.unloading_point }}
+                                </p>
+                              </div>
+                        </div>
                     <p><strong>3. Loading Point Full Address:</strong> {{ requirement.loading_point_full_address }}</p>
 
 <!--                    <label  for="loading_point_full">3. Loading Point Full Address</label>-->
@@ -388,12 +396,19 @@
                     📍 View Unloading Address on Map
                 </a>
             </p>
-            <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
-                <strong>5.Truck:</strong> {{ requirement.truck_type }}
-            </p>
-            <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
-                <strong>6. No of Truck:</strong> {{ requirement.no_of_trucks }}
-            </p>
+                        <div class="row">
+                            <div class="col md-8">
+                                <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
+                                    <strong>5.Truck:</strong> {{ requirement.truck_type }}
+                                </p>
+                            </div>
+
+                                <div class="col md-4">
+                                    <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
+                                        <strong>6. No of Truck:</strong> {{ requirement.no_of_trucks }}
+                                    </p>
+                                </div>
+                        </div>
 <!--           <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">-->
 <!--                <strong>7. Qty:</strong> {{ requirement.qty }}-->
 <!--            </p>-->
