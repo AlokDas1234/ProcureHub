@@ -23,18 +23,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             username = self.scope['user'].username
 
-            if not self.scope['user'].is_superuser:
+            general_access, minutes, start_time = await self.get_general_access()
+            clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+
+            auction_start = True
+
+            if clt <= start_time:
+                print("Auction Not Started")
+                auction_start = False
+
+            auction_end_status = False
+            if clt >= end_times:
+                print("Auction Ended")
+                auction_end_status = True
+
+            if  not self.scope['user'].is_superuser  and auction_start==False  and auction_end_status == False:
                 bid_group_data = await self.get_all_bid_group(username)
                 await self.send(text_data=json.dumps({
                     'type': 'grouped_bid',
                     'bid_group_data': bid_group_data
                 }))
-                # await self.send(text_data=json.dumps({
-                #     'type': 'grouped_bid',
-                #     'bid_group_data': bid_group_data
-                # }))
 
-            if self.scope['user'].is_superuser:
+
+            if auction_start==False  and auction_end_status == False and self.scope['user'].is_superuser:
                 bid_data = await self.get_all_bid_data()
                 for item in bid_data:
                     await self.channel_layer.group_send(
@@ -47,6 +58,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'bid_rate': item['bid_rate']
                         }
                     )
+
             if self.scope['user'].is_superuser:
                 '''This is used to get all users except superuser but admin can do it'''
                 users = await self.get_bid_users()
@@ -90,18 +102,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             auction_end_status = False
             if clt >= end_times:
                 print("Auction Ended")
-
                 auction_end_status = True
-
             if auction_start==False:
                 print("auction_start False: executed")
-
                 self.timer_task = asyncio.create_task(self.send_remaining_time())
+                reqs = await sync_to_async(get_all_requirements)()
 
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'load_requirements',
+                        'requirements': reqs,
+                        'len_reqs': len(reqs),
 
-
-
-
+                    }
+                )
             elif auction_end_status == False:
 
                 print("auction_end_status False: executed")
@@ -113,7 +128,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     # print("Access granted for: ", user.username)
                     # print("General Access minutes: ", minutes)
                     # print("General Access end_time: ", end_time)
-
                     reqs = await sync_to_async(get_all_requirements)()
 
                     await self.channel_layer.group_send(
@@ -218,7 +232,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # ✅ Only use user_access (boolean), don’t check user_exist == True
             if (
                     auction_end_status is False
-                    and existing_bids < 5
+                    # and existing_bids < 5
                     and general_access
                     and user_access  # True/False
                     and valid_bid
@@ -515,6 +529,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'timer_update',
             'minutes': event['minutes'],
+            'seconds': event['seconds'],
             'end_time': event['end_time'],
             'auction_started': event['auction_started']
         }))
@@ -558,7 +573,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             general_access, minutes, start_time = await self.get_general_access()
 
             clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
-
+            print("Remaining:", remaining.seconds)
+            print("Remaining type :", type(remaining.seconds))
+            print("Remaining Seconds:",remaining.total_seconds())
             if remaining.total_seconds() <= 0:
                 print("Auction time reached, stopping timer.")
                 break
@@ -578,6 +595,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type': 'timer_update',
                     'minutes': str(remaining),
                     'end_time': str(end_times),
+                    'seconds': remaining.seconds,
                     'auction_started': auction_start
                 }
             )

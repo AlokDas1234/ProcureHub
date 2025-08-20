@@ -189,6 +189,13 @@ alert(data.valid_bid);
 
 if (data.type === 'timer_update' && data.auction_started===true) {
     console.log("Update Timer:", data.minutes);
+    console.log("Minutes value:", data.minutes, "Type:", typeof data.minutes);
+    if(data.seconds===0){
+    window.location.reload();
+    }
+
+
+
      console.log("Auction Status:", data.auction_started);
 
        let timer = document.getElementById("start_status");
@@ -237,9 +244,15 @@ if (data.type === 'timer_update' && data.auction_started===true) {
 // Inside your onmessage
 else if (data.type === 'timer_update' && data.auction_started === false) {
     console.log("Update Timer:", data.minutes);
+     if(data.seconds===0){
+    window.location.reload();
+    }
 
     let timer = document.getElementById("start_status");
     timer.innerText = `Auction will start in: ${data.minutes}`;
+
+
+
 
     console.log("Auction Status:", data.auction_started);
 }
@@ -311,16 +324,10 @@ else   {
                            <div class="row no-border">
                            <div class="col-md-6">
 
-                        <p><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">1. Loading:</strong> ${req.loading_point || ''}</p>
-                        </div>
-                         <div class="col-md-6">
-                        <p><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">2. Unloading:</strong> ${req.unloading_point || ''}</p>
-                        &nbsp
-                          </div>
-                          </div>
-                       <p>
+                        <p><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
+                        <p>
                           <strong style="color: ${!req.loading_point_full_address ? '#EFADF0' : ''};">
-                            3. Loading Point Full Address:
+
                           </strong>
                           ${req.loading_point_full_address || ''}
                         </p>
@@ -329,71 +336,85 @@ else   {
                                 📍 View Loading Address on Map
                             </a>
                         </p>
+                        </div>
+                         <div class="col-md-6">
 
-                       <p>
+                        &nbsp
+                          </div>
+                          </div>
+                            <p><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>
+
+                          <p>
                           <strong style="color: ${!req.unloading_point_full_address ? '#EFADF0' : ''};">
-                            4. Unloading Point Full Address:
+
                           </strong>
                           ${req.unloading_point_full_address || ''}
                         </p>
+<!--                       <p>-->
+<!--                          <strong style="color: ${!req.loading_point_full_address ? '#EFADF0' : ''};">-->
+<!--                            3. Loading Point Full Address:-->
+<!--                          </strong>-->
+<!--                          ${req.loading_point_full_address || ''}-->
+<!--                        </p>-->
+<!--                        <p>-->
+<!--                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">-->
+<!--                                📍 View Loading Address on Map-->
+<!--                            </a>-->
+<!--                        </p>-->
+
+
                         <p>
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">
                                 📍 View Unloading Address on Map
                             </a>
                         </p>
-                        &nbsp
+
                         <hr>
-                        <div class="row  no-border">
-                           <div class="col-md-6">
-                        <p><strong style="color: ${req.truck_type ?  '#05ACFA' : '#EFADF0'};">5. Truck:</strong> ${req.truck_type || ''}</p>
+                        <h3>Requirements:</h3>
+
+
+                        <p><strong style="color: ${req.truck_type ?  '#05ACFA' : '#EFADF0'};">Truck:</strong> ${req.truck_type || ''}</p>
                         &nbsp
-                        </div>
-                         <div class="col-md-6">
-                        <p><strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">6. No of Truck:</strong> ${req.no_of_trucks || ''}</p>
+
+                        <p><strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong> ${req.no_of_trucks || ''}</p>
                         &nbsp
-                        </div>
-                        </div>
-<!--                        <p><strong style="color: ${req.qty ? '#05ACFA' : '#EFADF0'};">7. Qty:</strong> ${req.qty || ''}</p>-->
+
+<!--                        <p><strong style="color: ${req.qty ? '#05ACFA' : '#EFADF0'};">Qty:</strong> ${req.qty || ''}</p>-->
 <!--                        &nbsp-->
                           <p>
                               <strong style="color: ${req.product ? '#05ACFA' : '#EFADF0'};">
-                                7. Product Type:
+                                Product Type:
                               </strong>
-                              ${req.product || ''}
+                              ${req.product || ''} with ${req.drum_type_no_of_drums || ''} Drums
                             </p>
                         &nbsp
                        <p>
                       <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">
-                        8. Notes:
+                        Notes:
                       </strong>
                       ${req.notes || ''}
                     </p>
+                    <br>
 
-                        &nbsp
-                      <p>
-                          <strong style="color: ${req.drum_type_no_of_drums ? '#05ACFA' : '#EFADF0'};">
-                            9. Drum Type & No of Drums:
-                          </strong>
-                          ${req.drum_type_no_of_drums || ''}
-                        </p>
-                        &nbsp
-                        <p>
+
+
+
                           <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
-                            10. Weight Per Drum:
+                            Weight Per Drum:
                           </strong>
                           ${req.weight_per_drum || ''}
                         </p>
                         &nbsp
                        <p>
                           <strong style="color: ${req.types ? '#05ACFA' : '#EFADF0'};">
-                            11. Types:
+                            Types:
                           </strong>
                           ${req.types || ''}
                         </p>
                           &nbsp
                        <p>
                           <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
-                            12. Ceiling Price:
+                            Ceiling Price:
                           </strong>
                           ${req.cel_price || ''}
                         </p>
@@ -407,7 +428,6 @@ else   {
             rightCol.innerHTML = `
             <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">
                         <h2 style="margin: 0;"><strong>BIDDER REQUIREMENT ID:</strong> ${req.id}</h2>
-                        <p>Maximum 5 bids can be placed</p>
                     </div>
 
                   <h3 id="remaining-time-${req.id}"></h3>
