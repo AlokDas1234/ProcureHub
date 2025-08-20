@@ -24,6 +24,11 @@
             padding: 10px;
             align-items: stretch;
         }
+        .no-border {
+    border: none !important;
+    padding: 0;   /* optional, removes extra spacing */
+}
+
         .col {
             flex: 1;
             background-color: #222;
@@ -303,41 +308,95 @@ else   {
                     </div>
                     <div class="p-1" style="margin-left:0.25rem;">
 
-                        <p><strong style="color: ${!req.loading_point ? '#EFADF0' : 'inherit'};">1. Loading:</strong> ${req.loading_point || ''}</p>
-                        <p><strong style="color: ${!req.unloading_point ? '#EFADF0' : 'inherit'};">2. Unloading:</strong> ${req.unloading_point || ''}</p>
+                           <div class="row no-border">
+                           <div class="col-md-6">
+
+                        <p><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">1. Loading:</strong> ${req.loading_point || ''}</p>
+                        </div>
+                         <div class="col-md-6">
+                        <p><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">2. Unloading:</strong> ${req.unloading_point || ''}</p>
                         &nbsp
-                        <p><strong>3. Loading Point Full Address:</strong> ${req.loading_point_full_address || ''}</p>
+                          </div>
+                          </div>
+                       <p>
+                          <strong style="color: ${!req.loading_point_full_address ? '#EFADF0' : ''};">
+                            3. Loading Point Full Address:
+                          </strong>
+                          ${req.loading_point_full_address || ''}
+                        </p>
                         <p>
-                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')}" target="_blank">
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">
                                 📍 View Loading Address on Map
                             </a>
                         </p>
-                        &nbsp
-                        <p><strong>4. Unloading Point Full Address:</strong> ${req.unloading_point_full_address || ''}</p>
+
+                       <p>
+                          <strong style="color: ${!req.unloading_point_full_address ? '#EFADF0' : ''};">
+                            4. Unloading Point Full Address:
+                          </strong>
+                          ${req.unloading_point_full_address || ''}
+                        </p>
                         <p>
-                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')}" target="_blank">
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">
                                 📍 View Unloading Address on Map
                             </a>
                         </p>
                         &nbsp
                         <hr>
-                        <p><strong style="color: ${!req.truck_type ? '#EFADF0' : 'inherit'};">5. Truck:</strong> ${req.truck_type || ''}</p>
+                        <div class="row  no-border">
+                           <div class="col-md-6">
+                        <p><strong style="color: ${req.truck_type ?  '#05ACFA' : '#EFADF0'};">5. Truck:</strong> ${req.truck_type || ''}</p>
                         &nbsp
-                        <p><strong style="color: ${!req.no_of_trucks ? '#EFADF0' : 'inherit'};">6. No of Truck:</strong> ${req.no_of_trucks || ''}</p>
+                        </div>
+                         <div class="col-md-6">
+                        <p><strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">6. No of Truck:</strong> ${req.no_of_trucks || ''}</p>
                         &nbsp
-<!--                        <p><strong style="color: ${!req.qty ? '#EFADF0' : 'inherit'};">7. Qty:</strong> ${req.qty || ''}</p>-->
+                        </div>
+                        </div>
+<!--                        <p><strong style="color: ${req.qty ? '#05ACFA' : '#EFADF0'};">7. Qty:</strong> ${req.qty || ''}</p>-->
 <!--                        &nbsp-->
-                        <p><strong>8. Product Type:</strong> ${req.product || ''}</p>
+                          <p>
+                              <strong style="color: ${req.product ? '#05ACFA' : '#EFADF0'};">
+                                7. Product Type:
+                              </strong>
+                              ${req.product || ''}
+                            </p>
                         &nbsp
-                        <p><strong style="color: ${!req.notes ? '#EFADF0' : 'inherit'};">9. Notes:</strong> ${req.notes || ''}</p>
+                       <p>
+                      <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">
+                        8. Notes:
+                      </strong>
+                      ${req.notes || ''}
+                    </p>
+
                         &nbsp
-                        <p><strong>10. Drum Type & No of Drums:</strong> ${req.drum_type_no_of_drums || ''}</p>
+                      <p>
+                          <strong style="color: ${req.drum_type_no_of_drums ? '#05ACFA' : '#EFADF0'};">
+                            9. Drum Type & No of Drums:
+                          </strong>
+                          ${req.drum_type_no_of_drums || ''}
+                        </p>
                         &nbsp
-                        <p><strong>11. Weight Per Drum:</strong> ${req.weight_per_drum || ''}</p>
+                        <p>
+                          <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
+                            10. Weight Per Drum:
+                          </strong>
+                          ${req.weight_per_drum || ''}
+                        </p>
                         &nbsp
-                        <p><strong>12. Types:</strong> ${req.types || ''}</p>
+                       <p>
+                          <strong style="color: ${req.types ? '#05ACFA' : '#EFADF0'};">
+                            11. Types:
+                          </strong>
+                          ${req.types || ''}
+                        </p>
                           &nbsp
-                        <p><strong>13. Ceiling Price:</strong> ${req.cel_price || ''}</p>
+                       <p>
+                          <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
+                            12. Ceiling Price:
+                          </strong>
+                          ${req.cel_price || ''}
+                        </p>
                     </div>
                 </div>
                 </div>
