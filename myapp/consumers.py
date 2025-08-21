@@ -37,7 +37,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 print("Auction Ended")
                 auction_end_status = True
 
-            if  not self.scope['user'].is_superuser  and auction_start==False  and auction_end_status == False:
+            if  auction_start  and auction_end_status == False and  not self.scope['user'].is_superuser :
+                '''Normal users is subscribed to this channel'''
                 bid_group_data = await self.get_all_bid_group(username)
                 await self.send(text_data=json.dumps({
                     'type': 'grouped_bid',
@@ -45,7 +46,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }))
 
 
-            if auction_start==False  and auction_end_status == False and self.scope['user'].is_superuser:
+            if  self.scope['user'].is_superuser:
+                '''Only admin is subscribed to this channel'''
                 bid_data = await self.get_all_bid_data()
                 for item in bid_data:
                     await self.channel_layer.group_send(
@@ -80,7 +82,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 return list(Requirements.objects.all().values(
                     'id', 'loading_point', 'unloading_point', 'loading_point_full_address',
                     'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
-                    'drum_type_no_of_drums', 'weight_per_drum', 'types','cel_price'
+                    'drum_type_no_of_drums', 'weight_per_drum', 'types','cel_price','min_dec_val'
                 ))
 
             access, created = await req_view_access(self.scope['user'])
@@ -104,7 +106,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 print("Auction Ended")
                 auction_end_status = True
             if auction_start==False:
-                print("auction_start False: executed")
+                print("Auction Not Started")
                 self.timer_task = asyncio.create_task(self.send_remaining_time())
                 reqs = await sync_to_async(get_all_requirements)()
 
@@ -114,10 +116,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'type': 'load_requirements',
                         'requirements': reqs,
                         'len_reqs': len(reqs),
-
+                        "auction_start_status": auction_start,
                     }
                 )
             elif auction_end_status == False:
+
 
                 print("auction_end_status False: executed")
                 if self.scope['user'].is_superuser:
@@ -136,6 +139,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'type': 'load_requirements',
                             'requirements': reqs,
                             'len_reqs': len(reqs),
+                            "auction_start_status": auction_start,
 
                         }
                     )
@@ -192,8 +196,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             user_bid = await sync_to_async(list)(Bid.objects.filter(user=user_, req=requirement.id))
             req_ = await sync_to_async(Requirements.objects.get)(id=requirement.id)
 
+            # min_dec_val
+            ''' To place  a bid,Bid amount must be lower than the ceiling price or 0'''
             print("Req ceiling price:",req_.cel_price)
-            if int(bid_amt) < req_.cel_price:
+            if int(bid_amt) < req_.cel_price or req_.cel_price==0 :
                 print("valid_bid_cel_price  if executed")
                 valid_bid_cel_price = True
             else:
@@ -204,6 +210,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type': 'valid_bid',
                     'valid_bid': "Place lowest bid price than ceiling price {}".format(req_.cel_price),
                 }))
+            valid_bid_dec_val=True
+            if int(bid_amt) < req_.min_dec_val:
+                valid_bid_dec_val= False
+                await self.send(text_data=json.dumps({
+                    'type': 'valid_bid',
+                    'valid_bid': "Enter amount lower than the minimal decremental value {}".format( req_.min_dec_val),
+                }))
+
 
             # print("user_bid from receive:", user_bid)
             print("bid_amt",bid_amt)
@@ -237,19 +251,47 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     and user_access  # True/False
                     and valid_bid
                     and valid_bid_cel_price
+                    and valid_bid_dec_val
 
             ):
+                """Updating ceiling price"""
+                await self.update_req_cel_price(req_, bid_amt)
+
                 bid_instance = await sync_to_async(Bid.objects.create)(
                     user=user,
                     req=requirement,
                     rate=bid_amt
                 )
+
+
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "send_grouped_bid"
                     }
                 )
+
+                reqs=await self. get_all_requirements()
+                auction_start=True
+
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'load_requirements',
+                        'requirements': reqs,
+                        'len_reqs': len(reqs),
+                        "auction_start_status": auction_start,
+
+                    }
+                )
+
+                # await self.channel_layer.group_send(
+                #     self.room_group_name,
+                #     {
+                #         "type": "send_load_requirements"
+                #     }
+                # )
+
 
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -357,7 +399,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'requirements',
             'data': event['requirements'],
-            'len_reqs': event['len_reqs']
+            'len_reqs': event['len_reqs'],
+            'auction_start_status': event['auction_start_status']
+
 
         }))
 
@@ -378,6 +422,33 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "type": "grouped_bid",
                 "bid_group_data": bid_group_data
             }))
+
+
+
+    # async def send_load_requirements(self, event):
+    #     reqs = self.get_all_requirements()
+    #     len_=0
+    #
+    #     auction_start=True
+    #     await self.channel_layer.group_send(
+    #         self.room_group_name,
+    #         {
+    #             'type': 'load_requirements',
+    #             'requirements': reqs,
+    #             'len_reqs':len_,
+    #             "auction_start_status": auction_start,
+    #
+    #         }
+    #     )
+
+    @sync_to_async
+    def get_all_requirements(self):
+        return list(Requirements.objects.all().values(
+            'id', 'loading_point', 'unloading_point', 'loading_point_full_address',
+            'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
+            'drum_type_no_of_drums', 'weight_per_drum', 'types', 'cel_price','min_dec_val'
+        ))
+
 
     @sync_to_async
     def get_bid_users(self):
@@ -468,6 +539,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #         "bids": result,
     #         "user_ranks": user_result
     #     }
+
+
     @sync_to_async
     def get_all_bid_group(self, username):
         from django.contrib.auth.models import User
@@ -561,6 +634,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #         )
     #
     #         await asyncio.sleep(1)  # update every second
+    from channels.db import database_sync_to_async
+    @database_sync_to_async
+    def update_req_cel_price(self,req, bid_amt):
+        req.cel_price = bid_amt
+        req.save()
+        return req
 
     async def send_remaining_time(self):
 

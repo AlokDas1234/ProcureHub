@@ -150,8 +150,6 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
         socket.send(JSON.stringify({ action: "load_requirements" }));
         socket.send(JSON.stringify({ type: "grouped_bid" }));
 
-
-
     };
 
     function submitBid(reqId) {
@@ -190,9 +188,9 @@ alert(data.valid_bid);
 if (data.type === 'timer_update' && data.auction_started===true) {
     console.log("Update Timer:", data.minutes);
     console.log("Minutes value:", data.minutes, "Type:", typeof data.minutes);
-    if(data.seconds===0){
-    window.location.reload();
-    }
+<!--    if(data.seconds===0){-->
+<!--    window.location.reload();-->
+<!--    }-->
 
 
 
@@ -265,7 +263,8 @@ else   {
 }
 
         if (data.type === 'requirements') {
-            renderRequirements(data.data);
+        console.log("Auction Start Status:", data.auction_start_status);
+            renderRequirements(data.data,data.auction_start_status);
         }
 
 <!--         if (data.type === 'grouped_bid') {-->
@@ -281,18 +280,18 @@ else   {
 <!--            updateBids();-->
 <!--        }-->
 <!--    };-->
+
            if (data.type === "grouped_bid") {
-        latestUserRanks = data.bid_group_data.user_ranks; // user’s best ranks
-        userBids = data.bid_group_data.bids; // only this user’s bids
-        console.log("latestUserRanks:",latestUserRanks);
-        console.log("userBids:",userBids);
-        updateBids();
-    }
+                    latestUserRanks = data.bid_group_data.user_ranks; // user’s best ranks
+                    userBids = data.bid_group_data.bids; // only this user’s bids
+                    console.log("latestUserRanks:",latestUserRanks);
+                    console.log("userBids:",userBids);
+                    updateBids();
+                }
         };
 
 
-
- function renderRequirements(requirements) {
+ function renderRequirements(requirements,auction_start_status) {
 
         console.log("requirements:", requirements);
 
@@ -362,7 +361,6 @@ else   {
 <!--                            </a>-->
 <!--                        </p>-->
 
-
                         <p>
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">
                                 📍 View Unloading Address on Map
@@ -371,8 +369,6 @@ else   {
 
                         <hr>
                         <h3>Requirements:</h3>
-
-
                         <p><strong style="color: ${req.truck_type ?  '#05ACFA' : '#EFADF0'};">Truck:</strong> ${req.truck_type || ''}</p>
                         &nbsp
 
@@ -395,10 +391,6 @@ else   {
                       ${req.notes || ''}
                     </p>
                     <br>
-
-
-
-
                           <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
                             Weight Per Drum:
                           </strong>
@@ -411,12 +403,21 @@ else   {
                           </strong>
                           ${req.types || ''}
                         </p>
-                          &nbsp
+                           <hr>
+                        <h3>Bidding Strategy:</h3>
                        <p>
                           <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
                             Ceiling Price:
                           </strong>
                           ${req.cel_price || ''}
+                        </p>
+
+                          &nbsp
+                       <p>
+                          <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">
+                            Minimal Decremental Value:
+                          </strong>
+                          ${req.min_dec_val || ''}
                         </p>
                     </div>
                 </div>
@@ -459,12 +460,18 @@ else   {
             `;
 
             row.appendChild(leftCol);
+<!--            If auction is started then only append the right column-->
+
+            if (auction_start_status===true){
             row.appendChild(rightCol);
+            }
+
             container.appendChild(row);
         });
 
         updateBids();
     }
+
 
 <!--    function updateBids() {-->
 <!--        Object.keys(allGroupedBids).forEach(reqId => {-->
