@@ -142,22 +142,23 @@
         <div class="row">
 
             <!-- Left Column -->
-            <div class="col-md-4 mb-4">
+
 
                 <div  class="form-group">
                     <div class="form-group">
                     <label for="loading_point">1. Loading Point</label>
                     <input type="text" class="form-control" name="loading_point" id="loading_point" required>
+                         <label for="loading_point_full_address">3. Loading Point Full Address</label>
+                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>
                 </div>
-                    <div class="col-md-6">
+
                             <div class="form-group">
                                 <label for="unloading_point">2. Unloading Point</label>
                                 <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
                             </div>
-                    </div>
-                    <label for="loading_point_full_address">3. Loading Point Full Address</label>
-                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>
-                </div>
+
+
+
                 <div class="form-group">
                     <label for="unloading_point_full_address">4. Unloading Point Full Address</label>
                     <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>
@@ -370,63 +371,69 @@
                     <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> {{ requirement.id }}</h2>
 
                 </div>
-                    <div class="p-1">
-                        <div class="row">
-                            <div class="col md-6">
-
+                    <div class="p-2">
                                 <p style="background-color: {% if not requirement.loading_point %}#EFADF0{% else %}transparent{% endif %};">
-                                    <strong>1. Loading:</strong> {{ requirement.loading_point }}
+                                    <strong>Loading:</strong> {{ requirement.loading_point }}
                                 </p>
-                            </div>
-                              <div class="col md-6">
-                                <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">
-                                    <strong>2.Unloading:</strong> {{ requirement.unloading_point }}
+                                 <p><strong></strong> {{ requirement.loading_point_full_address }}</p>
+
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.loading_point_full_address|urlencode }}" target="_blank">
+                                    📍 View Loading Address on Map
+                                </a>
+                                <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};
+                                      padding-top: 10px;">
+                                      <strong>Unloading:</strong> {{ requirement.unloading_point }}
                                 </p>
-                              </div>
-                        </div>
-                    <p><strong>3. Loading Point Full Address:</strong> {{ requirement.loading_point_full_address }}</p>
+
+
+
+
+<!--                                <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">-->
+<!--                                    <strong>Unloading:</strong> {{ requirement.unloading_point }}-->
+<!--                                </p>-->
+
 
 <!--                    <label  for="loading_point_full">3. Loading Point Full Address</label>-->
 <!--                    <textarea class="form-control" name="loading_point_full"  rows="4" placeholder="Enter full loading address" required>"{{ requirement.loading_point_full_address }}"</textarea>-->
 
-            <p>
-                <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.loading_point_full_address|urlencode }}" target="_blank">
-                    📍 View Loading Address on Map
-                </a>
-            </p>
-            <p><strong>4. Unloading Point Full Address:</strong> {{ requirement.unloading_point_full_address }}</p>
-            <p>
+
+            <p><strong></strong> {{ requirement.unloading_point_full_address }}</p>
+
                 <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.unloading_point_full_address|urlencode }}" target="_blank">
                     📍 View Unloading Address on Map
                 </a>
-            </p>
+
+                        <hr>
+                        <h3> Requirements:</h3>
                         <div class="row">
                             <div class="col md-8">
                                 <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
-                                    <strong>5.Truck:</strong> {{ requirement.truck_type }}
+                                    <strong>Truck:</strong> {{ requirement.truck_type }}
                                 </p>
                             </div>
 
                                 <div class="col md-4">
                                     <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
-                                        <strong>6. No of Truck:</strong> {{ requirement.no_of_trucks }}
+                                        <strong>No of Truck:</strong> {{ requirement.no_of_trucks }}
                                     </p>
                                 </div>
                         </div>
 <!--           <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">-->
 <!--                <strong>7. Qty:</strong> {{ requirement.qty }}-->
 <!--            </p>-->
-            <p><strong>8. Product Type:</strong> {{ requirement.product }}</p>
+            <p><strong>Product Type:</strong> {{ requirement.product }}</p>
 
              <p style="background-color: {% if not requirement.notes %}#EFADF0{% else %}transparent{% endif %};">
-                <strong>7.Notes:</strong> {{ requirement.notes }}
+                <strong>Notes:</strong> {{ requirement.notes }}
             </p>
 
-            <p><strong>10. Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
-            <p><strong>11.Weight Per Drum(kg):</strong> {{ requirement.weight_per_drum }}</p>
-            <p><strong>12. Types:</strong> {{ requirement.types }}</p>
-            <p><strong>13. Ceiling Price:</strong> {{ requirement.cel_price }}</p>
-            <p><strong>14. Minimal Decremental value:</strong> {{ requirement.min_dec_val }}</p>
+            <p><strong>Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
+            <p><strong>Weight Per Drum(kg):</strong> {{ requirement.weight_per_drum }}</p>
+            <p><strong>Types:</strong> {{ requirement.types }}</p>
+                      <hr>
+            <h3> Bidding Strategy:</h3>
+            <p><strong>Ceiling Price:</strong> {{ requirement.cel_price }}</p>
+            <p><strong>Minimal Decremental value:</strong> {{ requirement.min_dec_val }}</p>
                         </div>
 
 
