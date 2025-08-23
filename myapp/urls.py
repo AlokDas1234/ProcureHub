@@ -19,10 +19,9 @@ urlpatterns = [
     path('requirements/', views.create_requirement, name='requirements'),  # Logout
     path('delId/', views.del_requirement, name='delId'),  # Logout
     path('editId/', views.edit_requirement, name='editId'),
-    path("bulk-upload/", views.bulk_upload_requirements, name="bulk_upload_requirements"),
-# urls.py
+    path("bulk-upload/", views.bulk_upload_requirements, name="bulk_upload_requirements"),# urls.py
     path('download-template/', views.download_template, name='download_template'),
-
-path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('download-requirements/', views.download_requirements, name='download_requirements'),
 
 ]

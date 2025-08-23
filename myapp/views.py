@@ -4,6 +4,7 @@
 #
 # def index(request):
 #     return render(request, 'myapp/index.html')
+import pandas as pd
 from channels.layers import get_channel_layer
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -145,6 +146,26 @@ def download_template(request):
     writer.writerow(field_names)  # Write header only
 
     return response
+
+
+import pandas as pd
+from django.http import HttpResponse
+
+
+def download_requirements(request):
+    all_bids = Bid.objects.all().values(
+        "id", "user__username", "req__id", "req__loading_point","req__unloading_point","req__product","req__truck_type", "rate", "created_at"
+    )
+
+    df = pd.DataFrame(list(all_bids))  # ✅ now it's
+    df.groupby("req__id")
+
+    # Generate CSV in memory instead of saving file on server
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="requirements.csv"'
+    df.to_csv(path_or_buf=response, index=False)
+    return response
+
 
 #
 # @csrf_exempt
