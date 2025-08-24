@@ -64,7 +64,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if self.scope['user'].is_superuser:
                 '''This is used to get all users except superuser but admin can do it'''
                 users = await self.get_bid_users()
-                print("Users:", users)
+                # print("Users:", users)
                 await self.send(text_data=json.dumps({
                     "type": "normal_user",
                     "users": [user["username"] for user in users]
@@ -98,15 +98,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             auction_start = True
             if clt <= start_time:
-                print("Auction Not Started")
+                # print("Auction Not Started")
                 auction_start = False
 
             auction_end_status = False
             if clt >= end_times:
-                print("Auction Ended")
+                # print("Auction Ended")
                 auction_end_status = True
             if auction_start==False:
-                print("Auction Not Started")
+                # print("Auction Not Started")
                 self.timer_task = asyncio.create_task(self.send_remaining_time())
                 reqs = await sync_to_async(get_all_requirements)()
 
@@ -172,9 +172,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             bid_amt = text_data_json.get("bid_amt")
 
             requirement = await sync_to_async(Requirements.objects.get)(id=req_id)
-            print("req_id from receive:",req_id)
-            print("bid_amt from receive:",bid_amt)
-            print("requirement from receive:",requirement)
+            # print("req_id from receive:",req_id)
+            # print("bid_amt from receive:",bid_amt)
+            # print("requirement from receive:",requirement)
 
             general_access, minutes, start_time = await self.get_general_access()
             clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
@@ -201,9 +201,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             # min_dec_val
             ''' To place  a bid,Bid amount must be lower than the ceiling price or 0'''
-            print("Req ceiling price:",req_.cel_price)
+            # print("Req ceiling price:",req_.cel_price)
             if int(bid_amt) < req_.cel_price or req_.cel_price==0 :
-                print("valid_bid_cel_price  if executed")
+                # print("valid_bid_cel_price  if executed")
                 valid_bid_cel_price = True
             else:
                 valid_bid_cel_price = False
@@ -215,14 +215,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }))
 
 
-            print("user_bid from receive type:", type(user_bid))
-            print("bid_amt",bid_amt)
-            print("bid_amt type",type(bid_amt))
+            # print("user_bid from receive type:", type(user_bid))
+            # print("bid_amt",bid_amt)
+            # print("bid_amt type",type(bid_amt))
 
             valid_bid = True
             for rate in user_bid:
-                print("Submitted Rate", rate.rate)
-                print("Submitted Rate Type", type(rate.rate))
+                # print("Submitted Rate", rate.rate)
+                # print("Submitted Rate Type", type(rate.rate))
                 if int(bid_amt)< rate.rate:
                     valid_bid=True
                 else:
@@ -239,23 +239,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             else:
                 last_bid = None
 
-            print("last_bid from receive:", last_bid)
+            # print("last_bid from receive:", last_bid)
             valid_bid_dec_val = True
             if last_bid and int(req_.min_dec_val !=0):
                 decremental_value=int(last_bid) - int(req_.min_dec_val)
                 print("decremental_value:",decremental_value)
 
                 if decremental_value <=int(bid_amt):
-                    print("decremental_value inside loop:", decremental_value)
-                    print("Bid Amount:", int(bid_amt))
+                    # print("decremental_value inside loop:", decremental_value)
+                    # print("Bid Amount:", int(bid_amt))
 
                     valid_bid_dec_val = False
                     await self.send(text_data=json.dumps({
                         'type': 'valid_bid',
                         'valid_bid': "Enter amount lower than the minimal decremental value {}".format(req_.min_dec_val),
                     }))
-            print("Valid Bid dec status:", valid_bid_dec_val)
-            print("Last_Bid:", last_bid)
+            # print("Valid Bid dec status:", valid_bid_dec_val)
+            # print("Last_Bid:", last_bid)
 
             try:
                 user_exist = await sync_to_async(UserAccess.objects.get)(user=user_)
@@ -606,8 +606,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             .order_by("req_id", "created_at")
         )
         my_bids = [{"id": r["req_id"], "rate": r["rate"]} for r in my_bids_qs]
-        print("my_bids:",my_bids)
-        print("user_ranks:",user_ranks)
+        # print("my_bids:",my_bids)
+        # print("user_ranks:",user_ranks)
         '''
         my_bids: [{'id': 2550, 'rate': 1000}]
         user_ranks: [{'bid_id': 2550, 'bid_rate': 1000, 'rank': 1}]

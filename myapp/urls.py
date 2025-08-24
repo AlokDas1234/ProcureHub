@@ -23,5 +23,6 @@ urlpatterns = [
     path('download-template/', views.download_template, name='download_template'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('download-requirements/', views.download_requirements, name='download_requirements'),
+    path("delete_all_bids/", views.delete_all_bids, name="delete_all_bids"),
 
 ]

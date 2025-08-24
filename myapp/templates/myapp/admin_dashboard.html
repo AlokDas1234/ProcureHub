@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +63,7 @@
 
 .access-toggle {
     display: flex;
-    border-radius: 50px;
+    border-radius: 30px;
     overflow: hidden;
     border: 2px solid #ccc;
     background: #eaeaea;
@@ -307,9 +308,10 @@ input:checked + .slider:before {
     &nbsp
     &nbsp
     &nbsp
-<a href="{% url 'download_requirements' %}" class="btn btn-primary">
-    Download Bids CSV
-</a>
+
+
+
+
 
 <button id="bulk-upload-btn" class="btn btn-primary w-100 mb-2">Bulk Upload</button>
 
@@ -371,8 +373,9 @@ input:checked + .slider:before {
 
        <h5 class="mb-3">3. Post Requirement</h5>
         <div class="access-toggle mb-4">
-            <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>
             <button type="button" class="toggle-btn no" data-value="no">NO</button>
+            <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>
+
         </div>
         <input type="hidden" name="access" id="accessInput" value="yes">
 
@@ -391,8 +394,23 @@ input:checked + .slider:before {
                 Grant Access/Post
             </button>
         </div>
+
     </form>
+
+                </div>
 </div>
+<!--  </div>-->
+<!--                  <form method="POST" action="{% url 'delete_all_bids' %}"-->
+<!--      onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
+<!--    {% csrf_token %}-->
+<!--    <button type="submit" class="btn btn-danger">-->
+<!--        Delete All Bids-->
+<!--    </button>-->
+<!--</form>-->
+
+
+<!--        </div>-->
+
 
 
 
@@ -513,12 +531,14 @@ input:checked + .slider:before {
           <button
     id="delAllReq"
     onclick="delReq('delAll')"
-    class="btn btn-danger btn-lg"
+    class="btn btn-danger "
     style="width: 100%; margin-top: 1rem;">
     Delete All Requirements
         </button>
 
         </div>
+
+
 
 
         <!-- RIGHT: Empty bid card (hidden until JS fills it) -->
@@ -532,7 +552,33 @@ input:checked + .slider:before {
 
     </div>
     {% endfor %}
+
+
+
 </div>
+
+            <div style="text-align:right">
+                <form method="POST" action="{% url 'delete_all_bids' %}"
+                          onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-50 mt-3 mb-0">
+                            Delete All Bids
+                        </button>
+                    </form>
+
+
+            </div>
+
+       <div class="container mt-4 mb-4">
+            <a  href="{% url 'download_requirements' %}" class="btn btn-primary w-100 ">
+                Download Bid Report
+            </a>
+       </div>
+
+
+
+
+
 
 
 
@@ -719,16 +765,19 @@ function renderBids() {
                 <hr>
 
 
-                <h3>Approve Bid</h3>
-                <label for ="bid-approve" class="switch">
-                  <input  id="bid-approve"  name="bid-approve" type="checkbox" checked>
-                  <span class="slider round"></span>
-                </label>
+<!--                <h3>Approve Bid</h3>-->
+<!--                <label for ="bid-approve" class="switch">-->
+<!--                  <input  id="bid-approve"  name="bid-approve" type="checkbox" checked>-->
+<!--                  <span class="slider round"></span>-->
+<!--                </label>-->
 
             `;
         });
 
         // Show the bid card
+
+
+
         bidDiv.style.display = "block";
     });
 }
@@ -792,6 +841,9 @@ function renderBids() {
                         console.error("Error deleting:", error);
                     });
                 }
+
+
+
 
 
      function editReq(reqId) {

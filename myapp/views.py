@@ -13,6 +13,24 @@ from django.contrib import messages
 from .models import *
 from django.forms.models import model_to_dict
 
+from django.http import JsonResponse
+from .models import Requirements
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+from .models import Requirements
+# views.py
+from django.http import HttpResponse
+import csv
+from .models import Requirements
+from django.views.decorators.csrf import csrf_exempt
+from django.forms.models import model_to_dict
+from django.http import JsonResponse
+import json
+# views.py
+from django.shortcuts import redirect
+from django.contrib import messages
+from .models import Bid
 def index(request):
     # If logged in, go to dashboard
     if request.user.is_authenticated:
@@ -95,8 +113,6 @@ def create_requirement(request):
     return render(request, "myapp/admin_dashboard.html", {"requirements": requirements})  # Or render to the dashboard
 
 
-from django.http import JsonResponse
-from .models import Requirements
 
 
 def del_requirement(request):
@@ -122,17 +138,7 @@ You're calling this from JavaScript fetch(), not through a form submission. So y
         return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
 
 
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-import json
-from .models import Requirements
 
-
-
-# views.py
-from django.http import HttpResponse
-import csv
-from .models import Requirements
 
 def download_template(request):
     # Get all field names from the Requirements model (excluding auto fields like id)
@@ -156,60 +162,34 @@ def download_requirements(request):
     all_bids = Bid.objects.all().values(
         "id", "user__username", "req__id", "req__loading_point","req__unloading_point","req__product","req__truck_type", "rate", "created_at"
     )
+    rank_df = pd.DataFrame(list(all_bids))  # ✅ now it's
+    # Pick the lowest rate per user per requirement
+    lowest_bids = rank_df.sort_values("rate").groupby(
+        ["req__id", "user__username"], as_index=False
+    ).first()
+    # Rank them within each requirement
+    lowest_bids["Rank"] = lowest_bids.groupby("req__id")["rate"].rank(
+        ascending=True, method="dense"
+    )
 
-    df = pd.DataFrame(list(all_bids))  # ✅ now it's
-    df.groupby("req__id")
-
+    # Keep only ranks 1 to 4
+    rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
     # Generate CSV in memory instead of saving file on server
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="requirements.csv"'
-    df.to_csv(path_or_buf=response, index=False)
+    response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
+    rank_df.to_csv(path_or_buf=response, index=False)
     return response
 
 
-#
-# @csrf_exempt
-# def bulk_upload_requirements(request):
-#     if request.method == "POST":
-#         data = json.loads(request.body).get("data", [])
-#         objs = []
-#         bulk_upload_exception=[]
-#
-#         for index,row in enumerate (data,start=1):
-#             try:
-#                 objs.append(Requirements(
-#                     loading_point=row.get("loading_point", ""),
-#                     unloading_point=row.get("unloading_point", ""),
-#                     loading_point_full_address=row.get("loading_point_full_address", ""),
-#                     unloading_point_full_address=row.get("unloading_point_full_address", ""),
-#                     product=row.get("product", ""),
-#                     truck_type=row.get("truck_type", ""),
-#                     qty=int(row.get("qty") or 0),
-#                     no_of_trucks=int(row.get("no_of_trucks") or 0),
-#                     notes=row.get("notes", ""),
-#                     drum_type_no_of_drums=row.get("drum_type_no_of_drums", ""),
-#                     weight_per_drum=float(row.get("weight_per_drum") or 0),
-#                     types=row.get("types", "")
-#                 ))
-#             except Exception as e:
-#                 print("Skipping row due to error:", e)
-#                 bulk_upload_exception.append({"index":index,"Exception":str(e)})
-#                 continue
-#
-#         Requirements.objects.bulk_create(objs)
-#         print(bulk_upload_exception)
-#         return JsonResponse({
-#             "status": "success",
-#             "count": len(objs),
-#             "bulk_upload_exception": bulk_upload_exception
-#         })
-#
-#     return JsonResponse({"error": "Invalid method"}, status=400)
 
-from django.views.decorators.csrf import csrf_exempt
-from django.forms.models import model_to_dict
-from django.http import JsonResponse
-import json
+def delete_all_bids(request):
+    if request.method == "POST":  # only allow POST for safety
+        Bid.objects.all().delete()
+        messages.success(request, "All bids have been deleted successfully.")
+    return redirect("requirements")  # redirect wherever you want
+
+
+
 
 @csrf_exempt
 def bulk_upload_requirements(request):
