@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Requirements, Bid,GeneralAccess
+from .models import Requirements, Bid,GeneralAccess,Profile
 
 class BidInline(admin.TabularInline):
     model = Bid
@@ -9,6 +9,10 @@ class BidInline(admin.TabularInline):
 
     fields = ('user', 'rate')
     readonly_fields = ('user', 'rate')
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display=["user","mobile_no","company_name","address","gst_no","pan_no"]
 
 @admin.register(GeneralAccess)
 class GeneralAccessAdmin(admin.ModelAdmin):
