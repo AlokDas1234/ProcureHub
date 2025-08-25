@@ -1,31 +1,8 @@
 # myapp/views.py
-#
-# from django.shortcuts import render
-#
-# def index(request):
-#     return render(request, 'myapp/index.html')
-import pandas as pd
-from channels.layers import get_channel_layer
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.contrib import messages
-from .models import *
-from django.forms.models import model_to_dict
-
-from django.http import JsonResponse
-from .models import Requirements
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-import json
-from .models import Requirements
-# views.py
-from django.http import HttpResponse
 import csv
 from .models import Requirements
 from django.views.decorators.csrf import csrf_exempt
-from django.forms.models import model_to_dict
-from django.http import JsonResponse
 import json
 # views.py
 from django.shortcuts import redirect
@@ -49,27 +26,69 @@ def index(request):
             return render(request, 'myapp/index.html')
     return redirect('login')  # Otherwise show login
 
+#
+# def register_view(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         password = request.POST['password']
+#
+#         if User.objects.filter(username=username).exists():
+#             messages.error(request, 'Username already exists.')
+#             return redirect('register')
+#
+#
+#         user = User.objects.create_user(username=username, password=password)
+#         login(request, user)
+#         return redirect('index')
+#
+#     return render(request, 'myapp/register.html')
+
+
+from django.contrib.auth.models import User
+from .models import Profile
 
 def register_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        mobile_no = request.POST['mobile_no']
+        company_name = request.POST['company_name']
+        address = request.POST['address']
+        email = request.POST['email']
+        gst_no = request.POST['gst_no']
+        pan_no = request.POST['pan_no']
 
         if User.objects.filter(username=username).exists():
             messages.error(request, 'Username already exists.')
             return redirect('register')
 
-        user = User.objects.create_user(username=username, password=password)
+        # Create User
+        user = User.objects.create_user(username=username, password=password, email=email)
+
+        # Create Profile
+        Profile.objects.create(
+            user=user,
+            mobile_no=mobile_no,
+            company_name=company_name,
+            address=address,
+            gst_no=gst_no,
+            pan_no=pan_no
+        )
+
         login(request, user)
         return redirect('index')
 
     return render(request, 'myapp/register.html')
 
 
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        if not User.objects.filter(username=username).exists():
+            messages.error(request, 'User does not exist.')
+            return redirect('register')
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -78,7 +97,6 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid credentials')
             return redirect('login')
-
     return render(request, 'myapp/login.html')
 
 
@@ -124,6 +142,7 @@ You're calling this from JavaScript fetch(), not through a form submission. So y
     '''
     if request.method == "POST":
         reqid = request.POST.get("reqId")
+        print("reqid in view delete:",reqid)
         if reqid == 'delAll':
             Requirements.objects.all().delete()
             return JsonResponse({"status": "success", "message": f" All Requirement  deleted."})
@@ -258,8 +277,6 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .models import UserAccess
 from .models import GeneralAccess
-from channels.layers import  get_channel_layer
-from asgiref.sync import async_to_sync,sync_to_async
 from datetime import datetime
 from django.utils.timezone import make_aware
 import pytz

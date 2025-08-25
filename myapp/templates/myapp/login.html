@@ -17,6 +17,13 @@
 </style>
 
 <hr class="gradient-hr">
+    {% if messages %}
+  <div class="mb-3">
+    {% for message in messages %}
+      <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
 
 
    <form method="post" class="col-5 mx-auto card p-4 shadow-lg border-0">
