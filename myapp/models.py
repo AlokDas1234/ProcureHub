@@ -36,7 +36,7 @@ class Bid(models.Model):
 
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='bid_user',null=True,blank=True)
     req= models.ForeignKey(Requirements, on_delete=models.DO_NOTHING,related_name='bid_req',null=True,blank=True)
-    rate=models.IntegerField(default=0)
+    rate=models.FloatField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

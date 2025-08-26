@@ -87,8 +87,8 @@ def login_view(request):
         username = request.POST['username']
         password = request.POST['password']
         if not User.objects.filter(username=username).exists():
-            messages.error(request, 'User does not exist.')
-            return redirect('register')
+            messages.error(request, 'User does not exist register new account.')
+            return redirect('login')
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -293,6 +293,7 @@ def admin_dashboard(request):
             # Make it timezone-aware in Asia/Kolkata
             india_tz = pytz.timezone('Asia/Kolkata')
             start_time = india_tz.localize(start_time)
+
 
             # Store only the time part in the DB
             access, _ = GeneralAccess.objects.get_or_create(id=1)

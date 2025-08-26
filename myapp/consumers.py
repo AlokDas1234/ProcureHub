@@ -1,6 +1,6 @@
 import asyncio
 from sys import exception
-
+from django.utils.timezone import localtime
 from django.contrib.auth.models import User
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -356,7 +356,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
-
             else:
                 # ❌ Send error if auction closed or too many bids
                 await self.send(text_data=json.dumps({
@@ -640,7 +639,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'minutes': event['minutes'],
             'seconds': event['seconds'],
             'end_time': event['end_time'],
-            'auction_started': event['auction_started']
+            'auction_started': event['auction_started'],
+            'auction_end_status': event['auction_end_status'],
+            'clt': event['clt'],
+            'start_time': event['start_time']
+
+
+
         }))
 
 
@@ -678,18 +683,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return req
 
     async def send_remaining_time(self):
-
         from django.utils import timezone
         from datetime import datetime
-
         import asyncio
 
         while True:
             general_access, minutes, start_time,g_access = await self.get_general_access()
             """From get_general_access to time_calculation """
+            # print("start_time:",start_time)
 
             clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
             # print("Remaining:", remaining.seconds)
+
             # print("Remaining type :", type(remaining.seconds))
             # print("Remaining Seconds:",remaining.total_seconds())
             if remaining.total_seconds() <= 0:
@@ -704,6 +709,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             else:
                 auction_start = True
 
+            auction_end_status = False
+            if clt >= end_times:
+                print("Auction Ended")
+                auction_end_status = True
+            # Make it timezone-aware in Asia/Kolkata
+            start_time = localtime(start_time)
+            end_times = localtime(end_times)
+            # print("start_time:",start_time)
+            print('auction_end_status:', auction_end_status)
+
             # print("auction_started status:", auction_start)
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -712,7 +727,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'minutes': str(remaining),
                     'end_time': str(end_times),
                     'seconds': remaining.seconds,
-                    'auction_started': auction_start
+                    'auction_started': auction_start,
+                    'auction_end_status': auction_end_status,
+                    "clt":str(clt),
+                    "start_time":str(start_time)
+
+
                 }
             )
             await asyncio.sleep(1)  # update every second

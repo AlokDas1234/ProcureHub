@@ -103,7 +103,7 @@
 </style>
 
 <hr class="gradient-hr">
-<div  class="container col-6 mx-auto p-2 shadow-lg" >
+<!--<div  class="container col-6 mx-auto p-2 shadow-lg" >-->
 
 <header>
     <div class="user-info">
@@ -116,17 +116,25 @@
     <div class="logout">
         <a href="{% url 'logout' %}">Logout</a>
     </div>
+
+
 </header>
- <h1 style="text-align:center;">BIDDER DASHBOARD</h1>
+<!--   </div>-->
+
+    <div class="container-fluid">
+         <h1 style="text-align:center;">BIDDER DASHBOARD</h1>
+        <h2 id="start_status" style="text-align:center;"></h2>
+        <h3 id="auction_status" class="text-align:left;"></h3>
+        <h3 id="current_time_div" style="text-align:left;"></h3>
+        <h3 id="start_time_div" style="text-align:left;"></h3>
+        <h3 id="end_time_div" style="text-align:left;"></h3>
+
+            <div id="refresh-container" style="text-align:center;">
+              <button id="refreshBtn" style="width:30%;">Refresh</button>
+            </div>
+    </div>
 
 
-<h1 id="start_status" style="text-align:center;"></h1>
-
-<div id="refresh-container" style="text-align:center;">
-  <button id="refreshBtn" style="width:30%;">Refresh</button>
-</div>
-
-</div>
 <div id="main-container" class="container"></div>
 
 
@@ -186,8 +194,18 @@ alert(data.valid_bid);
 }
 
 if (data.type === 'timer_update' && data.auction_started===true) {
+
+<!-- if (data.seconds === 0) {-->
+<!--        console.log("Auction Ended");-->
+<!--        window.location.reload();-->
+<!--    } else {-->
+<!--        console.log("Auction Ended");-->
+<!--    }-->
     console.log("Update Timer:", data.minutes);
     console.log("Minutes value:", data.minutes, "Type:", typeof data.minutes);
+    console.log("clt:", data.clt);
+    console.log("start_time:", data.start_time);
+    console.log("end_time:", data.end_time);
 <!--    if(data.seconds===0){-->
 <!--    window.location.reload();-->
 <!--    }-->
@@ -196,8 +214,39 @@ if (data.type === 'timer_update' && data.auction_started===true) {
 
      console.log("Auction Status:", data.auction_started);
 
-       let timer = document.getElementById("start_status");
-  timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;
+  let timer = document.getElementById("start_status");
+ timer.innerHTML = `
+    <span style="color:#007BFF; font-weight:500;">REMAINING TIME:</span><br>
+    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.minutes}</span>
+  `;
+
+  let auction_status = document.getElementById("auction_status");
+ auction_status.innerHTML = `
+    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>
+    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Started</span>
+  `;
+
+
+let current_time_div = document.getElementById("current_time_div");
+  current_time_div.innerHTML = `
+    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>
+    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>
+  `;
+
+ let start_time_div = document.getElementById("start_time_div");
+  start_time_div.innerHTML = `
+    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>
+    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>
+  `;
+
+
+ let end_time_div = document.getElementById("end_time_div");
+  end_time_div.innerHTML = `
+    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>
+    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>
+  `;
+
+
 
 
     // Convert HH:MM:SS to seconds
@@ -241,23 +290,18 @@ if (data.type === 'timer_update' && data.auction_started===true) {
 }
 // Inside your onmessage
 else if (data.type === 'timer_update' && data.auction_started === false) {
+      let timer = document.getElementById("start_status");
+  timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;
+
     console.log("Update Timer:", data.minutes);
      if(data.seconds===0){
     window.location.reload();
-    }
-
-    let timer = document.getElementById("start_status");
-    timer.innerText = `Auction will start in: ${data.minutes}`;
-
-
-
-
-    console.log("Auction Status:", data.auction_started);
+               }
 }
-else   {
-
-    let timer = document.getElementById("start_status");
-    timer.innerText = `Auction Ended !`;
+else  {
+        console.log("Auction Ended");
+        let timer_ = document.getElementById("start_status");
+        timer_.innerHTML = `Auction Ended`;
 
 
 }
