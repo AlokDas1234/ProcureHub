@@ -221,16 +221,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             ''' To place  a bid,Bid amount must be lower than the ceiling price or 0'''
             print("Req ceiling price:",req_.cel_price)
 
-
-            valid_bid_cel_price = False
-
-            if use_cel==True:
-
-                if  int(bid_amt) < req_.cel_price  and user_bid:
-                    # print("valid_bid_cel_price  if executed")
-                    valid_bid_cel_price = True
-
-                elif req_.cel_price == 0:
+            valid_bid_cel_price = True
+            if use_cel:
+                valid_bid_cel_price = False
+                if (int(bid_amt) < req_.cel_price and user_bid) or req_.cel_price == 0:
                     valid_bid_cel_price = True
 
                 if not valid_bid_cel_price:
@@ -238,7 +232,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'type': 'valid_bid',
                         'valid_bid': "Place lowest bid price than ceiling price {}".format(req_.cel_price),
                     }))
-
 
             # print("user_bid from receive type:", type(user_bid))
             # print("bid_amt",bid_amt)
@@ -300,7 +293,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     and valid_bid_cel_price
                     and valid_bid_dec_val
             ):
-                if use_cel == True:
+                if use_cel and valid_bid_cel_price:
                     """Updating ceiling price"""
                     await self.update_req_cel_price(req_, bid_amt)
 
