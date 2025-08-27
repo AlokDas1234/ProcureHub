@@ -15,7 +15,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     auction_end_status = False
 
     async def connect(self):
-        print("Connecting WebSocket...")
+        # print("Connecting WebSocket...")
         if self.scope['user'].is_authenticated:
             self.room_name = self.scope['url_route']['kwargs']['room_name']
             self.room_group_name = f'chat_{self.room_name}'
@@ -24,6 +24,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.accept()
 
             username = self.scope['user'].username
+            #
 
             general_access, minutes, start_time,g_access = await self.get_general_access()
             clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
@@ -31,12 +32,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             auction_start = True
 
             if clt <= start_time:
-                print("Auction Not Started")
+                '''Auction not started'''
+                # print("Auction Not Started")
                 auction_start = False
 
             auction_end_status = False
             if clt >= end_times:
-                print("Auction Ended")
+                """Auction Ended"""
+                # print("Auction Ended")
                 auction_end_status = True
 
             if  auction_start  and auction_end_status == False and  not self.scope['user'].is_superuser :
@@ -77,7 +80,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 '''This function is used to see whether the normal user or bidder has the access of  seeing the requirements or no'''
                 user = User.objects.get(username=user.username)
                 access, created = UserAccess.objects.get_or_create(user=user)
-
                 return access, created
 
             def get_all_requirements():
@@ -96,7 +98,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # print("General Access from connect:", general_access)
             # print("General Access minutes from connect:", minutes)
             # print("General Access end_time from connect:", start_time)
-            clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+
+
+            clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time,view_access)
 
             auction_start = True
             if clt <= start_time:
@@ -107,7 +111,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if clt >= end_times:
                 # print("Auction Ended")
                 auction_end_status = True
-            if auction_start==False:
+            if auction_start==False and access.can_view_requirements and general_access == True:
                 # print("Auction Not Started")
                 self.timer_task = asyncio.create_task(self.send_remaining_time())
                 reqs = await sync_to_async(get_all_requirements)()
@@ -124,7 +128,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             elif auction_end_status == False:
 
 
-                print("auction_end_status False: executed")
+                # # print("auction_end_status False: executed")
                 if self.scope['user'].is_superuser:
                     self.timer_task = asyncio.create_task(self.send_remaining_time())
 
@@ -155,7 +159,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         await self.timer_task
                     except asyncio.CancelledError:
                         print("Cancelled timer task")
-                print("Auction Ended")
+                # print("Auction Ended")
 
 
 
@@ -187,7 +191,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             last_minute = timedelta(minutes=1)
             if bid_amt and remaining <= last_minute:
-                print("User submitted  the bid last minute")
+                # print("User submitted  the bid last minute")
                 g_access.minutes += 2
                 await sync_to_async(g_access.save)()
                 # GeneralAccess.save()
@@ -196,10 +200,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             auction_end_status = False
             if clt >= end_times:
-                print("Auction Ended")
+                """Auction Ended"""
+                # print("Auction Ended")
                 auction_end_status = True
             if clt <= start_time:
-                print("Auction Not Started")
+                """Auction not started"""
+                # print("Auction Not Started")
                 auction_end_status = True
 
             # print("User:",user)
@@ -209,7 +215,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             user_bid = await sync_to_async(list)(Bid.objects.filter(user=user_, req=requirement.id))
             req_ = await sync_to_async(Requirements.objects.get)(id=requirement.id)
             # print("User Bid :",user_bid)
-            print("Req :",req_)
+            # print("Req :",req_)
 
             # min_dec_val
             ''' To place  a bid,Bid amount must be lower than the ceiling price or 0'''
@@ -255,7 +261,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             valid_bid_dec_val = True
             if last_bid and int(req_.min_dec_val !=0):
                 decremental_value=int(last_bid) - int(req_.min_dec_val)
-                print("decremental_value:",decremental_value)
+                # print("decremental_value:",decremental_value)
 
                 if decremental_value <=int(bid_amt):
                     # print("decremental_value inside loop:", decremental_value)
@@ -403,8 +409,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #         remaining = f"{hrs:02}:{mins:02}:{secs:02}"
     #
     #         return clt,start_time, end_times, remaining
+
+
+
     async def time_calculation(self, general_access, minutes, start_time):
+
+
+        # return access, created
         if general_access:
+
 
 
             get_india = pytz.timezone('Asia/Kolkata')
@@ -457,6 +470,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "type": "grouped_bid",
                 "bid_group_data": bid_group_data
             }))
+
 
 
 
@@ -675,6 +689,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #         )
     #
     #         await asyncio.sleep(1)  # update every second
+
+
+
     from channels.db import database_sync_to_async
     @database_sync_to_async
     def update_req_cel_price(self,req, bid_amt):
@@ -718,6 +735,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             end_times = localtime(end_times)
             # print("start_time:",start_time)
             print('auction_end_status:', auction_end_status)
+
 
             # print("auction_started status:", auction_start)
             await self.channel_layer.group_send(

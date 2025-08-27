@@ -142,7 +142,7 @@ You're calling this from JavaScript fetch(), not through a form submission. So y
     '''
     if request.method == "POST":
         reqid = request.POST.get("reqId")
-        print("reqid in view delete:",reqid)
+        # print("reqid in view delete:",reqid)
         if reqid == 'delAll':
             Requirements.objects.all().delete()
             return JsonResponse({"status": "success", "message": f" All Requirement  deleted."})
@@ -315,6 +315,7 @@ def admin_dashboard(request):
             access.general_access =False
             access.save()
         else:
+
             print("No access option selected")
 
         # access, _ = GeneralAccess.objects.get_or_create(id=1)
