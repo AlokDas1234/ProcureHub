@@ -304,6 +304,8 @@ def admin_dashboard(request):
             # print("Bidding End  Time:", end_time.strftime("%H:%M"))
         selected_usernames = request.POST.getlist("user")
         general_access = request.POST.getlist("access")
+        use_cel = request.POST.getlist("use_cel")
+        print("use_cel from view:",use_cel)
         # print("General Access  of select field:", general_access)
         if general_access and general_access[0]=="yes":
             '''This is for general singleton GeneralAccess instance'''
@@ -317,6 +319,18 @@ def admin_dashboard(request):
         else:
 
             print("No access option selected")
+
+        if general_access and use_cel[0]== "yes":
+            '''This is for general singleton GeneralAccess instance'''
+            access, _ = GeneralAccess.objects.get_or_create(id=1)
+            access.use_cel = True
+            access.save()
+        elif general_access and use_cel[0] == "no":
+            access, _ = GeneralAccess.objects.get_or_create(id=1)
+            access.use_cel = False
+            access.save()
+        else:
+            print("No access option selected for ceiling price")
 
         # access, _ = GeneralAccess.objects.get_or_create(id=1)
         # access.minutes = minute

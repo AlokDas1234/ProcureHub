@@ -56,7 +56,7 @@ class GeneralAccess(models.Model):
     general_access=models.BooleanField(default=False)
     minutes = models.IntegerField(default=0)
     start_time = models.DateTimeField(null=True, blank=True)
-
+    use_cel = models.BooleanField(default=True,null=True,blank=True)
 
     def __str__(self):
         return f"{self.general_access,self.minutes,self.start_time}"
@@ -71,6 +71,5 @@ class Profile(models.Model):
     address = models.TextField()
     gst_no = models.CharField(max_length=15)
     pan_no = models.CharField(max_length=10)
-
     def __str__(self):
         return f"{self.user.username} Profile"

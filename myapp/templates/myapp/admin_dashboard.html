@@ -97,6 +97,36 @@
 .toggle-btn:not(.active) {
     opacity: 0.6;
 }
+
+.toggle-btn-cel {
+    flex: 1;
+    padding: 10px 30px;
+    border: none;
+    background: transparent;
+    color: #555;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn-cel.active.yes {
+    background: #28a745;
+    color: white;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+}
+
+.toggle-btn-cel.active.no {
+    background: #dc3545;
+    color: white;
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.6);
+}
+
+.toggle-btn-cel:not(.active) {
+    opacity: 0.6;
+}
+
+
 </style>
     <style>
 .switch {
@@ -378,6 +408,15 @@ input:checked + .slider:before {
 
         </div>
         <input type="hidden" name="access" id="accessInput" value="yes">
+
+         <h5 class="mb-3">Use Ceiling Price</h5>
+        <div class="access-toggle mb-4">
+            <button type="button" class="toggle-btn-cel no" data-value="no">NO</button>
+            <button type="button" class="toggle-btn-cel yes active" data-value="yes">YES</button>
+        </div>
+        <input type="hidden" name="use_cel" id="useCelPrice" value="yes">
+
+
 
 
         <h5 class="mb-3">4. Individual User Access</h5>
@@ -974,6 +1013,14 @@ document.querySelectorAll(".toggle-btn").forEach(btn => {
         document.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("active"));
         this.classList.add("active");
         document.getElementById("accessInput").value = this.dataset.value;
+    });
+});
+
+    document.querySelectorAll(".toggle-btn-cel").forEach(btn => {
+    btn.addEventListener("click", function() {
+        document.querySelectorAll(".toggle-btn-cel").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+        document.getElementById("useCelPrice").value = this.dataset.value;
     });
 });
 </script>
