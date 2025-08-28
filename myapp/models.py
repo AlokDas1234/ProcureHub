@@ -24,6 +24,7 @@ class Requirements(models.Model):
     no_of_trucks=models.IntegerField(null=True,blank=True)
     notes=models.TextField(null=True,blank=True)
     drum_type_no_of_drums=models.CharField(max_length=100,null=True,blank=True)
+    approx_mat_mt=models.FloatField(null=True,blank=True,default=0)
     weight_per_drum=models.FloatField(null=True,blank=True)
     types=models.CharField(max_length=100,null=True,blank=True)
     cel_price = models.IntegerField(null=True, blank=True)

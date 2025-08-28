@@ -293,7 +293,7 @@ else if (data.type === 'timer_update' && data.auction_started === false) {
       let timer = document.getElementById("start_status");
   timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;
 
-    console.log("Update Timer:", data.minutes);
+    console.log("Auc not started will starts in:", data.minutes);
      if(data.seconds===0){
     window.location.reload();
                }
@@ -428,6 +428,13 @@ else  {
                               ${req.product || ''} with ${req.drum_type_no_of_drums || ''} Drums
                             </p>
                         &nbsp
+                        <p>
+                              <strong style="color: ${req.approx_mat_mt ? '#05ACFA' : '#EFADF0'};">
+                                Approx Material Wait (MT):
+                              </strong>
+                              ${req.approx_mat_mt || ''}
+                            </p>
+                        &nbsp
                        <p>
                       <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">
                         Notes:
@@ -435,6 +442,7 @@ else  {
                       ${req.notes || ''}
                     </p>
                     <br>
+                        <p>
                           <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
                             Weight Per Drum:
                           </strong>

@@ -119,11 +119,12 @@ def create_requirement(request):
         notes = request.POST.get("notes")
         drum_type_no_of_drums = request.POST.get("drum_type_no_of_drums")
         weight_per_drum = request.POST.get("weight_per_drum")
+        approx_mat_mt = request.POST.get("approx_mat_mt")
         types = request.POST.get("types")
         cel_price= request.POST.get("cel_price")
         min_dec_val= request.POST.get("min_dec_val")
         Requirements.objects.create(loading_point=loading_point, unloading_point=unloading_point,loading_point_full_address=loading_point_full_address,unloading_point_full_address=unloading_point_full_address, truck_type=truck_type,no_of_trucks=no_of_trucks,
-                                     product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,types=types,cel_price=cel_price,min_dec_val=min_dec_val)
+                                     product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,approx_mat_mt=approx_mat_mt,types=types,cel_price=cel_price,min_dec_val=min_dec_val)
         return redirect('requirements')  # <-- Redirect to avoid re-submission on refresh
 
     requirements = Requirements.objects.all()
@@ -231,6 +232,7 @@ def bulk_upload_requirements(request):
                     notes=row.get("notes", ""),
                     drum_type_no_of_drums=row.get("drum_type_no_of_drums", ""),
                     weight_per_drum=float(row.get("weight_per_drum") or 0),
+                    approx_mat_mt=float(row.get("approx_mat_mt") or 0),
                     types=row.get("types", ""),
                     cel_price=int(row.get("cel_price")or 0),
                     min_dec_val=int(row.get("min_dec_val")or 0)

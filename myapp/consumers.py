@@ -1,12 +1,9 @@
 import asyncio
-from sys import exception
 from django.utils.timezone import localtime
-from django.contrib.auth.models import User
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import *
 from asgiref.sync import async_to_sync, sync_to_async
-import pandas as pd
 from datetime import datetime, timedelta
 import pytz
 
@@ -86,7 +83,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 return list(Requirements.objects.all().values(
                     'id', 'loading_point', 'unloading_point', 'loading_point_full_address',
                     'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
-                    'drum_type_no_of_drums', 'weight_per_drum', 'types','cel_price','min_dec_val'
+                    'drum_type_no_of_drums', 'weight_per_drum','approx_mat_mt', 'types','cel_price','min_dec_val'
                 ))
 
             access, created = await req_view_access(self.scope['user'])
@@ -111,7 +108,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # print("Auction Ended")
                 auction_end_status = True
             if auction_start==False and access.can_view_requirements and general_access == True:
-                # print("Auction Not Started")
+                print("Auction Not Started can view req:",access.can_view_requirements)
+
                 self.timer_task = asyncio.create_task(self.send_remaining_time())
                 reqs = await sync_to_async(get_all_requirements)()
 
@@ -125,7 +123,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
             elif auction_end_status == False:
-
 
                 # # print("auction_end_status False: executed")
                 if self.scope['user'].is_superuser:
@@ -177,9 +174,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             bid_amt = text_data_json.get("bid_amt")
 
             requirement = await sync_to_async(Requirements.objects.get)(id=req_id)
-            # print("req_id from receive:",req_id)
-            # print("bid_amt from receive:",bid_amt)
-            # print("requirement from receive:",requirement)
 
             general_access, minutes, start_time,g_access,use_cel = await self.get_general_access()
             clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
@@ -224,6 +218,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             valid_bid_cel_price = True
             if use_cel:
                 valid_bid_cel_price = False
+                print("req_.cel_price:",req_.cel_price)
+                print("req_.cel_price type:",type(req_.cel_price))
+                print("user_bid :",user_bid)
+                print("user_bid type:",type(user_bid))
+                print("user_bid  amt:",bid_amt)
+                print("user_bid amt type:",type(bid_amt))
                 if (int(bid_amt) < req_.cel_price and user_bid) or req_.cel_price == 0:
                     valid_bid_cel_price = True
 
@@ -233,9 +233,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'valid_bid': "Place lowest bid price than ceiling price {}".format(req_.cel_price),
                     }))
 
-            # print("user_bid from receive type:", type(user_bid))
-            # print("bid_amt",bid_amt)
-            # print("bid_amt type",type(bid_amt))
+
 
             '''This is for getting taking the lowest bid price than the previous one'''
             valid_bid = True
@@ -325,12 +323,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
-                # await self.channel_layer.group_send(
-                #     self.room_group_name,
-                #     {
-                #         "type": "send_load_requirements"
-                #     }
-                # )
 
 
                 await self.channel_layer.group_send(
@@ -352,6 +344,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'drum_type_no_of_drums': requirement.drum_type_no_of_drums,
                             'product': requirement.product,
                             'weight_per_drum': requirement.weight_per_drum,
+                            'approx_mat_mt': requirement.approx_mat_mt,
                             'types': requirement.types,
                             'cel_price': requirement.cel_price,
                         },
@@ -366,47 +359,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'message': 'You can only place up to 5 bids for the same requirement or auction ended.'
                 }))
 
-        # elif text_data_json.get("type") == "grouped_bid":
-        #
-        #     # ✅ Explicit rank request from frontend
-        #     if not user.is_superuser:
-        #         bid_group_data = await self.get_all_bid_group(user.username)
-        #         await self.send(text_data=json.dumps({
-        #             'type': 'grouped_bid',
-        #             'bid_group_data': bid_group_data
-        #         }))
-
-
-    # async def time_calculation(self, general_access, minutes, start_time):
-    #     if general_access:
-    #         from datetime import datetime, timedelta
-    #         import pytz
-    #
-    #         get_india = pytz.timezone('Asia/Kolkata')
-    #         clt = datetime.now(get_india)
-    #         # print("Current Local  Time:", clt)
-    #         # print("Current Local  Time Type:", type(clt))
-    #         # print("Start_time Type:", type(start_time))
-    #         # print("Start_time Type:", start_time)
-    #         # print("Minutes:", minutes)
-    #
-    #         minute = timedelta(minutes=minutes)
-    #         end_times = start_time + minute
-    #         # print("End Time:", end_times)
-    #         # print("End Time Type:", type(end_times))
-    #         if clt<=start_time:
-    #             remaining=start_time-clt
-    #
-    #         else:
-    #             remaining = end_times - clt
-    #         # print("Remaining:", remaining)
-    #         # print("Remaining type:", type(remaining))
-    #         hrs, rem = divmod(total_seconds, 3600)
-    #         mins, secs = divmod(rem, 60)
-    #         remaining = f"{hrs:02}:{mins:02}:{secs:02}"
-    #
-    #         return clt,start_time, end_times, remaining
-
 
 
     async def time_calculation(self, general_access, minutes, start_time):
@@ -414,9 +366,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # return access, created
         if general_access:
-
-
-
             get_india = pytz.timezone('Asia/Kolkata')
             clt = datetime.now(get_india)
 
@@ -432,11 +381,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             else:
                 remaining = timedelta(seconds=0)  # auction ended
 
-            # # Convert timedelta → HH:MM:SS
-            # total_seconds = int(remaining.total_seconds())
-            # hrs, rem = divmod(total_seconds, 3600)
-            # mins, secs = divmod(rem, 60)
-            # remaining = f"{hrs:02}:{mins:02}:{secs:02}"
 
             return clt, start_time, end_times, remaining
 
@@ -470,29 +414,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 
-
-    # async def send_load_requirements(self, event):
-    #     reqs = self.get_all_requirements()
-    #     len_=0
-    #
-    #     auction_start=True
-    #     await self.channel_layer.group_send(
-    #         self.room_group_name,
-    #         {
-    #             'type': 'load_requirements',
-    #             'requirements': reqs,
-    #             'len_reqs':len_,
-    #             "auction_start_status": auction_start,
-    #
-    #         }
-    #     )
-
     @sync_to_async
     def get_all_requirements(self):
         return list(Requirements.objects.all().values(
             'id', 'loading_point', 'unloading_point', 'loading_point_full_address',
             'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
-            'drum_type_no_of_drums', 'weight_per_drum', 'types', 'cel_price','min_dec_val'
+            'drum_type_no_of_drums', 'weight_per_drum','approx_mat_mt', 'types', 'cel_price','min_dec_val'
         ))
 
 
@@ -531,60 +458,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'notes': bid.req.notes,
                         'drum_type_no_of_drums': bid.req.drum_type_no_of_drums,
                         'weight_per_drum': bid.req.weight_per_drum,
+                        'approx_mat_mt': bid.req.approx_mat_mt,
                         'types': bid.req.types,
                         'cel_price': bid.req.cel_price,
                     },
                     'bid_rate': bid.rate
                 })
         return result
-
-    # @sync_to_async
-    # def get_all_bid_group(self, username):
-    #     print(f"get_all_bid_group called by: {username}")
-    #     result = []
-    #     user = User.objects.get(username=username)
-    #
-    #     # Order by req_id, then rate, then created_at so earlier bids get priority
-    #     bids = Bid.objects.select_related('user', 'req').all().order_by('req__id', 'rate', 'created_at')
-    #
-    #     rank_bid = []
-    #     for bid in bids:
-    #         rank_bid.append({
-    #             "bid_id": bid.req.id,
-    #             "bid_by": bid.user.username,
-    #             "bid_rate": bid.rate,
-    #             "bid_time": bid.created_at  # assuming you have a timestamp
-    #         })
-    #
-    #     if rank_bid:
-    #         import pandas as pd
-    #         df = pd.DataFrame(rank_bid)
-    #
-    #         # Sort by rate and time to break ties
-    #         df = df.sort_values(['bid_id', 'bid_rate', 'bid_time'], ascending=[True, True, True])
-    #
-    #         # Assign rank based on sorted position
-    #         df['rank'] = df.groupby('bid_id').cumcount() + 1
-    #
-    #         # Get the current user's best rank per requirement
-    #         user_rank_df = df[df['bid_by'] == username]
-    #         user_rank_df = user_rank_df.loc[user_rank_df.groupby('bid_id')['bid_rate'].idxmin()]
-    #         user_result = user_rank_df[['bid_id', 'bid_rate', 'rank']].to_dict(orient='records')
-    #     else:
-    #         user_result = []
-    #
-    #     # Gather all user's bids for display
-    #     user_bids = Bid.objects.filter(user=user)
-    #     for bid in user_bids:
-    #         result.append({
-    #             "id": bid.req.id,
-    #             "rate": bid.rate
-    #         })
-    #
-    #     return {
-    #         "bids": result,
-    #         "user_ranks": user_result
-    #     }
 
 
     @sync_to_async
@@ -654,40 +534,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'auction_end_status': event['auction_end_status'],
             'clt': event['clt'],
             'start_time': event['start_time']
-
-
-
         }))
-
-
-    # async def send_upcoming_time(self):
-    #     from django.utils import timezone
-    #     from datetime import datetime
-    #
-    #     import asyncio
-    #
-    #     while True:
-    #         general_access, minutes, start_time = await self.get_general_access()
-    #
-    #         clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
-    #
-    #         if remaining.total_seconds() <= 0:
-    #             print("Auction time reached, stopping timer.")
-    #             break
-    #
-    #         # Send only the time update
-    #         await self.channel_layer.group_send(
-    #             self.room_group_name,
-    #             {
-    #                 'type': 'timer_update',
-    #                 'minutes': str(remaining),
-    #                 'end_time': str(end_times)
-    #             }
-    #         )
-    #
-    #         await asyncio.sleep(1)  # update every second
-
-
 
     from channels.db import database_sync_to_async
     @database_sync_to_async
@@ -708,7 +555,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
             # print("Remaining:", remaining.seconds)
-
             # print("Remaining type :", type(remaining.seconds))
             # print("Remaining Seconds:",remaining.total_seconds())
             if remaining.total_seconds() <= 0:
@@ -716,13 +562,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 break
 
             # Send only the time update
-
             if clt <= start_time:
                 print("Auction Not Started")
                 auction_start = False
             else:
                 auction_start = True
-
             auction_end_status = False
             if clt >= end_times:
                 print("Auction Ended")
@@ -746,8 +590,57 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'auction_end_status': auction_end_status,
                     "clt":str(clt),
                     "start_time":str(start_time)
-
-
                 }
             )
             await asyncio.sleep(1)  # update every second
+
+    # async def send_remaining_time(self):
+    #     from django.utils import timezone
+    #     from datetime import datetime
+    #     import asyncio
+    #     user = self.scope['user']
+    #     # Fetch user's access once
+    #     try:
+    #         user_access_obj = await sync_to_async(UserAccess.objects.get)(user=user.username)
+    #         has_access = user_access_obj.can_view_requirements
+    #     except UserAccess.DoesNotExist:
+    #         has_access = False
+    #
+    #     if not has_access:
+    #         # User doesn't have access → exit immediately
+    #         return
+    #
+    #     if has_access:
+    #         while True:
+    #             general_access, minutes, start_time, g_access, use_cel = await self.get_general_access()
+    #             clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+    #
+    #             if remaining.total_seconds() <= 0:
+    #                 break
+    #
+    #             auction_start=True
+    #             if clt <= start_time:
+    #                 auction_start = False
+    #             else:
+    #                 auction_start = True
+    #
+    #             auction_end_status = False
+    #             if clt >= end_times:
+    #                 print("Auction Ended")
+    #                 auction_end_status = True
+    #
+    #             # Send timer update **only to this user**
+    #             await self.send(text_data=json.dumps({
+    #                 'type': 'timer_update',
+    #                 'minutes': str(remaining),
+    #                 'seconds': remaining.seconds,
+    #                 'end_time': str(localtime(end_times)),
+    #                 'auction_started': auction_start,
+    #                 'auction_end_status': auction_end_status,
+    #                 'clt': str(clt),
+    #                 'start_time': str(localtime(start_time)),
+    #             }))
+    #
+    #             await asyncio.sleep(1)
+
+

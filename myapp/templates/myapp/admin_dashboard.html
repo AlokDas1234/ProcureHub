@@ -294,15 +294,19 @@ input:checked + .slider:before {
                     <input type="text" class="form-control" name="weight_per_drum">
                 </div>
                 <div class="form-group">
-                    <label for="types">12. Types</label>
+                    <label for="approx_mat_mt">12. Approx Material Wait(MT)</label>
+                    <input type="text" class="form-control" name="approx_mat_mt">
+                </div>
+                <div class="form-group">
+                    <label for="types">13. Types</label>
                     <input type="text" class="form-control" name="types">
                 </div>
                 <div class="form-group mb-0">
-                    <label for="cel_price">13. Ceiling Price</label>
+                    <label for="cel_price">14. Ceiling Price</label>
                     <input type="number" class="form-control" name="cel_price">
                 </div>
                  <div class="form-group mb-0">
-                    <label for="min_dec_val">14. Minimal Decremental value </label>
+                    <label for="min_dec_val">15. Minimal Decremental value </label>
                     <input type="number" class="form-control" name="min_dec_val">
                 </div>
             </div>
@@ -326,9 +330,11 @@ input:checked + .slider:before {
 
     <hr>
     <!-- Button to download template from the dynamic view -->
-    <a href="{% url 'download_template' %}">
-        <button type="button">Download Template</button>
-    </a>
+     <div>
+            <a href="{% url 'download_template' %}">
+                <button type="button">Download Template</button>
+            </a>
+        </div>
     &nbsp
     &nbsp
     &nbsp
@@ -541,6 +547,7 @@ input:checked + .slider:before {
 
             <p><strong>Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
             <p><strong>Weight Per Drum(kg):</strong> {{ requirement.weight_per_drum }}</p>
+            <p><strong>Approx Material Wait (Mt):</strong> {{ requirement.approx_mat_mt}}</p>
             <p><strong>Types:</strong> {{ requirement.types }}</p>
                       <hr>
             <h3> Bidding Strategy:</h3>
@@ -690,11 +697,8 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
 
 else   {
-
     let timer = document.getElementById("start_status");
     timer.innerText = `Auction Ended !`;
-
-
 }
         if (data.type === 'bids_per_requirement') {
             const bidReq = data.bid_req;
