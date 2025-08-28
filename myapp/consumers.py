@@ -250,7 +250,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if not valid_bid:
                 await self.send(text_data=json.dumps({
                     'type': 'valid_bid',
-                    'valid_bid':"Enter lowest bid amount than the previous one",
+                    'valid_bid':"Enter lowest bid amount than the previous one.",
                 }))
 
             if user_bid:  # make sure it's not empty
