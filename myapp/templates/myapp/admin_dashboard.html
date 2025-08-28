@@ -63,11 +63,11 @@
 
 .access-toggle {
     display: flex;
-    border-radius: 30px;
+    border-radius: 10px;
     overflow: hidden;
     border: 2px solid #ccc;
     background: #eaeaea;
-    width: fit-content;
+    width: 100%;
 }
 
 .toggle-btn {
@@ -83,7 +83,7 @@
 }
 
 .toggle-btn.active.yes {
-    background: #28a745;
+    background: #1a8276;
     color: white;
     box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
 }
@@ -111,7 +111,7 @@
 }
 
 .toggle-btn-cel.active.yes {
-    background: #28a745;
+    background: #1a8276;
     color: white;
     box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
 }
@@ -193,7 +193,7 @@ input:checked + .slider:before {
 
 </head>
 <body>
-<h1 style="text-align:center"><strong>PROCURE HUB</strong></h1>
+<h1 style="text-align:center;">PROCURE HUB</h1>
    <style>
 .gradient-hr {
     height: 4px;
@@ -395,11 +395,12 @@ input:checked + .slider:before {
         <hr>
         {% csrf_token %}
         <div class="container mt-4">
-         <label for="start_time"><strong>1.Bidding Start Time:</strong> </label>
+         <label for="start_time"><strong><h5>1.Bidding Start Time:</h5></strong> </label>
        <input type="datetime-local" name="start_time" id="start_time" required>
-          <label for="minute"> <strong> 2.Bidding Time in Minute:</strong> </label>
+          <label for="minute"> <strong><h5> 2.Bidding Time in Minute:</h5></strong> </label>
        <input type="number" name="minute" id="minute" required>
         </div>
+        &nbsp
 
        <h5 class="mb-3">3. Post Requirement</h5>
         <div class="access-toggle mb-4">
@@ -409,7 +410,7 @@ input:checked + .slider:before {
         </div>
         <input type="hidden" name="access" id="accessInput" value="yes">
 
-         <h5 class="mb-3">Use Ceiling Price</h5>
+         <h5 class="mb-3">4.Use Ceiling Price</h5>
         <div class="access-toggle mb-4">
             <button type="button" class="toggle-btn-cel no" data-value="no">NO</button>
             <button type="button" class="toggle-btn-cel yes active" data-value="yes">YES</button>
@@ -419,7 +420,7 @@ input:checked + .slider:before {
 
 
 
-        <h5 class="mb-3">4. Individual User Access</h5>
+        <h5 class="mb-3">5. Individual User Access</h5>
         <div class="form-group">
             <label for="user">Select Users:</label>
             <select id="userDropdown" name="user" multiple class="selectpicker"
@@ -428,8 +429,8 @@ input:checked + .slider:before {
             </select>
         </div>
 
-        <div class="d-flex justify-content-center mt-4">
-            <button class="btn btn-primary px-5" type="submit" style="border-radius: 30px;">
+        <div class="container-fluid mt-4">
+            <button class="btn btn-primary px-5" type="submit" style="border-radius: 15px;width:100%;">
                 Grant Access/Post
             </button>
         </div>
@@ -438,17 +439,7 @@ input:checked + .slider:before {
 
                 </div>
 </div>
-<!--  </div>-->
-<!--                  <form method="POST" action="{% url 'delete_all_bids' %}"-->
-<!--      onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
-<!--    {% csrf_token %}-->
-<!--    <button type="submit" class="btn btn-danger">-->
-<!--        Delete All Bids-->
-<!--    </button>-->
-<!--</form>-->
 
-
-<!--        </div>-->
 
 
 
@@ -464,14 +455,14 @@ input:checked + .slider:before {
     <h4 id="start_status"></h4>
 <div id="refresh-container" style="text-align:center;">
 
-     <div class="d-flex justify-content-center mt-4">
-            <button onclick="window.location.reload();" class="btn btn-primary px-5"  style="border-radius: 30px;">
+     <div class="d-flex justify-content-left mt-4">
+            <button onclick="window.location.reload();" class="btn btn-primary px-5"  style="border-radius: 15px;width:50%;">
                Refresh
             </button>
         </div>
 </div>
 
-        <h3 class="mb-4 text-primary font-weight-bold">5. UPLOADED REQUIREMENTS & USER BIDS:</h3>
+        <h3 class="mb-4 mt-4 text-primary font-weight-bold">5. UPLOADED REQUIREMENTS & USER BIDS:</h3>
 
     <hr>
 
