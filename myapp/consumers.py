@@ -218,13 +218,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             valid_bid_cel_price = True
             if use_cel:
                 valid_bid_cel_price = False
-                print("req_.cel_price:",req_.cel_price)
-                print("req_.cel_price type:",type(req_.cel_price))
-                print("user_bid :",user_bid)
-                print("user_bid type:",type(user_bid))
-                print("user_bid  amt:",bid_amt)
-                print("user_bid amt type:",type(bid_amt))
-                if (int(bid_amt) < req_.cel_price and user_bid) or req_.cel_price == 0:
+                # print("req_.cel_price:",req_.cel_price)
+                # print("req_.cel_price type:",type(req_.cel_price))
+                # print("user_bid :",user_bid)
+                # print("user_bid type:",type(user_bid))
+                # print("user_bid  amt:",bid_amt)
+                # print("user_bid amt type:",type(bid_amt))
+                if (int(bid_amt) < req_.cel_price) or req_.cel_price == 0:
                     valid_bid_cel_price = True
 
                 if not valid_bid_cel_price:
