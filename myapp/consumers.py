@@ -213,7 +213,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             # min_dec_val
             ''' To place  a bid,Bid amount must be lower than the ceiling price or 0'''
-            print("Req ceiling price:",req_.cel_price)
+            # print("Req ceiling price:",req_.cel_price)
 
             valid_bid_cel_price = True
             if use_cel:
@@ -251,28 +251,40 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'valid_bid':"Enter lowest bid amount than the previous one.",
                 }))
 
+            valid_bid_dec_val = True
             if user_bid:  # make sure it's not empty
                 last_bid = user_bid[-1].rate
+                # print("last_bid from receive:", last_bid)
+                if last_bid and int(req_.min_dec_val != 0):
+                    # print("Decremental val is called:")
+                    decremental_value = int(last_bid) - int(req_.min_dec_val)
+                    # print("decremental_value:", decremental_value)
+
+                    if decremental_value <= int(bid_amt):
+                        # print("decremental_value inside loop:", decremental_value)
+                        # print("Bid Amount:", int(bid_amt))
+
+                        valid_bid_dec_val = False
+                        await self.send(text_data=json.dumps({
+                            'type': 'valid_bid',
+                            'valid_bid': "Enter amount lower than the minimal decremental value {}".format(
+                                req_.min_dec_val),
+                        }))
+                # print("Valid Bid dec status:", valid_bid_dec_val)
+                # print("Last_Bid:", last_bid)
+
+
             else:
-                last_bid = None
-
-            # print("last_bid from receive:", last_bid)
-            valid_bid_dec_val = True
-            if last_bid and int(req_.min_dec_val !=0):
-                decremental_value=int(last_bid) - int(req_.min_dec_val)
-                # print("decremental_value:",decremental_value)
-
-                if decremental_value <=int(bid_amt):
-                    # print("decremental_value inside loop:", decremental_value)
-                    # print("Bid Amount:", int(bid_amt))
-
-                    valid_bid_dec_val = False
-                    await self.send(text_data=json.dumps({
-                        'type': 'valid_bid',
-                        'valid_bid': "Enter amount lower than the minimal decremental value {}".format(req_.min_dec_val),
-                    }))
-            # print("Valid Bid dec status:", valid_bid_dec_val)
-            # print("Last_Bid:", last_bid)
+                last_bid = 0
+                if req_.cel_price:
+                    minimum_amt=req_.cel_price-int(req_.min_dec_val)
+                    if not int(bid_amt)<minimum_amt:
+                        valid_bid_dec_val = False
+                        await self.send(text_data=json.dumps({
+                             'type': 'valid_bid',
+                             'valid_bid': "Enter amount lower than the minimal decremental value {}".format(
+                                 req_.min_dec_val),
+                        }))
 
             try:
                 user_exist = await sync_to_async(UserAccess.objects.get)(user=user_)
