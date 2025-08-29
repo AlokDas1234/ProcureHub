@@ -291,23 +291,23 @@ input:checked + .slider:before {
                 </div>
                 <div class="form-group">
                     <label for="weight_per_drum">11. Weight per Drum</label>
-                    <input type="text" class="form-control" name="weight_per_drum">
+                    <input type="text" class="form-control" name="weight_per_drum" required>
                 </div>
                 <div class="form-group">
                     <label for="approx_mat_mt">12. Approx Material Wait(MT)</label>
-                    <input type="text" class="form-control" name="approx_mat_mt">
+                    <input type="text" class="form-control" name="approx_mat_mt" required>
                 </div>
                 <div class="form-group">
                     <label for="types">13. Types</label>
-                    <input type="text" class="form-control" name="types">
+                    <input type="text" class="form-control" name="types" required>
                 </div>
                 <div class="form-group mb-0">
                     <label for="cel_price">14. Ceiling Price</label>
-                    <input type="number" class="form-control" name="cel_price">
+                    <input type="number" class="form-control" name="cel_price" required>
                 </div>
                  <div class="form-group mb-0">
                     <label for="min_dec_val">15. Minimal Decremental value </label>
-                    <input type="number" class="form-control" name="min_dec_val">
+                    <input type="number" class="form-control" name="min_dec_val" required>
                 </div>
             </div>
         </div>
@@ -641,7 +641,7 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 <!--    });-->
 <!--    }-->
   if (data.type === 'timer_update') {
-        console.log("Update Timer:", data.minutes);
+<!--        console.log("Update Timer:", data.minutes);-->
 
         // Convert remaining time string (e.g., "0:08:05") to seconds
         function parseTimeToSeconds(timeStr) {
@@ -676,23 +676,23 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
     }
 
      if (data.type === 'timer_update' && data.auction_started === false) {
-    console.log("Update Timer:", data.minutes);
-    console.log("Auction Status:",  data.auction_started);
+<!--    console.log("Update Timer:", data.minutes);-->
+<!--    console.log("Auction Status:",  data.auction_started);-->
 
     let timer = document.getElementById("start_status");
     timer.innerText = `Auction will start in: ${data.minutes}`;
 
-    console.log("Auction Status:", data.auction_started);
+<!--    console.log("Auction Status:", data.auction_started);-->
 }
 
     else if (data.type === 'timer_update' && data.auction_started === true) {
-    console.log("Update Timer:", data.minutes);
-    console.log("Auction Status:",  data.auction_started);
+<!--    console.log("Update Timer:", data.minutes);-->
+<!--    console.log("Auction Status:",  data.auction_started);-->
 
    let timer = document.getElementById("start_status");
   timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;
 
-    console.log("Auction Status:", data.auction_started);
+<!--    console.log("Auction Status:", data.auction_started);-->
 }
 
 
@@ -722,7 +722,7 @@ else   {
         }
 
        if (data.type === "normal_user") {
-    console.log("These are normal users who can see the requirements:", data.users);
+<!--    console.log("These are normal users who can see the requirements:", data.users);-->
 
     const dropdown = document.getElementById("userDropdown");
 
@@ -818,7 +818,7 @@ function renderBids() {
 
 
    socket.onopen = function(event) {
-            console.log("WebSocket is open now.");
+<!--            console.log("WebSocket is open now.");-->
 <!--            socket.send(JSON.stringify({ type: 'grouped_bid' }));-->
 
         };
@@ -838,7 +838,7 @@ function renderBids() {
 
                 function delReq(reqId)
                 {
-                console.log("Req ID in delete:",reqId);
+<!--                console.log("Req ID in delete:",reqId);-->
 
                    if (reqId === 'delAll')
                     {
@@ -854,7 +854,7 @@ function renderBids() {
                                      }
                          }
 
-                    console.log("reqId:", reqId);
+<!--                    console.log("reqId:", reqId);-->
                     const newForm = new FormData();
                     newForm.append("reqId", reqId);
 
@@ -882,7 +882,7 @@ function renderBids() {
 
 
      function editReq(reqId) {
-        console.log("reqId:", reqId);
+<!--        console.log("reqId:", reqId);-->
         const newForm = new FormData();
         newForm.append("reqId", reqId);
 

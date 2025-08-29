@@ -34,7 +34,6 @@ class Requirements(models.Model):
         return f" From {self.loading_point}  to {self.unloading_point} Truck: {self.truck_type} {self.truck_type}  Material:{self.product}"
 
 class Bid(models.Model):
-
     user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='bid_user',null=True,blank=True)
     req= models.ForeignKey(Requirements, on_delete=models.DO_NOTHING,related_name='bid_req',null=True,blank=True)
     rate=models.FloatField(default=0)

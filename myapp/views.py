@@ -341,6 +341,7 @@ def admin_dashboard(request):
         '''This is for individual  and all user access'''
         try:
             all_users = User.objects.filter(is_superuser=False, is_staff=False)
+            superusers = User.objects.filter(is_superuser=True)
 
             for user in all_users:
                 user_access, _ = UserAccess.objects.get_or_create(user=user)
@@ -349,6 +350,11 @@ def admin_dashboard(request):
 
                 else:
                     user_access.can_view_requirements = False
+                user_access.save()
+
+            for user in superusers:
+                user_access, _ = UserAccess.objects.get_or_create(user=user)
+                user_access.can_view_requirements = True
                 user_access.save()
 
 

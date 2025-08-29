@@ -17,10 +17,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_name = self.scope['url_route']['kwargs']['room_name']
             self.room_group_name = f'chat_{self.room_name}'
 
-            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-            await self.accept()
-
+            # await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            # await self.accept()
             username = self.scope['user'].username
+            """Timer canView  access"""
+            user = self.scope['user']
+            user_access_obj = await sync_to_async(UserAccess.objects.get)(user=user)
+
+            if user_access_obj.can_view_requirements:
+                await self.channel_layer.group_add(
+                    self.room_group_name,
+                    self.channel_name
+                )
+                await self.accept()
+            else:
+                # reject the connection or just don't add them to the group
+                await self.close()
+            """Timer Access end"""
             #
 
             general_access, minutes, start_time,g_access,use_cel= await self.get_general_access()
@@ -560,52 +573,59 @@ class ChatConsumer(AsyncWebsocketConsumer):
         from datetime import datetime
         import asyncio
 
-        while True:
-            general_access, minutes, start_time,g_access,use_cel = await self.get_general_access()
-            """From get_general_access to time_calculation """
-            # print("start_time:",start_time)
+        user = self.scope['user']
+        print("has2:",user)
+        user_access_obj = await sync_to_async(UserAccess.objects.get)(user=user)
+        has_access = user_access_obj.can_view_requirements
+        print("Has_access:",has_access)
+        if has_access:
+            while True:
+                general_access, minutes, start_time,g_access,use_cel = await self.get_general_access()
+                """From get_general_access to time_calculation """
+                # print("start_time:",start_time)
 
-            clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
-            # print("Remaining:", remaining.seconds)
-            # print("Remaining type :", type(remaining.seconds))
-            # print("Remaining Seconds:",remaining.total_seconds())
-            if remaining.total_seconds() <= 0:
-                print("Auction time reached, stopping timer.")
-                break
+                clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+                # print("Remaining:", remaining.seconds)
+                # print("Remaining type :", type(remaining.seconds))
+                # print("Remaining Seconds:",remaining.total_seconds())
+                if remaining.total_seconds() <= 0:
+                    print("Auction time reached, stopping timer.")
+                    break
 
-            # Send only the time update
-            if clt <= start_time:
-                print("Auction Not Started")
-                auction_start = False
-            else:
-                auction_start = True
-            auction_end_status = False
-            if clt >= end_times:
-                print("Auction Ended")
-                auction_end_status = True
-            # Make it timezone-aware in Asia/Kolkata
-            start_time = localtime(start_time)
-            end_times = localtime(end_times)
-            # print("start_time:",start_time)
-            # print('auction_end_status:', auction_end_status)
+                # Send only the time update
+                if clt <= start_time:
+                    print("Auction Not Started")
+                    auction_start = False
+                else:
+                    auction_start = True
+                auction_end_status = False
+                if clt >= end_times:
+                    print("Auction Ended")
+                    auction_end_status = True
+                # Make it timezone-aware in Asia/Kolkata
+                start_time = localtime(start_time)
+                end_times = localtime(end_times)
+                # print("start_time:",start_time)
+                # print('auction_end_status:', auction_end_status)
 
 
-            # print("auction_started status:", auction_start)
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'timer_update',
-                    'minutes': str(remaining),
-                    'end_time': str(end_times),
-                    'seconds': remaining.seconds,
-                    'auction_started': auction_start,
-                    'auction_end_status': auction_end_status,
-                    "clt":str(clt),
-                    "start_time":str(start_time)
-                }
-            )
-            await asyncio.sleep(1)  # update every second
-
+                # print("auction_started status:", auction_start)
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'timer_update',
+                        'minutes': str(remaining),
+                        'end_time': str(end_times),
+                        'seconds': remaining.seconds,
+                        'auction_started': auction_start,
+                        'auction_end_status': auction_end_status,
+                        "clt":str(clt),
+                        "start_time":str(start_time)
+                    }
+                )
+                await asyncio.sleep(1)  # update every second
+        # else:
+        #     print("Auction Not Started for:", user)
     # async def send_remaining_time(self):
     #     from django.utils import timezone
     #     from datetime import datetime
