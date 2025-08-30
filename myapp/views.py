@@ -211,8 +211,6 @@ def delete_all_bids(request):
         messages.success(request, "All bids have been deleted successfully.")
     return redirect("requirements")  # redirect wherever you want
 
-
-
 @login_required(login_url='/login/')
 @csrf_exempt
 def bulk_upload_requirements(request):

@@ -159,8 +159,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                         }
                     )
-
-
             else:
 
                 if hasattr(self, "timer_task") and not self.timer_task.done():
