@@ -20,6 +20,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # await self.channel_layer.group_add(self.room_group_name, self.channel_name)
             # await self.accept()
             username = self.scope['user'].username
+
             """Timer canView  access"""
             user = self.scope['user']
             user_access_obj = await sync_to_async(UserAccess.objects.get)(user=user)
@@ -574,10 +575,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         import asyncio
 
         user = self.scope['user']
-        print("has2:",user)
+        # print("has2:",user)
         user_access_obj = await sync_to_async(UserAccess.objects.get)(user=user)
         has_access = user_access_obj.can_view_requirements
-        print("Has_access:",has_access)
+        # print("Has_access:",has_access)
         if has_access:
             while True:
                 general_access, minutes, start_time,g_access,use_cel = await self.get_general_access()
@@ -589,18 +590,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # print("Remaining type :", type(remaining.seconds))
                 # print("Remaining Seconds:",remaining.total_seconds())
                 if remaining.total_seconds() <= 0:
-                    print("Auction time reached, stopping timer.")
+                    # print("Auction time reached, stopping timer.")
                     break
 
                 # Send only the time update
                 if clt <= start_time:
-                    print("Auction Not Started")
+                    # print("Auction Not Started")
                     auction_start = False
                 else:
                     auction_start = True
                 auction_end_status = False
                 if clt >= end_times:
-                    print("Auction Ended")
+                    # print("Auction Ended")
                     auction_end_status = True
                 # Make it timezone-aware in Asia/Kolkata
                 start_time = localtime(start_time)
@@ -624,55 +625,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
                 await asyncio.sleep(1)  # update every second
-        # else:
-        #     print("Auction Not Started for:", user)
-    # async def send_remaining_time(self):
-    #     from django.utils import timezone
-    #     from datetime import datetime
-    #     import asyncio
-    #     user = self.scope['user']
-    #     # Fetch user's access once
-    #     try:
-    #         user_access_obj = await sync_to_async(UserAccess.objects.get)(user=user.username)
-    #         has_access = user_access_obj.can_view_requirements
-    #     except UserAccess.DoesNotExist:
-    #         has_access = False
-    #
-    #     if not has_access:
-    #         # User doesn't have access → exit immediately
-    #         return
-    #
-    #     if has_access:
-    #         while True:
-    #             general_access, minutes, start_time, g_access, use_cel = await self.get_general_access()
-    #             clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
-    #
-    #             if remaining.total_seconds() <= 0:
-    #                 break
-    #
-    #             auction_start=True
-    #             if clt <= start_time:
-    #                 auction_start = False
-    #             else:
-    #                 auction_start = True
-    #
-    #             auction_end_status = False
-    #             if clt >= end_times:
-    #                 print("Auction Ended")
-    #                 auction_end_status = True
-    #
-    #             # Send timer update **only to this user**
-    #             await self.send(text_data=json.dumps({
-    #                 'type': 'timer_update',
-    #                 'minutes': str(remaining),
-    #                 'seconds': remaining.seconds,
-    #                 'end_time': str(localtime(end_times)),
-    #                 'auction_started': auction_start,
-    #                 'auction_end_status': auction_end_status,
-    #                 'clt': str(clt),
-    #                 'start_time': str(localtime(start_time)),
-    #             }))
-    #
-    #             await asyncio.sleep(1)
+
 
 

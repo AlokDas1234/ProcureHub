@@ -1,6 +1,9 @@
 # myapp/views.py
 from django.contrib.auth import authenticate, login, logout
 import csv
+
+from django.contrib.auth.decorators import login_required
+
 from .models import Requirements
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -104,7 +107,7 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-
+@login_required(login_url='/login/')
 def create_requirement(request):
     if request.method == "POST":
         loading_point = request.POST.get("loading_point")
@@ -133,7 +136,7 @@ def create_requirement(request):
 
 
 
-
+@login_required(login_url='/login/')
 def del_requirement(request):
     '''
     Return JsonResponse instead of rendering the template:
@@ -159,7 +162,7 @@ You're calling this from JavaScript fetch(), not through a form submission. So y
 
 
 
-
+@login_required(login_url='/login/')
 def download_template(request):
     # Get all field names from the Requirements model (excluding auto fields like id)
     field_names = [field.name for field in Requirements._meta.fields if not field.auto_created]
@@ -177,7 +180,7 @@ def download_template(request):
 import pandas as pd
 from django.http import HttpResponse
 
-
+@login_required(login_url='/login/')
 def download_requirements(request):
     all_bids = Bid.objects.all().values(
         "id", "user__username", "req__id", "req__loading_point","req__unloading_point","req__product","req__truck_type", "rate", "created_at"
@@ -201,7 +204,7 @@ def download_requirements(request):
     return response
 
 
-
+@login_required(login_url='/login/')
 def delete_all_bids(request):
     if request.method == "POST":  # only allow POST for safety
         Bid.objects.all().delete()
@@ -210,7 +213,7 @@ def delete_all_bids(request):
 
 
 
-
+@login_required(login_url='/login/')
 @csrf_exempt
 def bulk_upload_requirements(request):
     if request.method == "POST":
@@ -257,6 +260,7 @@ def bulk_upload_requirements(request):
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 
+@login_required(login_url='/login/')
 def edit_requirement(request):
     if request.method == "POST":
         reqid = request.POST.get("reqId")
@@ -282,6 +286,9 @@ from .models import GeneralAccess
 from datetime import datetime
 from django.utils.timezone import make_aware
 import pytz
+
+
+@login_required(login_url='/login/')
 def admin_dashboard(request):
     if request.method == "POST":
         start_time_str=request.POST.get("start_time")
