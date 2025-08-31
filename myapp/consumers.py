@@ -6,7 +6,12 @@ from .models import *
 from asgiref.sync import async_to_sync, sync_to_async
 from datetime import datetime, timedelta
 import pytz
-
+import io
+import base64
+import matplotlib
+matplotlib.use("Agg")   # important if server has no GUI (prevents Tkinter errors)
+import matplotlib.pyplot as plt
+import pandas as pd
 
 class ChatConsumer(AsyncWebsocketConsumer):
     auction_end_status = False
@@ -35,7 +40,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # reject the connection or just don't add them to the group
                 await self.close()
             """Timer Access end"""
-            #
 
             general_access, minutes, start_time,g_access,use_cel= await self.get_general_access()
             clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
@@ -78,13 +82,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     )
 
             if self.scope['user'].is_superuser:
-                '''This is used to get all users except superuser but admin can do it'''
+                '''This is used to get all users except superuser only admins subscribed to this '''
                 users = await self.get_bid_users()
                 # print("Users:", users)
                 await self.send(text_data=json.dumps({
                     "type": "normal_user",
                     "users": [user["username"] for user in users]
                 }))
+
+            # if self.scope['user'].is_superuser:
+            #     report= await self.get_bid_report()
+            #     print("Report:", report)
+                # await self.send(text_data=json.dumps({
+                #     "type": "report",
+                #     "report": ""
+                # }))
+                if self.scope['user'].is_superuser:
+                    image_base64 = await self.get_bid_report_plot()
+                    await self.channel_layer.group_send(
+                       self.room_group_name,
+                        {
+                            "type": "send_bid_graph",
+                            "graph": image_base64
+                        }
+                    )
 
             @sync_to_async
             def req_view_access(user):
@@ -122,7 +143,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # print("Auction Ended")
                 auction_end_status = True
             if auction_start==False and access.can_view_requirements and general_access == True:
-                print("Auction Not Started can view req:",access.can_view_requirements)
+                # print("Auction Not Started can view req:",access.can_view_requirements)
 
                 self.timer_task = asyncio.create_task(self.send_remaining_time())
                 reqs = await sync_to_async(get_all_requirements)()
@@ -180,6 +201,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         user = self.scope['user']
+
+
+
+
+
 
         if text_data_json.get("type") == "submit_bid":
             req_id = text_data_json.get("req_id")
@@ -383,10 +409,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'message': 'You can only place up to 5 bids for the same requirement or auction ended.'
                 }))
 
-
+            image_base64 = await self.get_bid_report_plot()
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "send_bid_graph",
+                    "graph": image_base64
+                }
+            )
 
     async def time_calculation(self, general_access, minutes, start_time):
-
 
         # return access, created
         if general_access:
@@ -427,6 +459,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'bid_rate': event['bid_rate']
         }))
 
+    async def send_bid_graph(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "bid_report_graph",
+            "graph": event["graph"]
+        }))
+
     async def send_grouped_bid(self, event):
         user = self.scope['user']
         if not user.is_superuser:
@@ -450,6 +488,113 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def get_bid_users(self):
         return list(User.objects.filter(is_superuser=False, is_staff=False).values("username"))
+
+    # @sync_to_async
+    # def get_bid_report(self):
+    #     import pandas as pd
+    #     all_bids = Bid.objects.all().values(
+    #         "id", "user__username", "req__id", "req__loading_point", "req__unloading_point", "req__product",
+    #         "req__truck_type", "rate", "created_at"
+    #     )
+    #     rank_df = pd.DataFrame(list(all_bids))  # ✅ now it's
+    #     # Pick the lowest rate per user per requirement
+    #     lowest_bids = rank_df.sort_values("rate").groupby(
+    #         ["req__id", "user__username"], as_index=False
+    #     ).first()
+    #     # Rank them within each requirement
+    #     lowest_bids["Rank"] = lowest_bids.groupby("req__id")["rate"].rank(
+    #         ascending=True, method="dense"
+    #     )
+    #
+    #     # Keep only ranks 1 to 4
+    #     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
+    #     return rank_df
+    @sync_to_async
+    def get_bid_report_plot(self):
+        import pandas as pd
+        import matplotlib
+        matplotlib.use("Agg")  # server-safe backend
+        import matplotlib.pyplot as plt
+        import io, base64
+
+        # ---- Fetch bids ----
+        all_bids = Bid.objects.all().values(
+            "id", "user__username", "req__id",
+            "req__loading_point", "req__unloading_point",
+            "req__product", "req__truck_type",
+            "rate", "created_at"
+        )
+
+        if not all_bids.exists():
+            return None  # no data yet
+
+        # ---- Convert to DataFrame ----
+        df = pd.DataFrame(list(all_bids))
+
+        # ---- Pick lowest rate per user per requirement ----
+        lowest_bids = (
+            df.sort_values("rate")
+            .groupby(["req__id", "user__username"], as_index=False)
+            .first()
+        )
+
+        # ---- Rank bids per requirement ----
+        lowest_bids["Rank"] = (
+            lowest_bids.groupby("req__id")["rate"]
+            .rank(ascending=True, method="dense")
+        )
+
+        # ---- Keep only top 4 per requirement ----
+        rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
+
+        # ---- Prepare for grouped bar chart ----
+        requirements = sorted(rank_df["req__id"].unique())
+        users = rank_df["user__username"].unique()
+        num_users = len(users)
+        bar_width = 0.2  # width of each bar
+
+        fig, ax = plt.subplots(figsize=(8, 5))
+
+        # assign colors per user
+        colors = {user: plt.cm.tab10(i % 10) for i, user in enumerate(users)}
+
+        # plot bars per user
+        for i, user in enumerate(users):
+            user_data = rank_df[rank_df["user__username"] == user]
+            # align bars per requirement id
+            x_positions = [requirements.index(req) + i * bar_width for req in user_data["req__id"]]
+            ax.bar(
+                x_positions,
+                user_data["rate"],
+                width=bar_width,
+                color=colors[user],
+                label=user
+            )
+            # annotate bars with rank and rate
+            for x, rate, rank in zip(x_positions, user_data["rate"], user_data["Rank"]):
+                ax.text(x, rate + 0.01 * max(rank_df["rate"]), f"{int(rank)} | {rate}", ha="center", va="bottom",
+                        fontsize=8)
+
+        # ---- X-axis ticks in the middle of grouped bars ----
+        mid_positions = [i + (num_users - 1) * bar_width / 2 for i in range(len(requirements))]
+        ax.set_xticks(mid_positions)
+        ax.set_xticklabels(requirements)
+
+        # ---- Labels and title ----
+        ax.set_xlabel("Requirement ID")
+        ax.set_ylabel("Bid Rate")
+        ax.set_title("Top 4 Bids per Requirement")
+        ax.legend(title="Bidders")
+        plt.tight_layout()
+
+        # ---- Convert figure to base64 ----
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png")
+        buf.seek(0)
+        image_base64 = base64.b64encode(buf.read()).decode("utf-8")
+        plt.close(fig)
+
+        return image_base64
 
     from .models import GeneralAccess
     @sync_to_async

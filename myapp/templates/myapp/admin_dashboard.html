@@ -2,6 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
 
     <title>Admin Dashboard</title>
 
@@ -224,6 +228,7 @@ input:checked + .slider:before {
 
 
 
+
 <form  class="col-10 mx-auto card p-3 shadow-sm" id="requisition-update" method="POST" action="{% url 'requirements' %}">
     {% csrf_token %}
 
@@ -330,15 +335,14 @@ input:checked + .slider:before {
 
     <hr>
     <!-- Button to download template from the dynamic view -->
-     <div>
+         <div class="col-2">
             <a href="{% url 'download_template' %}">
-                <button type="button">Download Template</button>
+                <button type="button"> Download  Template</button>
             </a>
         </div>
     &nbsp
     &nbsp
     &nbsp
-    <input type="file" id="csvUpload" accept=".csv,.xlsx" style="display:none;" onchange="handleFileUpload(this.files[0])">
 
 <input type="file" id="bulk-file" accept=".csv, .xlsx">
     &nbsp
@@ -455,18 +459,31 @@ input:checked + .slider:before {
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<div class="container-fluid mt-1">
-
- <h3 class="mb-4 text-primary font-weight-bold">4.AUCTION STATUS:</h3>
-    <h4 id="start_status"></h4>
-<div id="refresh-container" style="text-align:center;">
-
-     <div class="d-flex justify-content-left mt-4">
-            <button onclick="window.location.reload();" class="btn btn-primary px-5"  style="border-radius: 15px;width:50%;">
-               Refresh
-            </button>
+<div class="container-fluid" style="background-color:#41938a29">
+    <div class="row">
+          <div class="col-md-6   p-1">
+            <h3 class="mb-4 text-primary font-weight-bold">4. BIDDING STATUS:</h3>
+            <h4 style="color:blue;" id="start_status"></h4>
+               <h3 id="auction_status" class="text-align:left;"></h3>
+        <h3 id="current_time_div" style="text-align:left;"></h3>
+        <h3 id="start_time_div" style="text-align:left;"></h3>
+        <h3 id="end_time_div" style="text-align:left;"></h3>
+              <h3 style="color:blue;">Total requirements: {{requirements|length}}</h3>
+          </div>
+            <div class="col-md-6   p-1">
+              <img id="bidGraph" src="" style="max-width:100%; border:1px solid #ddd;" />
+            </div>
         </div>
-</div>
+
+        <div id="refresh-container" style="text-align:center;">
+
+             <div class="d-flex justify-content-left mt-4 ">
+                    <button onclick="window.location.reload();" class="btn btn-primary px-5"  style="border-radius: 10px;width:100%;">
+                       Refresh
+                    </button>
+                </div>
+        </div>
+   </div>
 
         <h3 class="mb-4 mt-4 text-primary font-weight-bold">5. UPLOADED REQUIREMENTS & USER BIDS:</h3>
 
@@ -565,13 +582,13 @@ input:checked + .slider:before {
                 </div>
 
             </div>
-          <button
-    id="delAllReq"
-    onclick="delReq('delAll')"
-    class="btn btn-danger "
-    style="width: 100%; margin-top: 1rem;">
-    Delete All Requirements
-        </button>
+<!--          <button-->
+<!--    id="delAllReq"-->
+<!--    onclick="delReq('delAll')"-->
+<!--    class="btn btn-danger "-->
+<!--    style="width: 100%; margin-top: 1rem;">-->
+<!--    Delete All Requirements-->
+<!--        </button>-->
 
         </div>
 
@@ -594,19 +611,51 @@ input:checked + .slider:before {
 
 </div>
 
-            <div style="text-align:right">
-                <form method="POST" action="{% url 'delete_all_bids' %}"
-                          onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger w-50 mt-3 mb-0">
-                            Delete All Bids
-                        </button>
-                    </form>
+<!--            <div style="text-align:right">-->
+<!--                <form method="POST" action="{% url 'delete_all_bids' %}"-->
+<!--                          onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
+<!--                        {% csrf_token %}-->
+<!--                        <button id="del_bids_btn" type="submit"  style="display:none">-->
+<!--                            Delete All Bids-->
+<!--                        </button>-->
+<!--                    </form>-->
 
 
-            </div>
+<!--            </div>-->
 
-       <div class="container mt-4 mb-4">
+<!--    <div class="d-flex justify-content-end">-->
+<!--      <form method="POST" action="{% url 'delete_all_bids' %}"-->
+<!--            onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
+<!--          {% csrf_token %}-->
+<!--          <button id="del_bids_btn" type="submit" class="btn btn-danger mt-3 mb-0" style="display:none;">-->
+<!--              Delete All Bids-->
+<!--          </button>-->
+<!--      </form>-->
+<!--    </div>-->
+
+
+<div class="row">
+  <div class="col-md-6  text-white p-3">
+      <button id="delAllReq" onclick="delReq('delAll')" class="btn btn-danger "
+              style="width: 100%; margin-top: 1rem;display:none;">Delete All Requirements
+        </button>
+
+  </div>
+  <div class="col-md-6 text-white p-3">
+      <form method="POST" action="{% url 'delete_all_bids' %}"
+            onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">
+          {% csrf_token %}
+          <button id="del_bids_btn" type="submit" class="btn btn-danger  mb-0" style="display:none; width: 100%; margin-top: 1rem;">
+              Delete All Bids
+          </button>
+      </form>
+
+  </div>
+</div>
+
+
+
+       <div  id ="download_bids_div" class="container mt-4 mb-4" style="display:none">
             <a  href="{% url 'download_requirements' %}" class="btn btn-primary w-100 ">
                 Download Bid Report
             </a>
@@ -618,14 +667,19 @@ input:checked + .slider:before {
 
 
 
-
-
 <script>
+    const req_len="{{requirements|length}}";
+    if(req_len>0){
+    let delAllReq=document.getElementById("delAllReq");
+    delAllReq.style.display="block";
+    }
+
     const user = "{{ user.username }}";
 <!--    const socket = new WebSocket("ws://127.0.0.1:8000/ws/chat/room1/");-->
 let wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
 const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room1/`);
     const bidGroups = {}; // Store grouped bids
+    console.log("bidGroups:",bidGroups);
 
     socket.onmessage = function (e) {
         const data = JSON.parse(e.data);
@@ -676,21 +730,62 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
     }
 
      if (data.type === 'timer_update' && data.auction_started === false) {
-<!--    console.log("Update Timer:", data.minutes);-->
-<!--    console.log("Auction Status:",  data.auction_started);-->
+
 
     let timer = document.getElementById("start_status");
     timer.innerText = `Auction will start in: ${data.minutes}`;
 
-<!--    console.log("Auction Status:", data.auction_started);-->
+let current_time_div = document.getElementById("current_time_div");
+  current_time_div.innerHTML = `
+    <span style="color:#262729; font-weight:400;">CURRENT TIME:</span><br>
+    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.clt}</span>
+  `;
+
+ let start_time_div = document.getElementById("start_time_div");
+  start_time_div.innerHTML = `
+    <span style="color:#262729; font-weight:400;">AUCTION START TIME:</span><br>
+    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
+  `;
+
+
+ let end_time_div = document.getElementById("end_time_div");
+  end_time_div.innerHTML = `
+    <span style="color:#262729; font-weight:400;">AUCTION END TIME:</span><br>
+    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
+  `;
+
+
+
+
 }
 
     else if (data.type === 'timer_update' && data.auction_started === true) {
-<!--    console.log("Update Timer:", data.minutes);-->
-<!--    console.log("Auction Status:",  data.auction_started);-->
+
 
    let timer = document.getElementById("start_status");
   timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;
+
+
+let current_time_div = document.getElementById("current_time_div");
+  current_time_div.innerHTML = `
+    <span style="color:#262729; font-weight:400;">CURRENT TIME:</span><br>
+    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.clt}</span>
+  `;
+
+ let start_time_div = document.getElementById("start_time_div");
+  start_time_div.innerHTML = `
+    <span style="color:#262729; font-weight:400;">AUCTION START TIME:</span><br>
+    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
+  `;
+
+
+ let end_time_div = document.getElementById("end_time_div");
+  end_time_div.innerHTML = `
+    <span style="color:#262729; font-weight:400;">AUCTION END TIME:</span><br>
+    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
+  `;
+
+
 
 <!--    console.log("Auction Status:", data.auction_started);-->
 }
@@ -714,13 +809,20 @@ else   {
             }
 
             if (!bidGroups[reqId].bidders[bidder]) {
+            console.log("Bid is not present");
                 bidGroups[reqId].bidders[bidder] = [];
             }
 
             bidGroups[reqId].bidders[bidder].push(bidRate);
+             console.log("Bid is present");
+
             renderBids();
         }
 
+ if (data.type === "bid_report_graph") {
+        document.getElementById("bidGraph").src =
+            "data:image/png;base64," + data.graph;
+    }
        if (data.type === "normal_user") {
 <!--    console.log("These are normal users who can see the requirements:", data.users);-->
 
@@ -755,6 +857,15 @@ function renderBids() {
         // Find the matching bid div
         const bidDiv = document.getElementById(`bid-card-${req.id}`);
         if (!bidDiv) return; // No matching requirement
+        let del_bid_btn=document.getElementById("del_bids_btn");
+        del_bid_btn.style.display="block";
+        let download_bid_div=document.getElementById("download_bids_div");
+        download_bid_div.style.display="block";
+
+
+<!--        del_bid_btn.classList.add("btn", "btn-danger", "align-right","w-50", "mt-3", "mb-0");-->
+
+<!--        del_bid_btn.className="btn btn-danger w-50 mt-3 mb-0";-->
 
         // Start fresh
         bidDiv.innerHTML = `
@@ -867,7 +978,7 @@ function renderBids() {
                     })
                     .then(res => res.text())
                     .then(data => {
-                        console.log("Deleted response:", data);
+<!--                        console.log("Deleted response:", data);-->
                         // Optionally remove the DOM element or reload
                         location.reload(); // or dynamically remove the element
 
@@ -898,7 +1009,7 @@ function renderBids() {
         .then(res => res.json())
         .then(data => {
         document.getElementById("loading_point").value=data.loading_point;
-            console.log("Edited :", data);
+<!--            console.log("Edited :", data);-->
             // Optionally remove the DOM element or reload
             location.reload(); // or dynamically remove the element
 

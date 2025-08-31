@@ -312,7 +312,7 @@ def admin_dashboard(request):
         selected_usernames = request.POST.getlist("user")
         general_access = request.POST.getlist("access")
         use_cel = request.POST.getlist("use_cel")
-        print("use_cel from view:",use_cel)
+        # print("use_cel from view:",use_cel)
         # print("General Access  of select field:", general_access)
         if general_access and general_access[0]=="yes":
             '''This is for general singleton GeneralAccess instance'''

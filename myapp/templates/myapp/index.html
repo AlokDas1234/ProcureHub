@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+   <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
     <title>Requirements & Bids</title>
     <style>
         body {
@@ -128,6 +130,7 @@
         <h3 id="current_time_div" style="text-align:left;"></h3>
         <h3 id="start_time_div" style="text-align:left;"></h3>
         <h3 id="end_time_div" style="text-align:left;"></h3>
+        <h3 id="total_req_div" style="text-align:left;"></h3>
 
             <div id="refresh-container" style="text-align:center;">
               <button id="refreshBtn" style="width:30%;">Refresh</button>
@@ -148,6 +151,9 @@
     let allGroupedBids = {};
     let latestUserRanks = [];
     let userBids = [];   // ✅ declare here
+<!--    console.log("allGroupedBids:",allGroupedBids);-->
+<!--    console.log("latestUserRanks:",latestUserRanks);-->
+<!--    console.log("userBids:",userBids);-->
 
 <!--    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/room1/`);-->
 let wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
@@ -249,6 +255,9 @@ let current_time_div = document.getElementById("current_time_div");
 
 
 
+
+
+
     // Convert HH:MM:SS to seconds
     function parseTimeToSeconds(timeStr) {
         const parts = timeStr.split(':').map(Number);
@@ -297,6 +306,37 @@ else if (data.type === 'timer_update' && data.auction_started === false) {
      if(data.seconds===0){
     window.location.reload();
                }
+
+
+  let auction_status = document.getElementById("auction_status");
+ auction_status.innerHTML = `
+    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>
+    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Will Start Soon....!</span>
+  `;
+
+
+let current_time_div = document.getElementById("current_time_div");
+  current_time_div.innerHTML = `
+    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>
+    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>
+  `;
+
+ let start_time_div = document.getElementById("start_time_div");
+  start_time_div.innerHTML = `
+    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>
+    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>
+  `;
+
+
+ let end_time_div = document.getElementById("end_time_div");
+  end_time_div.innerHTML = `
+    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>
+    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>
+  `;
+
+
+
+
 }
 else  {
 <!--        console.log("Auction Ended");-->
@@ -307,7 +347,13 @@ else  {
 }
 
         if (data.type === 'requirements') {
-        console.log("Auction Start Status:", data.auction_start_status);
+
+        let total_req_div = document.getElementById("total_req_div");
+         total_req_div.innerHTML = `
+        <span style="color:#007BFF;font-size:1.3em; font-weight:500;">Total Requirements:</span><br>
+        <span style="color:#FAFAFA; font-size:1.3em; font-weight:600;">${data.data.length}</span>`;
+
+<!--        console.log("Auction Start Status:", data.auction_start_status);-->
             renderRequirements(data.data,data.auction_start_status);
         }
 
@@ -336,6 +382,7 @@ else  {
 
 
  function renderRequirements(requirements,auction_start_status) {
+
 
 <!--        console.log("requirements:", requirements);-->
 
