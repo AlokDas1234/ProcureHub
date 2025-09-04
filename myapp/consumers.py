@@ -65,7 +65,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'bid_group_data': bid_group_data
                 }))
 
-
             if  self.scope['user'].is_superuser:
                 '''Only admin is subscribed to this channel'''
                 bid_data = await self.get_all_bid_data()
@@ -97,15 +96,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 #     "type": "report",
                 #     "report": ""
                 # }))
-                if self.scope['user'].is_superuser:
-                    image_base64 = await self.get_bid_report_plot()
-                    await self.channel_layer.group_send(
-                       self.room_group_name,
-                        {
-                            "type": "send_bid_graph",
-                            "graph": image_base64
-                        }
-                    )
+
+                # if self.scope['user'].is_superuser:
+                #     image_base64 = await self.get_bid_report_plot()
+                #     await self.channel_layer.group_send(
+                #        self.room_group_name,
+                #         {
+                #             "type": "send_bid_graph",
+                #             "graph": image_base64
+                #         }
+                #     )
 
             @sync_to_async
             def req_view_access(user):
@@ -409,14 +409,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'message': 'You can only place up to 5 bids for the same requirement or auction ended.'
                 }))
 
-            image_base64 = await self.get_bid_report_plot()
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "send_bid_graph",
-                    "graph": image_base64
-                }
-            )
+            # image_base64 = await self.get_bid_report_plot()
+            # await self.channel_layer.group_send(
+            #     self.room_group_name,
+            #     {
+            #         "type": "send_bid_graph",
+            #         "graph": image_base64
+            #     }
+            # )
 
     async def time_calculation(self, general_access, minutes, start_time):
 
