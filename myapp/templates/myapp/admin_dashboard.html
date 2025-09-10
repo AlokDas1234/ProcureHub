@@ -131,6 +131,37 @@
 }
 
 
+.toggle-btn-dec {
+    flex: 1;
+    padding: 10px 30px;
+    border: none;
+    background: transparent;
+    color: #555;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn-dec.active.yes {
+    background: #1a8276;
+    color: white;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+}
+
+.toggle-btn-dec.active.no {
+    background: #dc3545;
+    color: white;
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.6);
+}
+
+.toggle-btn-dec:not(.active) {
+    opacity: 0.6;
+}
+
+
+
+
 </style>
     <style>
 .switch {
@@ -422,15 +453,21 @@ input:checked + .slider:before {
 
          <h5 class="mb-3">4.Use Ceiling Price</h5>
         <div class="access-toggle mb-4">
-            <button type="button" class="toggle-btn-cel no" data-value="no">NO</button>
-            <button type="button" class="toggle-btn-cel yes active" data-value="yes">YES</button>
+            <button type="button" class="toggle-btn-cel no active" data-value="no">NO</button>
+            <button type="button" class="toggle-btn-cel yes " data-value="yes">YES</button>
         </div>
-        <input type="hidden" name="use_cel" id="useCelPrice" value="yes">
+        <input type="hidden" name="use_cel" id="useCelPrice" value="no">
+
+        <h5 class="mb-3">5.Decremental Value Visibility</h5>
+        <div class="access-toggle mb-4">
+            <button type="button" class="toggle-btn-dec no active" data-value="no">NO</button>
+            <button type="button" class="toggle-btn-dec yes " data-value="yes">YES</button>
+        </div>
+        <input type="hidden" name="dec_val_vi" id="decValVisibility" value="no">
 
 
 
-
-        <h5 class="mb-3">5. Individual User Access</h5>
+        <h5 class="mb-3">6. Individual User Access</h5>
         <div class="form-group">
             <label for="user">Select Users:</label>
             <select id="userDropdown" name="user" multiple class="selectpicker"
@@ -642,7 +679,7 @@ input:checked + .slider:before {
   <div class="col-md-6  text-white p-3">
       <button id="delAllReq" onclick="delReq('delAll')" class="btn btn-danger "
               style="width: 100%; margin-top: 1rem;display:none;">Delete All Requirements
-        </button>
+      </button>
 
   </div>
   <div class="col-md-6 text-white p-3">
@@ -1133,6 +1170,15 @@ document.querySelectorAll(".toggle-btn").forEach(btn => {
         document.getElementById("useCelPrice").value = this.dataset.value;
     });
 });
+
+    document.querySelectorAll(".toggle-btn-dec").forEach(btn => {
+    btn.addEventListener("click", function() {
+        document.querySelectorAll(".toggle-btn-dec").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+        document.getElementById("decValVisibility").value = this.dataset.value;
+    });
+});
+
 </script>
 
 

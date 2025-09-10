@@ -179,25 +179,119 @@ def download_template(request):
 
 import pandas as pd
 from django.http import HttpResponse
+# @login_required(login_url='/login/')
+# def download_requirements(request):
+#     all_bids = Bid.objects.all().values(
+#         "id", "user__username", "req__id", "req__loading_point","req__unloading_point","req__product","req__truck_type", "rate", "created_at"
+#     )
+#     rank_df = pd.DataFrame(list(all_bids))  # ✅ now it's
+#     # Pick the lowest rate per user per requirement
+#     lowest_bids = rank_df.sort_values("rate").groupby(
+#         ["req__id", "user__username"], as_index=False
+#     ).first()
+#     # Rank them within each requirement
+#     lowest_bids["Rank"] = lowest_bids.groupby("req__id")["rate"].rank(
+#         ascending=True, method="dense"
+#     )
+#     # Keep only ranks 1 to 4
+#     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
+#     # Generate CSV in memory instead of saving file on server
+#     response = HttpResponse(content_type='text/csv')
+#     response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
+#     rank_df.to_csv(path_or_buf=response, index=False)
+#     return response
 
 @login_required(login_url='/login/')
 def download_requirements(request):
+
     all_bids = Bid.objects.all().values(
-        "id", "user__username", "req__id", "req__loading_point","req__unloading_point","req__product","req__truck_type", "rate", "created_at"
+        "id", "user__username", "req__id",
+        "req__loading_point", "req__unloading_point",
+        "req__product", "req__truck_type",
+        "rate", "created_at"
     )
-    rank_df = pd.DataFrame(list(all_bids))  # ✅ now it's
-    # Pick the lowest rate per user per requirement
-    lowest_bids = rank_df.sort_values("rate").groupby(
+    rank_df = pd.DataFrame(list(all_bids))
+
+    # make sure created_at is datetime
+    rank_df["created_at"] = pd.to_datetime(rank_df["created_at"])
+
+    # Pick the lowest rate per user per requirement, tie-break by earliest created_at
+    lowest_bids = rank_df.sort_values(["req__id", "rate", "created_at"]).groupby(
         ["req__id", "user__username"], as_index=False
     ).first()
-    # Rank them within each requirement
-    lowest_bids["Rank"] = lowest_bids.groupby("req__id")["rate"].rank(
-        ascending=True, method="dense"
-    )
+
+    # Rank them within each requirement (rate first, created_at as tiebreaker)
+    lowest_bids = lowest_bids.sort_values(["req__id", "rate", "created_at"])
+    lowest_bids["Rank"] = lowest_bids.groupby("req__id").cumcount() + 1
 
     # Keep only ranks 1 to 4
     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
-    # Generate CSV in memory instead of saving file on server
+
+
+    # Generate CSV response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
+    rank_df.to_csv(path_or_buf=response, index=False)
+    return response
+#
+# @login_required(login_url='/login/')
+# def get_bid_report(request):
+#     user=request.user.username
+#     # user_id=User.objects.get(username=user)
+#     all_bids = Bid.objects.all().values(
+#         "id", "user__username", "req__id", "req__loading_point","req__unloading_point","req__product","req__truck_type", "rate", "created_at"
+#     )
+#     rank_df = pd.DataFrame(list(all_bids))  # ✅ now it's
+#     # Pick the lowest rate per user per requirement
+#     lowest_bids = rank_df.sort_values("rate").groupby(
+#         ["req__id", "user__username"], as_index=False
+#     ).first()
+#     # Rank them within each requirement
+#     lowest_bids["Rank"] = lowest_bids.groupby("req__id")["rate"].rank(
+#         ascending=True, method="dense"
+#     )
+#     # Keep only ranks 1 to 4
+#     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
+#     print("Rank_df before:", rank_df)
+#     rank_df=rank_df[rank_df["user__username"]==user]
+#     print("Rank_df after:",rank_df)
+#     # Generate CSV in memory instead of saving file on server
+#     response = HttpResponse(content_type='text/csv')
+#     response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
+#     rank_df.to_csv(path_or_buf=response, index=False)
+#     return response
+
+@login_required(login_url='/login/')
+def get_bid_report(request):
+    user = request.user.username
+
+    all_bids = Bid.objects.all().values(
+        "id", "user__username", "req__id",
+        "req__loading_point", "req__unloading_point",
+        "req__product", "req__truck_type",
+        "rate", "created_at"
+    )
+    rank_df = pd.DataFrame(list(all_bids))
+
+    # make sure created_at is datetime
+    rank_df["created_at"] = pd.to_datetime(rank_df["created_at"])
+
+    # Pick the lowest rate per user per requirement, tie-break by earliest created_at
+    lowest_bids = rank_df.sort_values(["req__id", "rate", "created_at"]).groupby(
+        ["req__id", "user__username"], as_index=False
+    ).first()
+
+    # Rank them within each requirement (rate first, created_at as tiebreaker)
+    lowest_bids = lowest_bids.sort_values(["req__id", "rate", "created_at"])
+    lowest_bids["Rank"] = lowest_bids.groupby("req__id").cumcount() + 1
+
+    # Keep only ranks 1 to 4
+    rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
+
+    # Filter for this user only
+    rank_df = rank_df[rank_df["user__username"] == user]
+
+    # Generate CSV response
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
     rank_df.to_csv(path_or_buf=response, index=False)
@@ -312,6 +406,8 @@ def admin_dashboard(request):
         selected_usernames = request.POST.getlist("user")
         general_access = request.POST.getlist("access")
         use_cel = request.POST.getlist("use_cel")
+        dec_val_vi = request.POST.getlist("dec_val_vi")
+        print("Decrement Value Visibility:", dec_val_vi)
         # print("use_cel from view:",use_cel)
         # print("General Access  of select field:", general_access)
         if general_access and general_access[0]=="yes":
@@ -324,9 +420,9 @@ def admin_dashboard(request):
             access.general_access =False
             access.save()
         else:
-
             print("No access option selected")
 
+        """For Ceiling Price"""
         if general_access and use_cel[0]== "yes":
             '''This is for general singleton GeneralAccess instance'''
             access, _ = GeneralAccess.objects.get_or_create(id=1)
@@ -338,6 +434,20 @@ def admin_dashboard(request):
             access.save()
         else:
             print("No access option selected for ceiling price")
+
+        """For Decremental Val Visibility"""
+        if general_access and dec_val_vi[0] == "yes":
+            '''This is for general singleton GeneralAccess instance'''
+            access, _ = GeneralAccess.objects.get_or_create(id=1)
+            access.dec_val_vi = True
+            access.save()
+        elif general_access and dec_val_vi[0] == "no":
+            access, _ = GeneralAccess.objects.get_or_create(id=1)
+            access.dec_val_vi = False
+            access.save()
+        else:
+            print("No access option selected for ceiling price")
+
 
         # access, _ = GeneralAccess.objects.get_or_create(id=1)
         # access.minutes = minute

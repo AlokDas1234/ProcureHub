@@ -1,4 +1,6 @@
 import asyncio
+
+from django.http import HttpResponse
 from django.utils.timezone import localtime
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -15,7 +17,6 @@ import pandas as pd
 
 class ChatConsumer(AsyncWebsocketConsumer):
     auction_end_status = False
-
     async def connect(self):
         # print("Connecting WebSocket...")
         if self.scope['user'].is_authenticated:
@@ -41,11 +42,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await self.close()
             """Timer Access end"""
 
-            general_access, minutes, start_time,g_access,use_cel= await self.get_general_access()
+            general_access, minutes, start_time,g_access,use_cel,dec_val_vi= await self.get_general_access()
             clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
 
             auction_start = True
-
             if clt <= start_time:
                 '''Auction not started'''
                 # print("Auction Not Started")
@@ -57,17 +57,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # print("Auction Ended")
                 auction_end_status = True
 
+
+            """Auction Started"""
             if  auction_start  and auction_end_status == False and  not self.scope['user'].is_superuser :
                 '''Normal users is subscribed to this channel'''
                 bid_group_data = await self.get_all_bid_group(username)
                 await self.send(text_data=json.dumps({
                     'type': 'grouped_bid',
                     'bid_group_data': bid_group_data
+
                 }))
 
             if  self.scope['user'].is_superuser:
                 '''Only admin is subscribed to this channel'''
-                bid_data = await self.get_all_bid_data()
+                bid_data = await self.get_all_bid_data(dec_val_vi)
                 for item in bid_data:
                     await self.channel_layer.group_send(
                         self.room_group_name,
@@ -126,11 +129,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             from django.utils import timezone
             from datetime import datetime
             """If auction ends requirements will not be shows"""
-            general_access, minutes, start_time,g_access,use_cel = await self.get_general_access()
+            general_access, minutes, start_time,g_access,use_cel,dec_val_vi = await self.get_general_access()
             # print("General Access from connect:", general_access)
             # print("General Access minutes from connect:", minutes)
             # print("General Access end_time from connect:", start_time)
-
+            print("Decremental Value:", dec_val_vi)
             clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
 
             auction_start = True
@@ -147,6 +150,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 self.timer_task = asyncio.create_task(self.send_remaining_time())
                 reqs = await sync_to_async(get_all_requirements)()
+                print("dec_val_vi:", dec_val_vi)
+                if not dec_val_vi:
+                    print("not dec val visibility executed 1")
+                    for r in reqs:  # loop through all requirements
+                        r['min_dec_val'] = 0
+                    # reqs[0].update({'min_dec_val': 0})
+                print("Reqs1:",reqs)
 
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -169,7 +179,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     # print("General Access minutes: ", minutes)
                     # print("General Access end_time: ", end_time)
                     reqs = await sync_to_async(get_all_requirements)()
-
+                    print("dec_val_vi2:", dec_val_vi)
+                    if  not dec_val_vi:
+                        print("not dec val visibility executed 2")
+                        for r in reqs:  # loop through all requirements
+                            r['min_dec_val'] = 0
+                        print("Reqs2 inside if:", reqs)
+                    print("Reqs2:",reqs)
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
@@ -190,8 +206,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         print("Cancelled timer task")
                 # print("Auction Ended")
 
-
-
         else:
             await self.send(text_data=json.dumps({"message": "Login"}))
 
@@ -202,18 +216,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         user = self.scope['user']
 
-
-
-
-
-
         if text_data_json.get("type") == "submit_bid":
             req_id = text_data_json.get("req_id")
             bid_amt = text_data_json.get("bid_amt")
 
             requirement = await sync_to_async(Requirements.objects.get)(id=req_id)
 
-            general_access, minutes, start_time,g_access,use_cel = await self.get_general_access()
+            general_access, minutes, start_time,g_access,use_cel,dec_val_vi = await self.get_general_access()
             clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
             existing_bids = await sync_to_async(
                 Bid.objects.filter(user=user, req=requirement).count
@@ -227,7 +236,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await sync_to_async(g_access.save)()
                 # GeneralAccess.save()
 
-                general_access, minutes, start_time,g_access,use_cel = await self.get_general_access()
+                general_access, minutes, start_time,g_access,use_cel,dec_val_vi= await self.get_general_access()
                 clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
 
             auction_end_status = False
@@ -273,7 +282,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 
-            '''This is for getting taking the lowest bid price than the previous one'''
+            '''This is for getting  the lowest bid price than the previous one'''
             valid_bid = True
             for rate in user_bid:
                 # print("Submitted Rate", rate.rate)
@@ -302,12 +311,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         # print("decremental_value inside loop:", decremental_value)
                         # print("Bid Amount:", int(bid_amt))
 
-                        valid_bid_dec_val = False
-                        await self.send(text_data=json.dumps({
-                            'type': 'valid_bid',
-                            'valid_bid': "Enter amount lower than the minimal decremental value {}".format(
-                                req_.min_dec_val),
-                        }))
+                        if dec_val_vi:
+                            valid_bid_dec_val = False
+                            await self.send(text_data=json.dumps({
+                                'type': 'valid_bid',
+                                'valid_bid': "Enter amount lower than the minimal decremental value {}".format(
+                                    req_.min_dec_val),
+                            }))
+                        if not dec_val_vi:
+                            valid_bid_dec_val = False
+                            await self.send(text_data=json.dumps({
+                                'type': 'valid_bid',
+                                'valid_bid': "Decrease the bidding price more to compete",
+                            }))
                 # print("Valid Bid dec status:", valid_bid_dec_val)
                 # print("Last_Bid:", last_bid)
 
@@ -351,7 +367,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     rate=bid_amt
                 )
 
-
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
@@ -360,7 +375,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 )
 
                 reqs=await self. get_all_requirements()
+                print("dec_val_vi3:", dec_val_vi)
+                if not dec_val_vi:
+                    # reqs[0].update({'min_dec_val': 0})
+                    for r in reqs:  # loop through all requirements
+                        r['min_dec_val'] = 0
                 auction_start=True
+                print("reqs3:",reqs)
 
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -369,7 +390,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'requirements': reqs,
                         'len_reqs': len(reqs),
                         "auction_start_status": auction_start,
-
                     }
                 )
 
@@ -417,6 +437,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
             #         "graph": image_base64
             #     }
             # )
+
+
+
+
 
     async def time_calculation(self, general_access, minutes, start_time):
 
@@ -483,6 +507,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
             'drum_type_no_of_drums', 'weight_per_drum','approx_mat_mt', 'types', 'cel_price','min_dec_val'
         ))
+
+    # @sync_to_async
+    # def get_requirements_except_min_dec_val(self):
+    #     return list(Requirements.objects.all().values(
+    #         'id', 'loading_point', 'unloading_point', 'loading_point_full_address',
+    #         'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
+    #         'drum_type_no_of_drums', 'weight_per_drum', 'approx_mat_mt', 'types', 'cel_price'
+    #     ))
 
 
     @sync_to_async
@@ -601,12 +633,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_general_access(self):
         try:
             general_access = GeneralAccess.objects.get(pk=1)
-            return general_access.general_access, general_access.minutes, general_access.start_time,general_access,general_access.use_cel
+            return general_access.general_access, general_access.minutes, general_access.start_time,general_access,general_access.use_cel,general_access.dec_val_vi
         except Exception as e:
             print("General Access Exception:", e)
 
     @sync_to_async
-    def get_all_bid_data(self):
+    def get_all_bid_data(self,dec_val_vi):
         result = []
         requirements = Requirements.objects.prefetch_related('bid_req__user')
         for req in requirements:
@@ -640,9 +672,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_all_bid_group(self, username):
         from django.contrib.auth.models import User
         user = User.objects.get(username=username)
-
         # Build rows for all bids (any user), then compute ranks per user per req
         bids = Bid.objects.select_related("user", "req").all().order_by("req__id", "rate", "created_at")
+        len_bids=len(bids)
 
         rows = []
         for b in bids:
@@ -652,11 +684,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "bid_rate": b.rate,  # rate
                 "bid_time": b.created_at,  # timestamp
             })
-
         if rows:
             import pandas as pd
             df = pd.DataFrame(rows)
-
             # --- Step 1: each (req, user) keeps only their BEST bid ---
             # Best = lowest rate; if tie on rate for same user, earlier time wins
             best_per_user = (
@@ -690,7 +720,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         '''
         return {
             "bids": my_bids,  # these are ONLY this user's bids
-            "user_ranks": user_ranks  # one unique rank per req for this user
+            "user_ranks": user_ranks,  # one unique rank per req for this user
+            "len_bids":len_bids
         }
 
     async def timer_update(self, event):
@@ -724,7 +755,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # print("Has_access:",has_access)
         if has_access:
             while True:
-                general_access, minutes, start_time,g_access,use_cel = await self.get_general_access()
+                general_access, minutes, start_time,g_access,use_cel,dec_val_vi = await self.get_general_access()
                 """From get_general_access to time_calculation """
                 # print("start_time:",start_time)
 

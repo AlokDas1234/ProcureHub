@@ -57,6 +57,7 @@ class GeneralAccess(models.Model):
     minutes = models.IntegerField(default=0)
     start_time = models.DateTimeField(null=True, blank=True)
     use_cel = models.BooleanField(default=True,null=True,blank=True)
+    dec_val_vi = models.BooleanField(default=True,null=True,blank=True)
 
     def __str__(self):
         return f"{self.general_access,self.minutes,self.start_time}"

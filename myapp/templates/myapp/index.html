@@ -140,6 +140,14 @@
 
 <div id="main-container" class="container"></div>
 
+<!--<a href="{% url 'get_bid_report' %}">Download Bid Report</a>-->
+
+<div id="download_bids_div" class="container mt-4 mb-4 d-flex justify-content-center" style="display:none">
+    <a href="{% url 'get_bid_report' %}" class="btn btn-primary w-100" style="max-width:300px;">
+        Download Bid Report
+    </a>
+</div>
+
 
 
 <script>
@@ -373,10 +381,19 @@ else  {
 
            if (data.type === "grouped_bid") {
                     latestUserRanks = data.bid_group_data.user_ranks; // user’s best ranks
+                    len_bids = data.bid_group_data.len_bids; // total no of bids
+                    console.log("len_bids:",len_bids);
+
                     userBids = data.bid_group_data.bids; // only this user’s bids
 <!--                    console.log("latestUserRanks:",latestUserRanks);-->
 <!--                    console.log("userBids:",userBids);-->
                     updateBids();
+
+                    if (len_bids>0){
+                    let download_bids_div=document.getElementById("download_bids_div");
+                    download_bids_div.style.display="block";
+
+                    }
                 }
         };
 
@@ -384,14 +401,12 @@ else  {
  function renderRequirements(requirements,auction_start_status) {
 
 
+
 <!--        console.log("requirements:", requirements);-->
 
         const container = document.getElementById('main-container');
 <!--        const container = document.getElementById('main-container');-->
-        container.innerHTML = `
-
-
-        `;
+        container.innerHTML = ` `;
 
         requirements.forEach((req, index) => {  // <-- index is here
             const row = document.createElement('div');
@@ -588,6 +603,8 @@ else  {
 <!--        });-->
 <!--    }-->
 function updateBids() {
+
+
     // Group this user’s bids by requirement
     const bidsByReq = {};
     userBids.forEach(bid => {
