@@ -703,7 +703,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             user_ranks = me.to_dict(orient="records")
         else:
             user_ranks = []
-
         # Return ONLY this user's own bids (if you want to show their own history)
         my_bids_qs = (
             Bid.objects.filter(user=user)

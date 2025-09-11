@@ -48,9 +48,9 @@ class UserAccess(models.Model):
     requirement_from_access = models.OneToOneField(Requirements, on_delete=models.CASCADE,null=True,blank=True)
     can_view_requirements = models.BooleanField(default=False)
 
-
     def __str__(self):
         return f"{self.user.username} access: {self.can_view_requirements}"
+
 
 class GeneralAccess(models.Model):
     general_access=models.BooleanField(default=False)

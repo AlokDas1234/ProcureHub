@@ -205,9 +205,14 @@ from django.http import HttpResponse
 def download_requirements(request):
 
     all_bids = Bid.objects.all().values(
+        # "id", "user__username", "req__id",
+        # "req__loading_point", "req__unloading_point",
+        # "req__product", "req__truck_type",
+        # "rate", "created_at"
         "id", "user__username", "req__id",
         "req__loading_point", "req__unloading_point",
-        "req__product", "req__truck_type",
+        "req__product", "req__truck_type", "req__no_of_trucks", "req__notes", "req__drum_type_no_of_drums",
+        "req__approx_mat_mt", "req__weight_per_drum",
         "rate", "created_at"
     )
     rank_df = pd.DataFrame(list(all_bids))
@@ -226,7 +231,6 @@ def download_requirements(request):
 
     # Keep only ranks 1 to 4
     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
-
 
     # Generate CSV response
     response = HttpResponse(content_type='text/csv')
@@ -268,7 +272,7 @@ def get_bid_report(request):
     all_bids = Bid.objects.all().values(
         "id", "user__username", "req__id",
         "req__loading_point", "req__unloading_point",
-        "req__product", "req__truck_type",
+        "req__product", "req__truck_type","req__no_of_trucks","req__notes","req__drum_type_no_of_drums","req__approx_mat_mt","req__weight_per_drum",
         "rate", "created_at"
     )
     rank_df = pd.DataFrame(list(all_bids))
