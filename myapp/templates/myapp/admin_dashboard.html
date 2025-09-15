@@ -482,6 +482,11 @@ input:checked + .slider:before {
             </button>
         </div>
 
+
+    </form>
+    <form method="POST" action="{% url 'extend_page' %}">
+         <label for="name">Extend</label>
+        <input type="number" name="extend" id="extendInput" >
     </form>
 
                 </div>
@@ -720,7 +725,7 @@ input:checked + .slider:before {
 let wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
 const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room1/`);
     const bidGroups = {}; // Store grouped bids
-    console.log("bidGroups:",bidGroups);
+<!--    console.log("bidGroups:",bidGroups);-->
 
     socket.onmessage = function (e) {
         const data = JSON.parse(e.data);
@@ -850,12 +855,12 @@ else   {
             }
 
             if (!bidGroups[reqId].bidders[bidder]) {
-            console.log("Bid is not present");
+<!--            console.log("Bid is not present");-->
                 bidGroups[reqId].bidders[bidder] = [];
             }
 
             bidGroups[reqId].bidders[bidder].push(bidRate);
-             console.log("Bid is present");
+<!--             console.log("Bid is present");-->
 
             renderBids();
         }

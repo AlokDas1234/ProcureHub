@@ -25,5 +25,6 @@ urlpatterns = [
     path('download-requirements/', views.download_requirements, name='download_requirements'),
     path("delete_all_bids/", views.delete_all_bids, name="delete_all_bids"),
     path("get_bid_report/", views.get_bid_report, name="get_bid_report"),
+    path("extend_page/", views.extend_page, name="extend_page"),
 
 ]

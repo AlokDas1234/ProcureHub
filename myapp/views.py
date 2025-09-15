@@ -399,7 +399,6 @@ def admin_dashboard(request):
             india_tz = pytz.timezone('Asia/Kolkata')
             start_time = india_tz.localize(start_time)
 
-
             # Store only the time part in the DB
             access, _ = GeneralAccess.objects.get_or_create(id=1)
             access.minutes = minute
@@ -411,7 +410,7 @@ def admin_dashboard(request):
         general_access = request.POST.getlist("access")
         use_cel = request.POST.getlist("use_cel")
         dec_val_vi = request.POST.getlist("dec_val_vi")
-        print("Decrement Value Visibility:", dec_val_vi)
+        # print("Decrement Value Visibility:", dec_val_vi)
         # print("use_cel from view:",use_cel)
         # print("General Access  of select field:", general_access)
         if general_access and general_access[0]=="yes":
@@ -466,7 +465,6 @@ def admin_dashboard(request):
                 user_access, _ = UserAccess.objects.get_or_create(user=user)
                 if user.username in selected_usernames:
                     user_access.can_view_requirements = True
-
                 else:
                     user_access.can_view_requirements = False
                 user_access.save()
@@ -489,10 +487,13 @@ def admin_dashboard(request):
 
             # return JsonResponse({"success": True})
             return redirect("/")
-
         except Exception as e:
             # return JsonResponse({"success": False, "message": str(e)})
             return render(request, "myapp/admin_dashboard.html")
     # On GET: send non-superusers to the template
     # users = User.objects.filter(is_superuser=False,is_staff=False)
     return render(request, "myapp/admin_dashboard.html")
+
+
+def extend_page():
+    return None

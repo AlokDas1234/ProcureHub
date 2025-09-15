@@ -219,6 +219,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if text_data_json.get("type") == "submit_bid":
             req_id = text_data_json.get("req_id")
             bid_amt = text_data_json.get("bid_amt")
+            valid_bid = True
+            if float(bid_amt) <= 0:  # Reject 0 and negative values
+                valid_bid = False
+                await self.send(text_data=json.dumps({
+                    'type': 'valid_bid',
+                    'valid_bid': "0 and negative values are not accepted"
+                }))
+                return  #  VERY IMPORTANT — stop executing the rest of the function
 
             requirement = await sync_to_async(Requirements.objects.get)(id=req_id)
 
@@ -227,7 +235,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             existing_bids = await sync_to_async(
                 Bid.objects.filter(user=user, req=requirement).count
             )()
-
 
             last_minute = timedelta(minutes=1)
             if bid_amt and remaining <= last_minute:
@@ -283,7 +290,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
             '''This is for getting  the lowest bid price than the previous one'''
-            valid_bid = True
+
             for rate in user_bid:
                 # print("Submitted Rate", rate.rate)
                 # print("Submitted Rate Type", type(rate.rate))
@@ -460,8 +467,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 remaining = end_times - clt  # auction running
             else:
                 remaining = timedelta(seconds=0)  # auction ended
-
-
             return clt, start_time, end_times, remaining
 
     async def load_requirements(self, event):
@@ -575,7 +580,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             lowest_bids.groupby("req__id")["rate"]
             .rank(ascending=True, method="dense")
         )
-
         # ---- Keep only top 4 per requirement ----
         rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
 

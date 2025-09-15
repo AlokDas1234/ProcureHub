@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.core.validators import MinValueValidator
 from django.utils import timezone
 # class ChatMessage(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -32,12 +32,20 @@ class Requirements(models.Model):
 
     def __str__(self):
         return f" From {self.loading_point}  to {self.unloading_point} Truck: {self.truck_type} {self.truck_type}  Material:{self.product}"
+from django.core.exceptions import ValidationError
+
+from django.core.exceptions import ValidationError
 
 class Bid(models.Model):
-    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name='bid_user',null=True,blank=True)
-    req= models.ForeignKey(Requirements, on_delete=models.DO_NOTHING,related_name='bid_req',null=True,blank=True)
-    rate=models.FloatField(default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bid_user', null=True, blank=True)
+    req = models.ForeignKey('Requirements', on_delete=models.DO_NOTHING, related_name='bid_req', null=True, blank=True)
+    rate = models.FloatField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if float(self.rate )<= 0:
+            raise ValidationError({"rate": "Rate must be greater than 0."})
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f" Trans: {self.user.username}   {self.req} Bid amt:  {self.rate}"
