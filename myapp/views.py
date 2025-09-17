@@ -349,7 +349,6 @@ def bulk_upload_requirements(request):
             "bulk_upload_exception": bulk_upload_exception,
             "new_requirements": new_requirements
         })
-
     return JsonResponse({"error": "Invalid method"}, status=400)
 
 
@@ -494,6 +493,11 @@ def admin_dashboard(request):
     # users = User.objects.filter(is_superuser=False,is_staff=False)
     return render(request, "myapp/admin_dashboard.html")
 
+def stop_bid(request):
+    access, _ = GeneralAccess.objects.get_or_create(id=1)
+    access.minutes = 0
+    access.save()
+    return redirect("/")
 
 def extend_page():
     return None

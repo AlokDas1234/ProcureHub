@@ -379,13 +379,9 @@ input:checked + .slider:before {
     &nbsp
     &nbsp
     &nbsp
-
-
-
-
-
-<button id="bulk-upload-btn" class="btn btn-primary w-100 mb-2">Bulk Upload</button>
-
+    <div style="text-align:center">
+<button id="bulk-upload-btn" class="btn btn-primary w-50 mb-2">Bulk Upload</button>
+</div>
 </div>
 
 
@@ -476,18 +472,31 @@ input:checked + .slider:before {
             </select>
         </div>
 
-        <div class="container-fluid mt-4">
-            <button class="btn btn-primary px-5" type="submit" style="border-radius: 15px;width:100%;">
-                Grant Access/Post
+        <div class="container-fluid">
+            <div class="row">
+                <div  class="col-md-6   p-1">
+            <button class="btn btn-primary px-5" type="submit" style="border-radius: 8px;width:100%;">
+               Start
             </button>
+                    </div>
+                  </form>
+                  <div  class="col-md-6   p-1">
+                      <form  method="POST" action="{% url 'stop_bid' %}" >
+                             {% csrf_token %}
+
+                         <button class="btn btn-danger px-5"  type="submit" style="border-radius: 8px;width:100%;">
+                            Stop
+                        </button>
+                      </form>
+                        <div>
+                </div>
         </div>
 
-
-    </form>
-    <form method="POST" action="{% url 'extend_page' %}">
-         <label for="name">Extend</label>
-        <input type="number" name="extend" id="extendInput" >
-    </form>
+<!--    </form>-->
+<!--    <form method="POST" action="{% url 'extend_page' %}">-->
+<!--         <label for="name">Extend</label>-->
+<!--        <input type="number" name="extend" id="extendInput" >-->
+<!--    </form>-->
 
                 </div>
 </div>
