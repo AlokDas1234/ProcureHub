@@ -72,16 +72,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 '''Only admin is subscribed to this channel'''
                 bid_data = await self.get_all_bid_data(dec_val_vi)
                 for item in bid_data:
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            'type': 'bids_per_requirement',
-                            'bid_id': item['bid_id'],
-                            'bids_by': item['bid_by'],
-                            'requirement': item['requirement'],
-                            'bid_rate': item['bid_rate']
-                        }
-                    )
+
+                    await self.send(text_data=json.dumps({
+                        'type': 'bids_per_requirement',
+                                'bid_id': item['bid_id'],
+                                'bids_by': item['bid_by'],
+                                'requirement': item['requirement'],
+                                'bid_rate': item['bid_rate']
+                    }))
+
+
 
             if self.scope['user'].is_superuser:
                 '''This is used to get all users except superuser only admins subscribed to this '''
@@ -400,11 +400,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
+                await self.send(text_data=json.dumps({
 
-
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
                         'type': 'bids_per_requirement',
                         'bid_id': bid_instance.id,
                         'bids_by': user.username,
@@ -426,8 +423,35 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'cel_price': requirement.cel_price,
                         },
                         'bid_rate': bid_amt
-                    }
-                )
+
+                }))
+
+                # await self.channel_layer.group_send(
+                #     self.room_group_name,{
+                #
+                #         'type': 'bids_per_requirement',
+                #         'bid_id': bid_instance.id,
+                #         'bids_by': user.username,
+                #         'requirement': {
+                #             'id': requirement.id,
+                #             'loading_point': requirement.loading_point,
+                #             'unloading_point': requirement.unloading_point,
+                #             'loading_point_full_address': requirement.loading_point_full_address,
+                #             'unloading_point_full_address': requirement.unloading_point_full_address,
+                #             'truck_type': requirement.truck_type,
+                #             'no_of_trucks': requirement.no_of_trucks,
+                #             # 'qty': requirement.qty,
+                #             'notes': requirement.notes,
+                #             'drum_type_no_of_drums': requirement.drum_type_no_of_drums,
+                #             'product': requirement.product,
+                #             'weight_per_drum': requirement.weight_per_drum,
+                #             'approx_mat_mt': requirement.approx_mat_mt,
+                #             'types': requirement.types,
+                #             'cel_price': requirement.cel_price,
+                #         },
+                #         'bid_rate': bid_amt
+                #     }
+                # )
 
             else:
                 # ❌ Send error if auction closed or too many bids
@@ -475,8 +499,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'data': event['requirements'],
             'len_reqs': event['len_reqs'],
             'auction_start_status': event['auction_start_status']
-
-
         }))
 
     async def bids_per_requirement(self, event):
@@ -801,6 +823,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         "start_time":str(start_time)
                     }
                 )
+
                 await asyncio.sleep(1)  # update every second
 
 

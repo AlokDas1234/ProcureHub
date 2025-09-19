@@ -16,14 +16,14 @@
         .container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 2px;
         }
         .row {
             display: flex;
-            gap: 20px;
+            gap: 5px;
             border: 1px solid #555;
-            border-radius: 6px;
-            padding: 10px;
+            border-radius: 5px;
+            padding: 2px;
             align-items: stretch;
         }
         .no-border {
@@ -31,10 +31,20 @@
     padding: 0;   /* optional, removes extra spacing */
 }
 
+.col-left {
+  flex: 0 0 70%; /* Take 70% of available width */
+  max-width: 70%;
+}
+.col-right {
+  flex: 0 0 30%; /* Take 30% of available width */
+  max-width: 30%;
+}
+
+
         .col {
             flex: 1;
             background-color: #222;
-            padding: 10px;
+            padding: 5px;
             border-radius: 4px;
         }
         .col p {
@@ -72,7 +82,7 @@
     height: 100%;           /* Take full height of parent */
     min-width: 50px;        /* Consistent strip width */
     margin:0px;
-    font-size: 30px;
+    font-size: 25px;
 }
         .progress {
     background-color: #333;
@@ -365,19 +375,7 @@ else  {
             renderRequirements(data.data,data.auction_start_status);
         }
 
-<!--         if (data.type === 'grouped_bid') {-->
-<!--            latestUserRanks = data.bid_group_data.user_ranks;-->
-<!--            console.log("LatestUserRanks:",latestUserRanks);-->
-<!--            allGroupedBids = {};-->
-<!--            data.bid_group_data.bids.forEach(bid => {-->
-<!--                if (!allGroupedBids[bid.id]) {-->
-<!--                    allGroupedBids[bid.id] = [];-->
-<!--                }-->
-<!--                allGroupedBids[bid.id].push(bid.rate);-->
-<!--            });-->
-<!--            updateBids();-->
-<!--        }-->
-<!--    };-->
+
 
            if (data.type === "grouped_bid") {
                     latestUserRanks = data.bid_group_data.user_ranks; // user’s best ranks
@@ -402,7 +400,6 @@ else  {
  function renderRequirements(requirements,auction_start_status) {
 
 
-
 <!--        console.log("requirements:", requirements);-->
 
         const container = document.getElementById('main-container');
@@ -414,8 +411,11 @@ else  {
             row.className = 'row';
             row.id = `req_row_${req.id}`;
 
-            const leftCol = document.createElement('div');
-            leftCol.className = 'col';
+
+
+             const leftCol = document.createElement('div');
+             leftCol.className = 'col col-left';
+
             leftCol.innerHTML = `
                 <div style="display: flex; align-items: stretch;">
                     <div class="vertical-label">
@@ -423,127 +423,130 @@ else  {
                     </div>
                 <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; padding-bottom: 0; padding-top: 0;">
                     <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">
-                        <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> ${req.id}</h2>
+                        <h4 style="margin: 0;"><strong>REQUIREMENT ID:</strong> ${req.id}</h2>
                     </div>
-                    <div class="p-1" style="margin-left:0.25rem;">
+
+                    <div class="p-1" style="margin-left:0.5rem;">
+
 
                            <div class="row no-border">
                            <div class="col-md-6">
+                             <div style="display: flex; gap: 10px;">
+
 
                         <p><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
-                        <p>
-                          <strong style="color: ${!req.loading_point_full_address ? '#EFADF0' : ''};">
 
-                          </strong>
-                          ${req.loading_point_full_address || ''}
-                        </p>
                         <p>
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">
-                                📍 View Loading Address on Map
+                             ${ req.loading_point_full_address}
                             </a>
                         </p>
+
                         </div>
+
                          <div class="col-md-6">
 
-                        &nbsp
+
                           </div>
                           </div>
                             <p><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>
 
-                          <p>
-                          <strong style="color: ${!req.unloading_point_full_address ? '#EFADF0' : ''};">
-
-                          </strong>
-                          ${req.unloading_point_full_address || ''}
-                        </p>
-<!--                       <p>-->
-<!--                          <strong style="color: ${!req.loading_point_full_address ? '#EFADF0' : ''};">-->
-<!--                            3. Loading Point Full Address:-->
-<!--                          </strong>-->
-<!--                          ${req.loading_point_full_address || ''}-->
-<!--                        </p>-->
-<!--                        <p>-->
-<!--                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">-->
-<!--                                📍 View Loading Address on Map-->
-<!--                            </a>-->
-<!--                        </p>-->
 
                         <p>
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">
-                                📍 View Unloading Address on Map
+                               ${req.unloading_point_full_address}
                             </a>
                         </p>
+                        </div>
 
                         <hr>
-                        <h3>Requirements:</h3>
-                        <p><strong style="color: ${req.truck_type ?  '#05ACFA' : '#EFADF0'};">Truck:</strong> ${req.truck_type || ''}</p>
-                        &nbsp
+                        <div style="display: flex; gap: 10px;">
+                                          <p>
+                                            <strong style="color: ${req.truck_type ? '#05ACFA' : '#EFADF0'};">Truck:</strong>
+                                            ${req.truck_type || ''}
+                                          </p>
 
-                        <p><strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong> ${req.no_of_trucks || ''}</p>
-                        &nbsp
+                                          <p>
+                                            <strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong>
+                                            ${req.no_of_trucks || ''}
+                                          </p>
 
-<!--                        <p><strong style="color: ${req.qty ? '#05ACFA' : '#EFADF0'};">Qty:</strong> ${req.qty || ''}</p>-->
-<!--                        &nbsp-->
-                          <p>
+                                          <p>
                               <strong style="color: ${req.product ? '#05ACFA' : '#EFADF0'};">
                                 Product Type:
                               </strong>
                               ${req.product || ''} with ${req.drum_type_no_of_drums || ''} Drums
                             </p>
-                        &nbsp
+
+                            <p>
+                          <strong style="color: ${req.types ? '#05ACFA' : '#EFADF0'};">
+                            Types:
+                          </strong>
+                          ${req.types || ''}
+                        </p>
+                                        </div>
+
+
+
+
+                       <div style="display: flex; gap: 10px;">
                         <p>
                               <strong style="color: ${req.approx_mat_mt ? '#05ACFA' : '#EFADF0'};">
                                 Approx Material Wait (MT):
                               </strong>
                               ${req.approx_mat_mt || ''}
                             </p>
-                        &nbsp
-                       <p>
-                      <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">
-                        Notes:
-                      </strong>
-                      ${req.notes || ''}
-                    </p>
-                    <br>
-                        <p>
+
+                             <p>
                           <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
                             Weight Per Drum:
                           </strong>
                           ${req.weight_per_drum || ''}
                         </p>
-                        &nbsp
-                       <p>
-                          <strong style="color: ${req.types ? '#05ACFA' : '#EFADF0'};">
-                            Types:
-                          </strong>
-                          ${req.types || ''}
-                        </p>
-                           <hr>
-                        <h3>Bidding Strategy:</h3>
-                       <p>
-                          <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
-                            Ceiling Price:
-                          </strong>
-                          ${req.cel_price || ''}
-                        </p>
 
-                          &nbsp
-                       <p>
-                          <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">
-                            Minimal Decremental Value:
-                          </strong>
-                          ${req.min_dec_val || ''}
-                        </p>
+
+
+
+                                              <p>
+                      <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">
+                        Notes:
+                      </strong>
+                      ${req.notes || ''}
+                    </p>
+                        </div>
+
+
+
+
+                           <hr>
+                           <div style="display: flex; gap: 5px;">
+                          <p>
+                            <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
+                              Ceiling Price:
+                            </strong>
+                            ${req.cel_price || ''}
+                          </p>
+
+                          <p>
+                            <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">
+                              Minimal Decremental Value:
+                            </strong>
+                            ${req.min_dec_val || ''}
+                          </p>
+                        </div>
+
+
                     </div>
                 </div>
                 </div>
             `;
 
             const rightCol = document.createElement('div');
-            rightCol.className = 'col';
+            rightCol.className = 'col col-right';
+
             rightCol.innerHTML = `
             <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">
-                        <h2 style="margin: 0;"><strong>BIDDER REQUIREMENT ID:</strong> ${req.id}</h2>
+                        <h4 style="margin: 0;"><strong>BIDDER REQUIREMENT ID:</strong> ${req.id}</h2>
                     </div>
 
                   <h3 id="remaining-time-${req.id}"></h3>
@@ -561,14 +564,17 @@ else  {
                 <hr>
 
                 <p id="previous_bids_${req.id}" style="color: yellow;"></p>
+
+                <div>
                 <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
+                </div>
 
 
                <div style="margin-top: 5px; display: flex; gap: 2px;">
                  <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount">
                     <button id="submitbid_${req.id}" onclick="submitBid(${req.id})">Submit Bid</button>
                     <button onclick="window.location.reload();">Refresh</button>
-<!--                    <button onclick="load_rank()">Send Grouped Bid</button>-->
+
 
                 </div>
 
@@ -588,21 +594,6 @@ else  {
     }
 
 
-<!--    function updateBids() {-->
-<!--        Object.keys(allGroupedBids).forEach(reqId => {-->
-<!--            const field = document.getElementById(`previous_bids_${reqId}`);-->
-<!--            if (field) {-->
-<!--                field.textContent = `Previous Bids: ${allGroupedBids[reqId].join(' >> ')}`;-->
-<!--            }-->
-<!--        });-->
-
-<!--        latestUserRanks.forEach(rank => {-->
-<!--            const field = document.getElementById(`user_rank_${rank.bid_id}`);-->
-<!--            if (field) {-->
-<!--                field.textContent = `Your Rank: ${rank.rank} (Bid: ₹${rank.bid_rate})`;-->
-<!--            }-->
-<!--        });-->
-<!--    }-->
 function updateBids() {
 
 
@@ -634,12 +625,6 @@ function updateBids() {
 
 
 
-<!--function load_rank(){-->
-
-<!--    socket.send(JSON.stringify({ type: "grouped_bid" }));-->
-<!--    console.log("Sent grouped_bid to server");-->
-
-<!--}-->
 </script>
 
 </body>
