@@ -926,8 +926,9 @@ function renderBids() {
         bidDiv.innerHTML = `
             <h1>RECEIVED BIDS:</h1>
             <hr>
-
+             <div style="height: 40px; display: flex; background-color: transparent;">
            <h4 id="remaining-time-${req.id}"></h4>
+           </div>
            <div class="progress" style="height: 20px;">
         <div id="progress-bar-${req.id}"
              class="progress-bar bg-success"
