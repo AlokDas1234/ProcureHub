@@ -197,6 +197,8 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
 
     socket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+        if (data.sender && data.sender === currentUser) return; // ignore self events
         const data = JSON.parse(e.data);
 <!--        console.log("From server:", data);-->
 
