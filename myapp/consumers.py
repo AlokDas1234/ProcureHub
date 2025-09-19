@@ -400,7 +400,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
-                await self.send(text_data=json.dumps({
+
+                await self.channel_layer.group_send(
+                    self.room_group_name,{
 
                         'type': 'bids_per_requirement',
                         'bid_id': bid_instance.id,
@@ -423,35 +425,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'cel_price': requirement.cel_price,
                         },
                         'bid_rate': bid_amt
-
-                }))
-
-                # await self.channel_layer.group_send(
-                #     self.room_group_name,{
-                #
-                #         'type': 'bids_per_requirement',
-                #         'bid_id': bid_instance.id,
-                #         'bids_by': user.username,
-                #         'requirement': {
-                #             'id': requirement.id,
-                #             'loading_point': requirement.loading_point,
-                #             'unloading_point': requirement.unloading_point,
-                #             'loading_point_full_address': requirement.loading_point_full_address,
-                #             'unloading_point_full_address': requirement.unloading_point_full_address,
-                #             'truck_type': requirement.truck_type,
-                #             'no_of_trucks': requirement.no_of_trucks,
-                #             # 'qty': requirement.qty,
-                #             'notes': requirement.notes,
-                #             'drum_type_no_of_drums': requirement.drum_type_no_of_drums,
-                #             'product': requirement.product,
-                #             'weight_per_drum': requirement.weight_per_drum,
-                #             'approx_mat_mt': requirement.approx_mat_mt,
-                #             'types': requirement.types,
-                #             'cel_price': requirement.cel_price,
-                #         },
-                #         'bid_rate': bid_amt
-                #     }
-                # )
+                    }
+                )
 
             else:
                 # ❌ Send error if auction closed or too many bids
