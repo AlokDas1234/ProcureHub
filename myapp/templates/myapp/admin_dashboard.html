@@ -737,8 +737,6 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 <!--    console.log("bidGroups:",bidGroups);-->
 
     socket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            if (data.sender && data.sender === currentUser) return; // ignore self events
         const data = JSON.parse(e.data);
 <!--          if (data.type === 'timer_update') {-->
 <!--        console.log("Update Timer:", data.minutes);-->
