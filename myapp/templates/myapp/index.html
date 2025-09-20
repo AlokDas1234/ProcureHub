@@ -40,11 +40,51 @@
 <!--  max-width: 30%;-->
 <!--}-->
 
-/* Your existing columns */
+<!--/* Your existing columns */-->
+<!--.col-left {-->
+<!--  flex: 0 0 70%;-->
+<!--  max-width: 70%;-->
+<!--}-->
+<!--.col-right {-->
+<!--  flex: 0 0 30%;-->
+<!--  max-width: 30%;-->
+<!--}-->
+
+<!--/* ✅ Make it mobile-friendly */-->
+<!--@media (max-width: 768px) {-->
+<!--  .row {-->
+<!--    flex-direction: column; /* stack columns vertically */-->
+<!--  }-->
+
+<!--  .col-left, .col-right {-->
+<!--    flex: 0 0 100%;-->
+<!--    max-width: 100%;-->
+<!--  }-->
+
+<!--  .col-right {-->
+<!--    margin-top: 5px; /* add spacing between left and right on mobile */-->
+<!--  }-->
+<!--}-->
+
+
+
+<!--        .col {-->
+<!--            flex: 1;-->
+<!--            background-color: #222;-->
+<!--            padding: 5px;-->
+<!--            border-radius: 4px;-->
+<!--        }-->
+<!--        .col p {-->
+<!--            margin: 4px 0;-->
+<!--        }-->
+
+
+/* Desktop layout */
 .col-left {
   flex: 0 0 70%;
   max-width: 70%;
 }
+
 .col-right {
   flex: 0 0 30%;
   max-width: 30%;
@@ -53,41 +93,46 @@
 /* ✅ Make it mobile-friendly */
 @media (max-width: 768px) {
   .row {
-    flex-direction: column; /* stack columns vertically */
+    flex-direction: column; /* stack vertically */
+    align-items: flex-start; /* ✅ stop forcing equal height */
   }
 
-  .col-left, .col-right {
-    flex: 0 0 100%;
+  .col-left,
+  .col-right {
+    flex: 1 1 100%; /* ✅ let them expand naturally */
     max-width: 100%;
   }
 
   .col-right {
-    margin-top: 10px; /* add spacing between left and right on mobile */
+    margin-top: 10px; /* add spacing between sections */
   }
 }
 
+body {
+  word-wrap: break-word;
+  overflow-x: hidden; /* ✅ no sideways scrollbars */
+}
+input[type="number"] {
+  padding: 4px;
+  width: 100%; /* ✅ take full width on mobile */
+  box-sizing: border-box;
+}
 
+button {
+  flex: 1; /* ✅ makes buttons scale properly */
+}
 
-        .col {
-            flex: 1;
-            background-color: #222;
-            padding: 5px;
-            border-radius: 4px;
-        }
-        .col p {
-            margin: 4px 0;
-        }
-        button {
-            background-color: #05aafc;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #1dde8a;
-        }
+<!--        button {-->
+<!--            background-color: #05aafc;-->
+<!--            color: white;-->
+<!--            border: none;-->
+<!--            padding: 5px 10px;-->
+<!--            border-radius: 4px;-->
+<!--            cursor: pointer;-->
+<!--        }-->
+<!--        button:hover {-->
+<!--            background-color: #1dde8a;-->
+<!--        }-->
         input {
             padding: 4px;
             width: 80%;
@@ -448,7 +493,7 @@ else  {
                     <div class="vertical-label">
                         <span>#REQUIREMENT ${index + 1}</span>
                     </div>
-                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; padding-bottom: 0; padding-top: 0;">
+                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding-bottom: 0; padding-top: 0;">
                     <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">
                         <h4 style="margin: 0;"><strong>REQUIREMENT ID:</strong> ${req.id}</h2>
                     </div>
@@ -458,12 +503,11 @@ else  {
 
                            <div class="row no-border">
                            <div class="col-md-6">
-                             <div style="display: flex; gap: 10px;">
+<!--                             <div style="display: flex; gap: 10px;">-->
 
+                        <p style="margin:0;"><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
 
-                        <p><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
-
-                        <p>
+                      <p style="margin:0;">
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">
                              ${ req.loading_point_full_address}
                             </a>
@@ -476,36 +520,36 @@ else  {
 
                           </div>
                           </div>
-                            <p><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>
+                            <p style="margin:0;"><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>
 
 
-                        <p>
+                        <p style="margin:0;">
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">
                                ${req.unloading_point_full_address}
                             </a>
                         </p>
-                        </div>
+<!--                        </div>-->
 
                         <hr>
-                        <div style="display: flex; gap: 10px;">
-                                          <p>
+                        <div style="display: flex; gap: 4px;">
+                                          <p style="margin:0;">
                                             <strong style="color: ${req.truck_type ? '#05ACFA' : '#EFADF0'};">Truck:</strong>
                                             ${req.truck_type || ''}
                                           </p>
 
-                                          <p>
+                                          <p style="margin:0;">
                                             <strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong>
                                             ${req.no_of_trucks || ''}
                                           </p>
 
-                                          <p>
+                                          <p style="margin:0;">
                               <strong style="color: ${req.product ? '#05ACFA' : '#EFADF0'};">
                                 Product Type:
                               </strong>
                               ${req.product || ''} with ${req.drum_type_no_of_drums || ''} Drums
                             </p>
 
-                            <p>
+                            <p style="margin:0;">
                           <strong style="color: ${req.types ? '#05ACFA' : '#EFADF0'};">
                             Types:
                           </strong>
@@ -516,15 +560,15 @@ else  {
 
 
 
-                       <div style="display: flex; gap: 10px;">
-                        <p>
+                       <div style="display: flex; gap: 4px; margin:0;">
+                        <p style="margin:0;">
                               <strong style="color: ${req.approx_mat_mt ? '#05ACFA' : '#EFADF0'};">
                                 Approx Material Wait (MT):
                               </strong>
                               ${req.approx_mat_mt || ''}
                             </p>
 
-                             <p>
+                             <p style="margin:0;">
                           <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
                             Weight Per Drum:
                           </strong>
@@ -534,7 +578,7 @@ else  {
 
 
 
-                                              <p>
+                                              <p style="margin:0;">
                       <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">
                         Notes:
                       </strong>
@@ -546,15 +590,15 @@ else  {
 
 
                            <hr>
-                           <div style="display: flex; gap: 5px;">
-                          <p>
+                           <div style="display: flex; gap: 4px;">
+                          <p style="margin:0;">
                             <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
                               Ceiling Price:
                             </strong>
                             ${req.cel_price || ''}
                           </p>
 
-                          <p>
+                          <p style="margin:0;">
                             <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">
                               Minimal Decremental Value:
                             </strong>
@@ -582,7 +626,7 @@ else  {
                         </div>
                                           </div>
 
-                  <div class="progress" style="height: 20px; margin-bottom: 10px;">
+                  <div class="progress" style="height: 12px; margin-bottom: 10px;">
 
                    <div id="progress-bar-${req.id}"
 
