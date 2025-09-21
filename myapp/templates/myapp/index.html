@@ -766,32 +766,60 @@ else  {
 <!--        }-->
 <!--    }-->
 <!--}, 100); // wait a bit for DOM to finish rendering-->
-// ✅ Wait until the specific input exists before restoring focus
-// ✅ Restore focus and cursor position safely
-const lastFocusedId = localStorage.getItem("last_focused_input");
-const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
+<!--// ✅ Wait until the specific input exists before restoring focus-->
+<!--// ✅ Restore focus and cursor position safely-->
+<!--const lastFocusedId = localStorage.getItem("last_focused_input");-->
+<!--const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
 
-if (lastFocusedId) {
+<!--if (lastFocusedId) {-->
+<!--    const container = document.getElementById("main-container");-->
+
+<!--    const tryFocus = () => {-->
+<!--        const focusedInput = document.getElementById(lastFocusedId);-->
+<!--        if (focusedInput) {-->
+<!--            focusedInput.focus();-->
+<!--            if (!isNaN(lastCursorPos)) {-->
+<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
+<!--            }-->
+<!--            observer.disconnect(); // ✅ stop watching after first success-->
+<!--        }-->
+<!--    };-->
+
+<!--    // Create observer only for this container-->
+<!--    const observer = new MutationObserver(() => tryFocus());-->
+<!--    observer.observe(container, { childList: true, subtree: true });-->
+
+<!--    // Also try immediately (in case inputs already exist)-->
+<!--    tryFocus();-->
+<!--}-->
+// Restore input values and focus
+function restoreInputs() {
     const container = document.getElementById("main-container");
+    const lastFocusedId = localStorage.getItem("last_focused_input");
+    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
 
-    const tryFocus = () => {
+    // Restore all saved input values
+    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
+        const savedVal = localStorage.getItem(input.id);
+        if (savedVal !== null) input.value = savedVal;
+    });
+
+    // Restore focus safely
+    if (lastFocusedId) {
         const focusedInput = document.getElementById(lastFocusedId);
         if (focusedInput) {
             focusedInput.focus();
-            if (!isNaN(lastCursorPos)) {
+            // Only try to set cursor if input type allows it
+            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
                 focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
             }
-            observer.disconnect(); // ✅ stop watching after first success
         }
-    };
-
-    // Create observer only for this container
-    const observer = new MutationObserver(() => tryFocus());
-    observer.observe(container, { childList: true, subtree: true });
-
-    // Also try immediately (in case inputs already exist)
-    tryFocus();
+    }
 }
+
+// Call this after rendering your inputs
+restoreInputs();
+
 
 
 
@@ -854,7 +882,15 @@ document.addEventListener("input", (e) => {
 <!--        localStorage.setItem("last_cursor_position", e.target.selectionStart || 0);-->
 <!--    }-->
 <!--});-->
-
+document.addEventListener("focusin", (e) => {
+    if (e.target.tagName === "INPUT" && e.target.id.startsWith("bid_amt_")) {
+        localStorage.setItem("last_focused_input", e.target.id);
+        // Save cursor only if input type is text (number type doesn't support it)
+        if (e.target.type === "text") {
+            localStorage.setItem("last_cursor_position", e.target.selectionStart || 0);
+        }
+    }
+});
 
 
 </script>
