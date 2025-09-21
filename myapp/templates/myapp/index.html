@@ -834,14 +834,21 @@ document.addEventListener("input", (e) => {
     }
 });
 
-window.addEventListener("beforeunload", () => {
-    const active = document.activeElement;
-    if (active && active.tagName === "INPUT" && active.id.startsWith("bid_amt_")) {
-        localStorage.setItem("last_focused_input", active.id);
-        localStorage.setItem("last_cursor_position", active.selectionStart);
-    } else {
-        localStorage.removeItem("last_focused_input");
-        localStorage.removeItem("last_cursor_position");
+<!--window.addEventListener("beforeunload", () => {-->
+<!--    const active = document.activeElement;-->
+<!--    if (active && active.tagName === "INPUT" && active.id.startsWith("bid_amt_")) {-->
+<!--        localStorage.setItem("last_focused_input", active.id);-->
+<!--        localStorage.setItem("last_cursor_position", active.selectionStart);-->
+<!--    } else {-->
+<!--        localStorage.removeItem("last_focused_input");-->
+<!--        localStorage.removeItem("last_cursor_position");-->
+<!--    }-->
+<!--});-->
+// Save last focused input and cursor position immediately on focus
+document.addEventListener("focusin", (e) => {
+    if (e.target.tagName === "INPUT" && e.target.id.startsWith("bid_amt_")) {
+        localStorage.setItem("last_focused_input", e.target.id);
+        localStorage.setItem("last_cursor_position", e.target.selectionStart || 0);
     }
 });
 
