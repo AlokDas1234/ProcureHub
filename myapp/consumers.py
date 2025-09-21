@@ -62,7 +62,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if  auction_start  and auction_end_status == False and  not self.scope['user'].is_superuser :
                 '''Normal users is subscribed to this channel'''
                 bid_group_data = await self.get_all_bid_group(username)
-                print("bid_group_data in connect:",bid_group_data)
+                # print("bid_group_data in connect:",bid_group_data)
 
                 await self.send(text_data=json.dumps({
                     'type': 'grouped_bid',
@@ -146,7 +146,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # print("General Access from connect:", general_access)
             # print("General Access minutes from connect:", minutes)
             # print("General Access end_time from connect:", start_time)
-            print("Decremental Value:", dec_val_vi)
+            # print("Decremental Value:", dec_val_vi)
             clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
 
             auction_start = True
@@ -163,13 +163,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 self.timer_task = asyncio.create_task(self.send_remaining_time())
                 reqs = await sync_to_async(get_all_requirements)()
-                print("dec_val_vi:", dec_val_vi)
+                # print("dec_val_vi:", dec_val_vi)
                 if not dec_val_vi:
-                    print("not dec val visibility executed 1")
+                    # print("not dec val visibility executed 1")
                     for r in reqs:  # loop through all requirements
                         r['min_dec_val'] = 0
                     # reqs[0].update({'min_dec_val': 0})
-                print("Reqs1:",reqs)
+                # print("Reqs1:",reqs)
 
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -192,13 +192,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     # print("General Access minutes: ", minutes)
                     # print("General Access end_time: ", end_time)
                     reqs = await sync_to_async(get_all_requirements)()
-                    print("dec_val_vi2:", dec_val_vi)
+                    # print("dec_val_vi2:", dec_val_vi)
                     if  not dec_val_vi:
-                        print("not dec val visibility executed 2")
+                        # print("not dec val visibility executed 2")
                         for r in reqs:  # loop through all requirements
                             r['min_dec_val'] = 0
-                        print("Reqs2 inside if:", reqs)
-                    print("Reqs2:",reqs)
+                        # print("Reqs2 inside if:", reqs)
+                    # print("Reqs2:",reqs)
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {

@@ -486,12 +486,14 @@ else  {
            if (data.type === "grouped_bid") {
                     latestUserRanks = data.bid_group_data.user_ranks; // user’s best ranks
                     len_bids = data.bid_group_data.len_bids; // total no of bids
-                    console.log("len_bids:",len_bids);
+<!--                    console.log("len_bids:",len_bids);-->
+
 
 
                     userBids = data.bid_group_data.bids; // only this user’s bids
-                    console.log("latestUserRanks:",latestUserRanks);
-                    console.log("userBids:",userBids);
+
+<!--                    console.log("latestUserRanks in group_bids :",latestUserRanks);-->
+<!--                      console.log("userBids in group_bids:",userBids);-->
                     updateBids();
 
                     if (len_bids>0){
