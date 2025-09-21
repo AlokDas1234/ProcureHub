@@ -236,6 +236,7 @@ button {
 
             <div id="refresh-container" style="text-align:center;">
               <button id="refreshBtn" style="width:30%;">Refresh</button>
+                &nbsp &nbsp &nbsp
             </div>
     </div>
 
@@ -780,6 +781,13 @@ function restoreInputs() {
 
 // Call this after rendering your inputs
 restoreInputs();
+
+// Restore scroll position after page reload
+const lastScrollPos = localStorage.getItem("last_scroll_position");
+if (lastScrollPos !== null) {
+    window.scrollTo(0, parseInt(lastScrollPos, 10));
+}
+
         updateBids();
     }
 
@@ -846,6 +854,12 @@ document.addEventListener("focusin", (e) => {
         }
     }
 });
+
+    // Save scroll position before refresh or navigation
+window.addEventListener("beforeunload", () => {
+    localStorage.setItem("last_scroll_position", window.scrollY);
+});
+
 
 
 </script>
