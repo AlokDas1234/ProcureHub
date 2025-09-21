@@ -11,7 +11,7 @@
             font-family: Arial, sans-serif;
             background-color: #111;
             color: white;
-            margin: 20px;
+<!--            margin: 20px;-->
         }
         .container {
             display: flex;
@@ -20,10 +20,10 @@
         }
         .row {
             display: flex;
-            gap: 5px;
+<!--            gap: 5px;-->
             border: 1px solid #555;
             border-radius: 5px;
-            padding: 5px;
+<!--            padding: 5px;-->
             align-items: stretch;
         }
         .no-border {
@@ -97,11 +97,11 @@
 <!--    align-items: flex-start; /* ✅ stop forcing equal height */-->
 <!--  }-->
 
-  .col-left,
- {
-    flex: 1 1 100%; /* ✅ let them expand naturally */
-    max-width: 100%;
-  }
+<!--  .col-left,-->
+<!-- {-->
+<!--    flex: 1 1 100%; /* ✅ let them expand naturally */-->
+<!--    max-width: 100%;-->
+<!--  }-->
 
 <!--  .col-right {-->
 <!--    margin-top: 10px; /* add spacing between sections */-->
@@ -664,16 +664,17 @@ else  {
                     <h4 id= "previous_bids_${req.id}"></h4>
                    <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
 
-                   <div id="submit_bid_amt_${req.id}">
-                <div style="display: flex; gap: 6px; align-items: center;">
-                    <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
-                           style="flex: 2; padding: 8px; font-size: 14px;">
-                    <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
-                            style="flex: 1; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        Submit Bid
-                    </button>
-                </div>
-            </div>
+                  <div id="submit_bid_amt_${req.id}">
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
+                                   style="flex: 1; padding: 8px; font-size: 14px;">
+                            <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
+                                    style="flex: 1; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                Submit Bid
+                            </button>
+                        </div>
+                    </div>
+
 
                </div>
 
@@ -750,48 +751,7 @@ else  {
             input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";
         }
     });
-    // ✅ Restore focus and cursor position if user was typing
-// ✅ Delay focus restoration until DOM is ready
-<!--setTimeout(() => {-->
-<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
-<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
 
-<!--    if (lastFocusedId) {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            focusedInput.focus();-->
-<!--            if (!isNaN(lastCursorPos)) {-->
-<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
-<!--}, 100); // wait a bit for DOM to finish rendering-->
-<!--// ✅ Wait until the specific input exists before restoring focus-->
-<!--// ✅ Restore focus and cursor position safely-->
-<!--const lastFocusedId = localStorage.getItem("last_focused_input");-->
-<!--const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
-
-<!--if (lastFocusedId) {-->
-<!--    const container = document.getElementById("main-container");-->
-
-<!--    const tryFocus = () => {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            focusedInput.focus();-->
-<!--            if (!isNaN(lastCursorPos)) {-->
-<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--            }-->
-<!--            observer.disconnect(); // ✅ stop watching after first success-->
-<!--        }-->
-<!--    };-->
-
-<!--    // Create observer only for this container-->
-<!--    const observer = new MutationObserver(() => tryFocus());-->
-<!--    observer.observe(container, { childList: true, subtree: true });-->
-
-<!--    // Also try immediately (in case inputs already exist)-->
-<!--    tryFocus();-->
-<!--}-->
 // Restore input values and focus
 function restoreInputs() {
     const container = document.getElementById("main-container");
@@ -819,12 +779,6 @@ function restoreInputs() {
 
 // Call this after rendering your inputs
 restoreInputs();
-
-
-
-
-
-
         updateBids();
     }
 
