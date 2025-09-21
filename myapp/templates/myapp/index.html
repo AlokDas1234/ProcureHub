@@ -307,6 +307,9 @@ function submitBid(reqId) {
         // ✅ Clear storage immediately (before re-render)
         try {
             localStorage.removeItem("bid_amt_" + reqId);
+            localStorage.removeItem("last_focused_input");
+            localStorage.removeItem("last_cursor_position");
+
         } catch (e) {
             console.error("Failed to clear localStorage:", e);
         }
@@ -745,6 +748,20 @@ else  {
             input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";
         }
     });
+    // ✅ Restore focus and cursor position if user was typing
+const lastFocusedId = localStorage.getItem("last_focused_input");
+const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
+
+if (lastFocusedId) {
+    const focusedInput = document.getElementById(lastFocusedId);
+    if (focusedInput) {
+        focusedInput.focus();
+        if (!isNaN(lastCursorPos)) {
+            focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
+        }
+    }
+}
+
 
         updateBids();
     }
@@ -782,6 +799,17 @@ function updateBids() {
 document.addEventListener("input", (e) => {
     if (e.target.id.startsWith("bid_amt_")) {
         localStorage.setItem(e.target.id, e.target.value);
+    }
+});
+
+window.addEventListener("beforeunload", () => {
+    const active = document.activeElement;
+    if (active && active.tagName === "INPUT" && active.id.startsWith("bid_amt_")) {
+        localStorage.setItem("last_focused_input", active.id);
+        localStorage.setItem("last_cursor_position", active.selectionStart);
+    } else {
+        localStorage.removeItem("last_focused_input");
+        localStorage.removeItem("last_cursor_position");
     }
 });
 
