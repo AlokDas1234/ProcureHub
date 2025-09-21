@@ -154,7 +154,7 @@ button {
     height: 100%;           /* Take full height of parent */
 <!--    min-width: 50px;        /* Consistent strip width */-->
     margin:0px;
-    font-size: 25px;
+    font-size: 20px;
 }
         .progress {
     background-color: #333;
@@ -226,7 +226,8 @@ button {
 
     <div class="container-fluid">
          <h1 style="text-align:center;">BIDDER DASHBOARD</h1>
-        <h2 id="start_status" style="text-align:center;"></h2>
+       <h2 id="start_status" style="text-align:center; height:60px;"></h2>
+
         <h3 id="auction_status" class="text-align:left;"></h3>
         <h3 id="current_time_div" style="text-align:left;"></h3>
         <h3 id="start_time_div" style="text-align:left;"></h3>
@@ -343,25 +344,6 @@ alert(data.valid_bid);
 
 if (data.type === 'timer_update' && data.auction_started===true) {
 
-
-<!-- if (data.seconds === 0) {-->
-<!--        console.log("Auction Ended");-->
-<!--        window.location.reload();-->
-<!--    } else {-->
-<!--        console.log("Auction Ended");-->
-<!--    }-->
-<!--    console.log("Update Timer:", data.minutes);-->
-<!--    console.log("Minutes value:", data.minutes, "Type:", typeof data.minutes);-->
-<!--    console.log("clt:", data.clt);-->
-<!--    console.log("start_time:", data.start_time);-->
-<!--    console.log("end_time:", data.end_time);-->
-<!--    if(data.seconds===0){-->
-<!--    window.location.reload();-->
-<!--    }-->
-
-
-
-<!--     console.log("Auction Status:", data.auction_started);-->
 
   let timer = document.getElementById("start_status");
  timer.innerHTML = `
@@ -602,7 +584,7 @@ else  {
 <!--                        </div>-->
 
                         <hr>
-                        <div style="display: flex; gap: 4px;">
+                        <div style="display: flex; gap: 5px;">
                                           <p style="margin:0;">
                                             <strong style="color: ${req.truck_type ? '#05ACFA' : '#EFADF0'};">Truck:</strong>
                                             ${req.truck_type || ''}
@@ -631,7 +613,7 @@ else  {
 
 
 
-                       <div style="display: flex; gap: 4px; margin:0;">
+                       <div style="display: flex; gap: 5px; margin:2;">
                         <p style="margin:0;">
                               <strong style="color: ${req.approx_mat_mt ? '#05ACFA' : '#EFADF0'};">
                                 Approx Material Wait (MT):
