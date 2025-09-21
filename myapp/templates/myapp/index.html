@@ -507,6 +507,8 @@ else  {
 
 
  function renderRequirements(requirements,auction_start_status) {
+ const scrollY = window.scrollY;
+
 
 
 <!--        console.log("requirements:", requirements);-->
@@ -754,33 +756,36 @@ else  {
         }
     });
 
+       window.scrollTo(0, scrollY);
+
 // Restore input values and focus
-<!--function restoreInputs() {-->
-<!--    const container = document.getElementById("main-container");-->
-<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
-<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
 
-<!--    // Restore all saved input values-->
-<!--    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {-->
-<!--        const savedVal = localStorage.getItem(input.id);-->
-<!--        if (savedVal !== null) input.value = savedVal;-->
-<!--    });-->
+function restoreInputs() {
+    const container = document.getElementById("main-container");
+    const lastFocusedId = localStorage.getItem("last_focused_input");
+    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
 
-<!--    // Restore focus safely-->
-<!--    if (lastFocusedId) {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            focusedInput.focus();-->
-<!--            // Only try to set cursor if input type allows it-->
-<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
-<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
-<!--}-->
+    // Restore all saved input values
+    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
+        const savedVal = localStorage.getItem(input.id);
+        if (savedVal !== null) input.value = savedVal;
+    });
 
-<!--// Call this after rendering your inputs-->
-<!--restoreInputs();-->
+    // Restore focus safely
+    if (lastFocusedId) {
+        const focusedInput = document.getElementById(lastFocusedId);
+        if (focusedInput) {
+            focusedInput.focus();
+            // Only try to set cursor if input type allows it
+            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
+                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
+            }
+        }
+    }
+}
+
+// Call this after rendering your inputs
+restoreInputs();
 
 
 
@@ -806,27 +811,27 @@ else  {
 <!--    }-->
 <!--}, 100);-->
 
-setTimeout(() => {
-    const lastFocusedId = localStorage.getItem("last_focused_input");
-    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
+<!--setTimeout(() => {-->
+<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
+<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
 
-    if (lastFocusedId) {
-        // ✅ If user had focused an input, just focus it, do not restore scroll
-        const focusedInput = document.getElementById(lastFocusedId);
-        if (focusedInput) {
-            focusedInput.focus();
-            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
-                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
-            }
-        }
-    } else {
-        // ✅ If no input was focused, restore scroll position
-        const lastScrollPos = localStorage.getItem("last_scroll_position");
-        if (lastScrollPos !== null) {
-            window.scrollTo(0, parseInt(lastScrollPos, 10));
-        }
-    }
-}, 100);
+<!--    if (lastFocusedId) {-->
+<!--        // ✅ If user had focused an input, just focus it, do not restore scroll-->
+<!--        const focusedInput = document.getElementById(lastFocusedId);-->
+<!--        if (focusedInput) {-->
+<!--            focusedInput.focus();-->
+<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
+<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
+<!--            }-->
+<!--        }-->
+<!--    } else {-->
+<!--        // ✅ If no input was focused, restore scroll position-->
+<!--        const lastScrollPos = localStorage.getItem("last_scroll_position");-->
+<!--        if (lastScrollPos !== null) {-->
+<!--            window.scrollTo(0, parseInt(lastScrollPos, 10));-->
+<!--        }-->
+<!--    }-->
+<!--}, 100);-->
 
 
 
@@ -897,10 +902,10 @@ document.addEventListener("focusin", (e) => {
     }
 });
 
-    // Save scroll position before refresh or navigation
-window.addEventListener("beforeunload", () => {
-    localStorage.setItem("last_scroll_position", window.scrollY);
-});
+<!--    // Save scroll position before refresh or navigation-->
+<!--window.addEventListener("beforeunload", () => {-->
+<!--    localStorage.setItem("last_scroll_position", window.scrollY);-->
+<!--});-->
 
 
 
