@@ -750,20 +750,47 @@ else  {
     });
     // ✅ Restore focus and cursor position if user was typing
 // ✅ Delay focus restoration until DOM is ready
-setTimeout(() => {
-    const lastFocusedId = localStorage.getItem("last_focused_input");
-    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
+<!--setTimeout(() => {-->
+<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
+<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
 
-    if (lastFocusedId) {
+<!--    if (lastFocusedId) {-->
+<!--        const focusedInput = document.getElementById(lastFocusedId);-->
+<!--        if (focusedInput) {-->
+<!--            focusedInput.focus();-->
+<!--            if (!isNaN(lastCursorPos)) {-->
+<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+<!--}, 100); // wait a bit for DOM to finish rendering-->
+// ✅ Wait until the specific input exists before restoring focus
+const lastFocusedId = localStorage.getItem("last_focused_input");
+const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
+
+if (lastFocusedId) {
+    const tryFocus = () => {
         const focusedInput = document.getElementById(lastFocusedId);
         if (focusedInput) {
             focusedInput.focus();
             if (!isNaN(lastCursorPos)) {
                 focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
             }
+            observer.disconnect(); // stop watching once done
         }
-    }
-}, 100); // wait a bit for DOM to finish rendering
+    };
+
+    // Run once immediately in case input is already there
+    tryFocus();
+
+    // If not there yet, observe the DOM until it appears
+    const observer = new MutationObserver(tryFocus);
+    observer.observe(document.getElementById("requirements-container") || document.body, {
+        childList: true,
+        subtree: true,
+    });
+}
+
 
 
 
