@@ -788,11 +788,25 @@ restoreInputs();
 
 // ✅ Delay scroll restore slightly so DOM has time to paint
 setTimeout(() => {
+    // First restore scroll
     const lastScrollPos = localStorage.getItem("last_scroll_position");
     if (lastScrollPos !== null) {
         window.scrollTo(0, parseInt(lastScrollPos, 10));
     }
-}, 100); // 100ms delay usually works
+
+    // Then restore focus
+    const lastFocusedId = localStorage.getItem("last_focused_input");
+    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
+    if (lastFocusedId) {
+        const focusedInput = document.getElementById(lastFocusedId);
+        if (focusedInput) {
+            focusedInput.focus();
+            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
+                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
+            }
+        }
+    }
+}, 100);
 
 
         updateBids();
