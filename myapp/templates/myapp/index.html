@@ -765,10 +765,13 @@ else  {
 <!--    }-->
 <!--}, 100); // wait a bit for DOM to finish rendering-->
 // ✅ Wait until the specific input exists before restoring focus
+// ✅ Restore focus and cursor position safely
 const lastFocusedId = localStorage.getItem("last_focused_input");
 const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
 
 if (lastFocusedId) {
+    const container = document.getElementById("main-container");
+
     const tryFocus = () => {
         const focusedInput = document.getElementById(lastFocusedId);
         if (focusedInput) {
@@ -776,20 +779,18 @@ if (lastFocusedId) {
             if (!isNaN(lastCursorPos)) {
                 focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
             }
-            observer.disconnect(); // stop watching once done
+            observer.disconnect(); // ✅ stop watching after first success
         }
     };
 
-    // Run once immediately in case input is already there
-    tryFocus();
+    // Create observer only for this container
+    const observer = new MutationObserver(() => tryFocus());
+    observer.observe(container, { childList: true, subtree: true });
 
-    // If not there yet, observe the DOM until it appears
-    const observer = new MutationObserver(tryFocus);
-    observer.observe(document.getElementById("requirements-container") || document.body, {
-        childList: true,
-        subtree: true,
-    });
+    // Also try immediately (in case inputs already exist)
+    tryFocus();
 }
+
 
 
 
