@@ -23,7 +23,7 @@
             gap: 5px;
             border: 1px solid #555;
             border-radius: 5px;
-            padding: 2px;
+            padding: 5px;
             align-items: stretch;
         }
         .no-border {
@@ -81,31 +81,31 @@
 
 /* Desktop layout */
 .col-left {
-  flex: 0 0 70%;
-  max-width: 70%;
+  flex: 0 0 100%;
+  max-width: 100%;
 }
 
-.col-right {
-  flex: 0 0 30%;
-  max-width: 30%;
-}
+<!--.col-right {-->
+<!--  flex: 0 0 30%;-->
+<!--  max-width: 30%;-->
+<!--}-->
 
 /* ✅ Make it mobile-friendly */
-@media (max-width: 768px) {
-  .row {
-    flex-direction: column; /* stack vertically */
-    align-items: flex-start; /* ✅ stop forcing equal height */
-  }
+<!--@media (max-width: 768px) {-->
+<!--  .row {-->
+<!--    flex-direction: column; /* stack vertically */-->
+<!--    align-items: flex-start; /* ✅ stop forcing equal height */-->
+<!--  }-->
 
   .col-left,
-  .col-right {
+ {
     flex: 1 1 100%; /* ✅ let them expand naturally */
     max-width: 100%;
   }
 
-  .col-right {
-    margin-top: 10px; /* add spacing between sections */
-  }
+<!--  .col-right {-->
+<!--    margin-top: 10px; /* add spacing between sections */-->
+<!--  }-->
 }
 
 body {
@@ -152,7 +152,7 @@ button {
     justify-content: center; /* Center text horizontally in strip */
 <!--    padding: 0 10px;-->
     height: 100%;           /* Take full height of parent */
-    min-width: 50px;        /* Consistent strip width */
+<!--    min-width: 50px;        /* Consistent strip width */-->
     margin:0px;
     font-size: 25px;
 }
@@ -170,7 +170,26 @@ button {
 .progress-bar.green { background-color: green; }
 .progress-bar.orange { background-color: orange; }
 .progress-bar.red { background-color: red; }
+  .submit-btn {
+        flex: 1;
+        padding: 10px;
+        background-color: #007bff; /* Bootstrap blue */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
 
+    .submit-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .submit-btn:active {
+        transform: scale(0.97);
+        background-color: #00408d;
+    }
 
     </style>
 </head>
@@ -291,6 +310,7 @@ alert(data.valid_bid);
 
 if (data.type === 'timer_update' && data.auction_started===true) {
 
+
 <!-- if (data.seconds === 0) {-->
 <!--        console.log("Auction Ended");-->
 <!--        window.location.reload();-->
@@ -341,11 +361,6 @@ let current_time_div = document.getElementById("current_time_div");
     <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>
     <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>
   `;
-
-
-
-
-
 
 
     // Convert HH:MM:SS to seconds
@@ -444,6 +459,7 @@ else  {
         <span style="color:#FAFAFA; font-size:1.3em; font-weight:600;">${data.data.length}</span>`;
 
 <!--        console.log("Auction Start Status:", data.auction_start_status);-->
+
             renderRequirements(data.data,data.auction_start_status);
         }
 
@@ -494,12 +510,34 @@ else  {
                         <span>#REQUIREMENT ${index + 1}</span>
                     </div>
                 <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding-bottom: 0; padding-top: 0;">
-                    <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">
-                        <h4 style="margin: 0;"><strong>REQUIREMENT ID:</strong> ${req.id}</h2>
-                    </div>
+<!--                    <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">-->
+<!--                        <h4 style="margin: 0;"><strong>REQUIREMENT ID:${req.id} </strong> <span id="remaining-time-${req.id}"></span></h2>-->
+<!--                    </div>-->
+
+
+
+
+<div class="progress" style="height: 30px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">
+
+  <!-- Shrinking bar -->
+  <div id="progress-bar-${req.id}"
+       class="progress-bar green"
+       style="width: 100%; height: 100%;">
+  </div>
+
+  <!-- Fixed text layer (stays in center regardless of bar width) -->
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+              display: flex; align-items: center; justify-content: center;
+              font-weight: bold; color: white; pointer-events: none;">
+    REQUIREMENT ID: ${req.id} | <span id="remaining-time-${req.id}"></span>
+  </div>
+
+</div>
+
+
+
 
                     <div class="p-1" style="margin-left:0.5rem;">
-
 
                            <div class="row no-border">
                            <div class="col-md-6">
@@ -585,11 +623,7 @@ else  {
                       ${req.notes || ''}
                     </p>
                         </div>
-
-
-
-
-                           <hr>
+                                                   <hr>
                            <div style="display: flex; gap: 4px;">
                           <p style="margin:0;">
                             <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
@@ -605,64 +639,86 @@ else  {
                             ${req.min_dec_val || ''}
                           </p>
                         </div>
+                    </div>
+                    <hr>
+                    <h4 id= "previous_bids_${req.id}"></h4>
+                   <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
 
-
+                   <div id="submit_bid_amt_${req.id}">
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
+                               style="flex: 2; padding: 8px; font-size: 14px;">
+                        <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
+                                style="flex: 1; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Submit Bid
+                        </button>
                     </div>
                 </div>
-                </div>
+
+               </div>
+
+              </div>
             `;
 
-            const rightCol = document.createElement('div');
-            rightCol.className = 'col col-right';
+<!--            const rightCol = document.createElement('div');-->
+<!--            rightCol.className = 'col col-right';-->
 
-            rightCol.innerHTML = `
-            <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">
-                        <h4 style="margin: 0;"><strong>BIDDER REQUIREMENT ID:</strong> ${req.id}</h2>
-                    </div>
-                    <div>
-<!--                  <h3 id="remaining-time-${req.id}"></h3>-->
-                        <div style="height: 40px; display: flex; background-color: transparent;">
-                          <h3 id="remaining-time-${req.id}" style="margin: 0;"></h3>
-                        </div>
-                                          </div>
+<!--            rightCol.innerHTML = `-->
+<!--            <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">-->
+<!--                        <h4 style="margin: 0;"><strong>BIDDER REQUIREMENT ID:</strong> ${req.id}</h2>-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--&lt;!&ndash;                  <h3 id="remaining-time-${req.id}"></h3>&ndash;&gt;-->
+<!--                        <div style="height: 40px; display: flex; background-color: transparent;">-->
+<!--                          <h3 id="remaining-time-${req.id}" style="margin: 0;"></h3>-->
+<!--                        </div>-->
+<!--                                          </div>-->
 
-                  <div class="progress" style="height: 12px; margin-bottom: 10px;">
+<!--                  <div class="progress" style="height: 12px; margin-bottom: 10px;">-->
 
-                   <div id="progress-bar-${req.id}"
+<!--                   <div id="progress-bar-${req.id}"-->
 
-                     class="progress-bar green"
+<!--                     class="progress-bar green"-->
 
-                         role="progressbar"
-                         style="width: 100%;"
-                         aria-valuenow="100"
-                         aria-valuemin="0"
-                         aria-valuemax="100">
-                    </div>
-                </div>
-                <hr>
+<!--                         role="progressbar"-->
+<!--                         style="width: 100%;"-->
+<!--                         aria-valuenow="100"-->
+<!--                         aria-valuemin="0"-->
+<!--                         aria-valuemax="100">-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <hr>-->
 
-                <p id="previous_bids_${req.id}" style="color: yellow;"></p>
+<!--                <p id="previous_bids_${req.id}" style="color: yellow;"></p>-->
 
-                <div>
-                <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
-                </div>
-
-
-               <div style="margin-top: 5px; display: flex; gap: 2px;">
-                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount">
-                    <button id="submitbid_${req.id}" onclick="submitBid(${req.id})">Submit Bid</button>
-<!--                    <button onclick="window.location.reload();">Refresh</button>-->
+<!--                <div>-->
+<!--                <p id="user_rank_${req.id}" style="color: lightgreen;"></p>-->
+<!--                </div>-->
 
 
-                </div>
+<!--               <div style="margin-top: 5px; display: flex; gap: 2px;">-->
+<!--                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount">-->
+<!--                    <button id="submitbid_${req.id}" onclick="submitBid(${req.id})">Submit Bid</button>-->
+<!--&lt;!&ndash;                    <button onclick="window.location.reload();">Refresh</button>&ndash;&gt;-->
 
-            `;
+
+<!--                </div>-->
+
+<!--            `;-->
 
             row.appendChild(leftCol);
 <!--            If auction is started then only append the right column-->
 
+<!--            if (auction_start_status===true){-->
+<!--            row.appendChild(rightCol);-->
+<!--            }-->
+
             if (auction_start_status===true){
-            row.appendChild(rightCol);
+           let submit_bid_amt = document.getElementById("submit_bid_amt");
+            if (submit_bid_amt) {
+                console.log("The element is present");
+                submit_bid_amt.style.display = "block";
+                          }
             }
 
             container.appendChild(row);
@@ -688,7 +744,7 @@ function updateBids() {
     Object.keys(bidsByReq).forEach(reqId => {
         const field = document.getElementById(`previous_bids_${reqId}`);
         if (field) {
-            field.textContent = `Rates History: ${bidsByReq[reqId].join(" >> ")}`;
+            field.textContent = `Rates History: ${bidsByReq[reqId].join(">")}`;
         }
     });
 
@@ -696,7 +752,7 @@ function updateBids() {
     latestUserRanks.forEach(rank => {
         const field = document.getElementById(`user_rank_${rank.bid_id}`);  // ✅ use bid_id
         if (field) {
-            field.textContent = `Rank: ${rank.rank} (Best Bid: ₹${rank.bid_rate})`;
+            field.textContent = `Rank: ${rank.rank} (Last Bid: ₹${rank.bid_rate})`;
         }
     });
 }
