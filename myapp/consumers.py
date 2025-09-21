@@ -62,17 +62,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if  auction_start  and auction_end_status == False and  not self.scope['user'].is_superuser :
                 '''Normal users is subscribed to this channel'''
                 bid_group_data = await self.get_all_bid_group(username)
+
                 await self.send(text_data=json.dumps({
                     'type': 'grouped_bid',
                     'bid_group_data': bid_group_data
 
                 }))
 
+
             if  self.scope['user'].is_superuser:
                 '''Only admin is subscribed to this channel'''
                 bid_data = await self.get_all_bid_data(dec_val_vi)
                 for item in bid_data:
-
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
@@ -393,13 +394,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 )
 
                 reqs=await self. get_all_requirements()
-                print("dec_val_vi3:", dec_val_vi)
+                # print("dec_val_vi3:", dec_val_vi)
                 if not dec_val_vi:
                     # reqs[0].update({'min_dec_val': 0})
                     for r in reqs:  # loop through all requirements
                         r['min_dec_val'] = 0
                 auction_start=True
-                print("reqs3:",reqs)
+                # print("reqs3:",reqs)
 
                 await self.channel_layer.group_send(
                     self.room_group_name,

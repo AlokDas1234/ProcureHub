@@ -334,7 +334,7 @@ function submitBid(reqId) {
 
 
 
-    socket.onmessage = function(e) {
+socket.onmessage = function(e) {
         const data = JSON.parse(e.data);
 <!--        console.log("From server:", data);-->
 
@@ -844,7 +844,8 @@ document.addEventListener("input", (e) => {
 <!--        localStorage.removeItem("last_cursor_position");-->
 <!--    }-->
 <!--});-->
-// Save last focused input and cursor position immediately on focus
+
+<!--// Save last focused input and cursor position immediately on focus-->
 document.addEventListener("focusin", (e) => {
     if (e.target.tagName === "INPUT" && e.target.id.startsWith("bid_amt_")) {
         localStorage.setItem("last_focused_input", e.target.id);
