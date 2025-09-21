@@ -62,6 +62,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if  auction_start  and auction_end_status == False and  not self.scope['user'].is_superuser :
                 '''Normal users is subscribed to this channel'''
                 bid_group_data = await self.get_all_bid_group(username)
+                print("bid_group_data in connect:",bid_group_data)
 
                 await self.send(text_data=json.dumps({
                     'type': 'grouped_bid',

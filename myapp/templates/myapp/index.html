@@ -846,12 +846,12 @@ document.addEventListener("input", (e) => {
 <!--});-->
 
 <!--// Save last focused input and cursor position immediately on focus-->
-document.addEventListener("focusin", (e) => {
-    if (e.target.tagName === "INPUT" && e.target.id.startsWith("bid_amt_")) {
-        localStorage.setItem("last_focused_input", e.target.id);
-        localStorage.setItem("last_cursor_position", e.target.selectionStart || 0);
-    }
-});
+<!--document.addEventListener("focusin", (e) => {-->
+<!--    if (e.target.tagName === "INPUT" && e.target.id.startsWith("bid_amt_")) {-->
+<!--        localStorage.setItem("last_focused_input", e.target.id);-->
+<!--        localStorage.setItem("last_cursor_position", e.target.selectionStart || 0);-->
+<!--    }-->
+<!--});-->
 
 
 
