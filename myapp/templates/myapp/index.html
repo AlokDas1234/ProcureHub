@@ -783,10 +783,17 @@ function restoreInputs() {
 restoreInputs();
 
 // Restore scroll position after page reload
-const lastScrollPos = localStorage.getItem("last_scroll_position");
-if (lastScrollPos !== null) {
-    window.scrollTo(0, parseInt(lastScrollPos, 10));
-}
+// Call this after rendering your inputs
+restoreInputs();
+
+// ✅ Delay scroll restore slightly so DOM has time to paint
+setTimeout(() => {
+    const lastScrollPos = localStorage.getItem("last_scroll_position");
+    if (lastScrollPos !== null) {
+        window.scrollTo(0, parseInt(lastScrollPos, 10));
+    }
+}, 100); // 100ms delay usually works
+
 
         updateBids();
     }
