@@ -756,7 +756,7 @@ else  {
         }
     });
 
-       window.scrollTo(0, scrollY);
+<!--       window.scrollTo(0, scrollY);-->
 
 // Restore input values and focus
 
@@ -833,7 +833,10 @@ restoreInputs();
 <!--    }-->
 <!--}, 100);-->
 
-
+   setTimeout(() => {
+        window.scrollTo(0, scrollY);
+        restoreInputs();
+    }, 50);
 
         updateBids();
     }
