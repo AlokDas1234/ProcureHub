@@ -275,25 +275,58 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
     };
 
-    function submitBid(reqId) {
-        const button = document.querySelector(`#submitbid_${reqId}`);
-        const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);
+<!--    function submitBid(reqId) {-->
+<!--        const button = document.querySelector(`#submitbid_${reqId}`);-->
+<!--        const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);-->
 
-        if (bidAmtInput && bidAmtInput.value.trim()) {
-            button.disabled = true;
-            socket.send(JSON.stringify({
-                type: 'submit_bid',
-                req_id: reqId,
-                bid_amt: bidAmtInput.value.trim()
-            }));
+<!--        if (bidAmtInput && bidAmtInput.value.trim()) {-->
+<!--            button.disabled = true;-->
+<!--            socket.send(JSON.stringify({-->
+<!--                type: 'submit_bid',-->
+<!--                req_id: reqId,-->
+<!--                bid_amt: bidAmtInput.value.trim()-->
+<!--            }));-->
+<!--            setTimeout(() => {-->
+<!--            bidAmtInput.value = "";-->
+<!--            localStorage.removeItem("bid_amt_"+reqId);-->
 
-            setTimeout(() => {
-                button.disabled = false;
-                bidAmtInput.value = "";
-                socket.send(JSON.stringify({ type: 'grouped_bid' }));
-            }, 300);
+<!--        }, 300);-->
+<!--        }-->
+<!--    }-->
+
+
+
+function submitBid(reqId) {
+    const button = document.querySelector(`#submitbid_${reqId}`);
+    const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);
+
+    if (bidAmtInput && bidAmtInput.value.trim()) {
+        button.disabled = true;
+
+        // ✅ Clear storage immediately (before re-render)
+        try {
+            localStorage.removeItem("bid_amt_" + reqId);
+        } catch (e) {
+            console.error("Failed to clear localStorage:", e);
         }
+
+        socket.send(JSON.stringify({
+            type: 'submit_bid',
+            req_id: reqId,
+            bid_amt: bidAmtInput.value.trim()
+        }));
+
+        // ✅ Clear input field immediately, not delayed
+        bidAmtInput.value = "";
+
+        setTimeout(() => {
+            button.disabled = false;
+<!--            socket.send(JSON.stringify({ type: 'grouped_bid' }));-->
+        }, 300);
     }
+}
+
+
 
 
 
@@ -645,15 +678,15 @@ else  {
                    <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
 
                    <div id="submit_bid_amt_${req.id}">
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                        <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
-                               style="flex: 2; padding: 8px; font-size: 14px;">
-                        <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
-                                style="flex: 1; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                            Submit Bid
-                        </button>
-                    </div>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
+                           style="flex: 2; padding: 8px; font-size: 14px;">
+                    <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
+                            style="flex: 1; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Submit Bid
+                    </button>
                 </div>
+            </div>
 
                </div>
 
@@ -724,6 +757,13 @@ else  {
             container.appendChild(row);
         });
 
+    requirements.forEach(req => {
+        const input = document.getElementById(`bid_amt_${req.id}`);
+        if (input) {
+            input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";
+        }
+    });
+
         updateBids();
     }
 
@@ -756,6 +796,12 @@ function updateBids() {
         }
     });
 }
+// Save input values in localStorage whenever user types
+document.addEventListener("input", (e) => {
+    if (e.target.id.startsWith("bid_amt_")) {
+        localStorage.setItem(e.target.id, e.target.value);
+    }
+});
 
 
 
