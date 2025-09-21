@@ -749,18 +749,22 @@ else  {
         }
     });
     // ✅ Restore focus and cursor position if user was typing
-const lastFocusedId = localStorage.getItem("last_focused_input");
-const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
+// ✅ Delay focus restoration until DOM is ready
+setTimeout(() => {
+    const lastFocusedId = localStorage.getItem("last_focused_input");
+    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
 
-if (lastFocusedId) {
-    const focusedInput = document.getElementById(lastFocusedId);
-    if (focusedInput) {
-        focusedInput.focus();
-        if (!isNaN(lastCursorPos)) {
-            focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
+    if (lastFocusedId) {
+        const focusedInput = document.getElementById(lastFocusedId);
+        if (focusedInput) {
+            focusedInput.focus();
+            if (!isNaN(lastCursorPos)) {
+                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
+            }
         }
     }
-}
+}, 50); // wait a bit for DOM to finish rendering
+
 
 
         updateBids();
