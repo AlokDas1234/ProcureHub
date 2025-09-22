@@ -850,6 +850,28 @@ function restoreInputs() {
 <!--            }-->
 <!--        }-->
 <!--    }-->
+
+
+    if (lastFocusedId) {
+        const focusedInput = document.getElementById(lastFocusedId);
+        if (focusedInput) {
+            const rect = focusedInput.getBoundingClientRect();
+
+            // check if input is currently visible in viewport
+            const inViewport =
+                rect.top >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight);
+
+            if (inViewport) {
+                // Only restore focus if the user is still seeing this field
+                focusedInput.focus();
+                if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
+                    focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
+                }
+            }
+        }
+    }
+
 }
 
 <!--function restoreInputs() {-->
