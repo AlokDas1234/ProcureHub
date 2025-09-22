@@ -402,15 +402,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 auction_start=True
                 # print("reqs3:",reqs)
 
-                # await self.channel_layer.group_send(
-                #     self.room_group_name,
-                #     {
-                #         'type': 'load_requirements',
-                #         'requirements': reqs,
-                #         'len_reqs': len(reqs),
-                #         "auction_start_status": auction_start,
-                #     }
-                # )
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'load_requirements',
+                        'requirements': reqs,
+                        'len_reqs': len(reqs),
+                        "auction_start_status": auction_start,
+                    }
+                )
 
 
                 await self.channel_layer.group_send(
