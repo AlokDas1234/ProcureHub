@@ -507,7 +507,7 @@ else  {
 
 
  function renderRequirements(requirements,auction_start_status) {
- const scrollY = window.scrollY;
+<!-- const scrollY = window.scrollY;-->
 
 
 
@@ -756,7 +756,7 @@ else  {
         }
     });
 
-       window.scrollTo(0, scrollY);
+<!--       window.scrollTo(0, scrollY);-->
 
 // Restore input values and focus
 
@@ -772,16 +772,16 @@ function restoreInputs() {
     });
 
     // Restore focus safely
-    if (lastFocusedId) {
-        const focusedInput = document.getElementById(lastFocusedId);
-        if (focusedInput) {
-            focusedInput.focus();
-            // Only try to set cursor if input type allows it
-            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
-                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
-            }
-        }
-    }
+<!--    if (lastFocusedId) {-->
+<!--        const focusedInput = document.getElementById(lastFocusedId);-->
+<!--        if (focusedInput) {-->
+<!--            focusedInput.focus();-->
+<!--            // Only try to set cursor if input type allows it-->
+<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
+<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
 }
 
 // Call this after rendering your inputs
