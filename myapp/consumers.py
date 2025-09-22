@@ -493,7 +493,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'type': 'bids_per_requirement',
             'bid_id': event['bid_id'],
             'bids_by': event['bids_by'],
-            'bid_req': event['requirement'],
+            'bid_req': event['bid_req'],
             'bid_rate': event['bid_rate']
         }))
 
