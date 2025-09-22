@@ -80,7 +80,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             "type": "bids_per_requirement",
                             'bid_id': item['bid_id'],
                             'bids_by': item['bid_by'],
-                            'requirement': item['requirement'],
+                            'bid_req': item['requirement'],
                             'bid_rate': item['bid_rate']
                         }
                     )
