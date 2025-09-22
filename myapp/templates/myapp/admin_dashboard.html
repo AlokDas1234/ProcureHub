@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,16 +40,13 @@
         p {
             margin: 5px 0;
         }
-.requirement-card button {
-    margin-top: 4px !important; /* pull the button closer */
-}
+
 .requirement-card {
     display: flex;
     align-items: stretch; /* Ensure children take full height */
     border-radius: 8px;
     overflow: hidden;
-<!--    margin-bottom: 1rem;-->
-margin-bottom: 2px !important; /* reduce spacing between paragraphs */
+    margin-bottom: 1rem;
 }
 
 .vertical-label {
@@ -61,11 +59,10 @@ margin-bottom: 2px !important; /* reduce spacing between paragraphs */
     display: flex;
     align-items: center;   /* Center text vertically in strip */
     justify-content: center; /* Center text horizontally in strip */
-    padding: 0 ;
+    padding: 0 10px;
     height: 100%;           /* Take full height of parent */
     min-width: 50px;        /* Consistent strip width */
     font-size: 30px;
-
 }
 
 
@@ -565,16 +562,15 @@ input:checked + .slider:before {
                     <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> {{ requirement.id }}</h2>
 
                 </div>
-                    <div class="p-2">
+                    <div class="p-0">
                                 <p style="background-color: {% if not requirement.loading_point %}#EFADF0{% else %}transparent{% endif %};">
                                     <strong>Loading:</strong> {{ requirement.loading_point }}
                                 </p>
-<!--                                 <p><strong></strong> {{ requirement.loading_point_full_address }}</p>-->
+                                 <p><strong></strong> {{ requirement.loading_point_full_address }}</p>
 
                                 <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.loading_point_full_address|urlencode }}" target="_blank">
-                                    {{ requirement.loading_point_full_address }}
+                                    📍 View Loading Address on Map
                                 </a>
-
                                 <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};
                                       padding-top: 10px;">
                                       <strong>Unloading:</strong> {{ requirement.unloading_point }}
@@ -583,16 +579,24 @@ input:checked + .slider:before {
 
 
 
+<!--                                <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">-->
+<!--                                    <strong>Unloading:</strong> {{ requirement.unloading_point }}-->
+<!--                                </p>-->
 
+
+<!--                    <label  for="loading_point_full">3. Loading Point Full Address</label>-->
+<!--                    <textarea class="form-control" name="loading_point_full"  rows="4" placeholder="Enter full loading address" required>"{{ requirement.loading_point_full_address }}"</textarea>-->
+
+
+            <p><strong></strong> {{ requirement.unloading_point_full_address }}</p>
 
                 <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.unloading_point_full_address|urlencode }}" target="_blank">
-                   {{ requirement.unloading_point_full_address }}
+                    📍 View Unloading Address on Map
                 </a>
 
                         <hr>
-
-<!--                        <div class="row">-->
-                            <div style="display: flex; gap: 5px;">
+<!--                        <h3> Requirements:</h3>-->
+                        <div class="row">
                             <div class="col md-8">
                                 <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
                                     <strong>Truck:</strong> {{ requirement.truck_type }}
@@ -604,38 +608,34 @@ input:checked + .slider:before {
                                         <strong>No of Truck:</strong> {{ requirement.no_of_trucks }}
                                     </p>
                                 </div>
-                            </div>
-<!--                        </div>-->
-
-            <div style="display: flex; gap: 5px;">
-            <p><strong>Product Type:</strong> {{ requirement.product }}</p>
-                 <p><strong>Types:</strong> {{ requirement.types }}</p>
-                </div>
+                        </div>
+<!--           <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">-->
+<!--                <strong>7. Qty:</strong> {{ requirement.qty }}-->
+<!--            </p>-->
+                         <div style="display: flex; gap: 5px;">
+                         <p><strong>Product Type:</strong> {{ requirement.product }}</p>
+                            <p><strong>Types:</strong> {{ requirement.types }}</p>
+                             </div>
 
              <p style="background-color: {% if not requirement.notes %}#EFADF0{% else %}transparent{% endif %};">
                 <strong>Notes:</strong> {{ requirement.notes }}
             </p>
-                        <div style="display: flex; gap: 5px;">
-                            <p><strong>Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
-                            <p><strong>Weight Per Drum(kg):</strong> {{ requirement.weight_per_drum }}</p>
-                            </div>
 
-
+            <p><strong>Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
+            <p><strong>Weight Per Drum(kg):</strong> {{ requirement.weight_per_drum }}</p>
             <p><strong>Approx Material Wait (Mt):</strong> {{ requirement.approx_mat_mt}}</p>
 
                       <hr>
-
-            <div style="display: flex; gap: 5px;">
+<!--            <h3> Bidding Strategy:</h3>-->
             <p><strong>Ceiling Price:</strong> {{ requirement.cel_price }}</p>
             <p><strong>Minimal Decremental value:</strong> {{ requirement.min_dec_val }}</p>
-                </div>
                         </div>
 
-                        <button style="width: 100%; margin-top: auto; border-radius: 1px; margin-bottom: 0; padding-bottom: 0;"
-            onclick="delReq({{ requirement.id }})"
-            class="btn btn-sm btn-danger">Delete</button>
 
 
+                    <button style="width: 100%; margin-top: auto; border-radius: 1px; margin-bottom: 0; padding-bottom: 0;"
+        onclick="delReq({{ requirement.id }})"
+        class="btn btn-sm btn-danger">Delete</button>
 
                     <!-- other fields here -->
                 </div>
@@ -669,6 +669,28 @@ input:checked + .slider:before {
 
 
 </div>
+
+<!--            <div style="text-align:right">-->
+<!--                <form method="POST" action="{% url 'delete_all_bids' %}"-->
+<!--                          onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
+<!--                        {% csrf_token %}-->
+<!--                        <button id="del_bids_btn" type="submit"  style="display:none">-->
+<!--                            Delete All Bids-->
+<!--                        </button>-->
+<!--                    </form>-->
+
+
+<!--            </div>-->
+
+<!--    <div class="d-flex justify-content-end">-->
+<!--      <form method="POST" action="{% url 'delete_all_bids' %}"-->
+<!--            onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
+<!--          {% csrf_token %}-->
+<!--          <button id="del_bids_btn" type="submit" class="btn btn-danger mt-3 mb-0" style="display:none;">-->
+<!--              Delete All Bids-->
+<!--          </button>-->
+<!--      </form>-->
+<!--    </div>-->
 
 
 <div class="row">
@@ -720,7 +742,17 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
     socket.onmessage = function (e) {
         const data = JSON.parse(e.data);
+<!--          if (data.type === 'timer_update') {-->
+<!--        console.log("Update Timer:", data.minutes);-->
 
+<!--        // Loop over all requirements and update each timer-->
+<!--       Object.keys(bidGroups).forEach(reqId => {-->
+<!--        const timerEl = document.getElementById(`remaining-time-${reqId}`);-->
+<!--        if (timerEl) {-->
+<!--            timerEl.textContent = `Remaining Time: ${data.minutes}`;-->
+<!--        }-->
+<!--    });-->
+<!--    }-->
   if (data.type === 'timer_update') {
 <!--        console.log("Update Timer:", data.minutes);-->
 
@@ -898,10 +930,10 @@ function renderBids() {
         bidDiv.innerHTML = `
             <h1>RECEIVED BIDS:</h1>
             <hr>
-             <div style="height: 50px; display: flex; background-color: transparent;">
+             <div style="height: 45px; display: flex; background-color: transparent;">
            <h4 id="remaining-time-${req.id}"></h4>
            </div>
-           <div class="progress" style="height: 12px; margin:0;">
+           <div class="progress" style="height: 18px;">
         <div id="progress-bar-${req.id}"
              class="progress-bar bg-success"
              role="progressbar"
@@ -938,7 +970,11 @@ function renderBids() {
                 <hr>
 
 
-
+<!--                <h3>Approve Bid</h3>-->
+<!--                <label for ="bid-approve" class="switch">-->
+<!--                  <input  id="bid-approve"  name="bid-approve" type="checkbox" checked>-->
+<!--                  <span class="slider round"></span>-->
+<!--                </label>-->
 
             `;
         });
@@ -1115,7 +1151,13 @@ document.getElementById("bulk-upload-btn").addEventListener("click", () => {
 
 
 <script>
-
+<!--function loadPost() {-->
+<!--    if (socket.readyState === WebSocket.OPEN) {-->
+<!--        socket.send(JSON.stringify({ action: "load_requirements" }));-->
+<!--    } else {-->
+<!--        alert("WebSocket not ready");-->
+<!--    }-->
+<!--}-->
 
 function closeModal() {
     document.getElementById("upload-modal").style.display = "none";
@@ -1124,7 +1166,11 @@ function closeModal() {
 </script>
 
 
-
+<!--<script>-->
+<!--    $(document).ready(function () {-->
+<!--        $('.selectpicker').selectpicker();-->
+<!--    });-->
+<!--</script>-->
 
 
 <script>
