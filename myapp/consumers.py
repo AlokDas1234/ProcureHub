@@ -70,7 +70,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                 }))
 
-
             if  self.scope['user'].is_superuser:
                 '''Only admin is subscribed to this channel'''
                 bid_data = await self.get_all_bid_data(dec_val_vi)
@@ -403,15 +402,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 auction_start=True
                 # print("reqs3:",reqs)
 
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        'type': 'load_requirements',
-                        'requirements': reqs,
-                        'len_reqs': len(reqs),
-                        "auction_start_status": auction_start,
-                    }
-                )
+                # await self.channel_layer.group_send(
+                #     self.room_group_name,
+                #     {
+                #         'type': 'load_requirements',
+                #         'requirements': reqs,
+                #         'len_reqs': len(reqs),
+                #         "auction_start_status": auction_start,
+                #     }
+                # )
 
 
                 await self.channel_layer.group_send(
