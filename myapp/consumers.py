@@ -412,7 +412,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'type': 'bids_per_requirement',
                         'bid_id': bid_instance.id,
                         'bids_by': user.username,
-                        'requirement': {
+                        'bid_req': {
                             'id': requirement.id,
                             'loading_point': requirement.loading_point,
                             'unloading_point': requirement.unloading_point,
