@@ -469,7 +469,7 @@ else  {
 
 
 }
-
+  let lastRequirementsJSON = ""; // define once at top of your script
         if (data.type === 'requirements') {
 
         let total_req_div = document.getElementById("total_req_div");
@@ -479,7 +479,16 @@ else  {
 
 <!--        console.log("Auction Start Status:", data.auction_start_status);-->
 
-            renderRequirements(data.data,data.auction_start_status);
+<!--            renderRequirements(data.data,data.auction_start_status);-->
+
+          const newJSON = JSON.stringify(data.data);
+            if (newJSON !== lastRequirementsJSON) {
+                lastRequirementsJSON = newJSON;
+                renderRequirements(data.data, data.auction_start_status);
+            } else {
+                // console.log("No change → skip re-render → no flicker");
+            }
+
         }
 
 
@@ -756,7 +765,7 @@ else  {
         }
     });
 
-<!--       window.scrollTo(0, scrollY);-->
+       window.scrollTo(0, scrollY);
 
 // Restore input values and focus
 
@@ -843,7 +852,6 @@ restoreInputs();
 
 
 function updateBids() {
-
 
     // Group this user’s bids by requirement
     const bidsByReq = {};
