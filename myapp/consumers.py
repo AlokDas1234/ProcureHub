@@ -85,13 +85,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }
                     )
 
-                    # await self.send(text_data=json.dumps({
-                    #     'type': 'bids_per_requirement',
-                    #             'bid_id': item['bid_id'],
-                    #             'bids_by': item['bid_by'],
-                    #             'requirement': item['requirement'],
-                    #             'bid_rate': item['bid_rate']
-                    # }))
 
 
 
