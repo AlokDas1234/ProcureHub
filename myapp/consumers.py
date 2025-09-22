@@ -72,18 +72,36 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             if  self.scope['user'].is_superuser:
                 '''Only admin is subscribed to this channel'''
-                bid_data = await self.get_all_bid_data(dec_val_vi)
-                for item in bid_data:
+                ranked_bids = await self.get_ranked_bids()
+
+                for item in ranked_bids:
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
                             "type": "bids_per_requirement",
-                            'bid_id': item['bid_id'],
-                            'bids_by': item['bid_by'],
-                            'bid_req': item['requirement'],
-                            'bid_rate': item['bid_rate']
+                            "bid_req": item["requirement"],
+                            "top_bidders": [
+                                {
+                                    "username": bidder["user__username"],
+                                    "rate": bidder["rate"],
+                                    "rank": bidder["rank"],
+                                }
+                                for bidder in item["top_bidders"]
+                            ]
                         }
                     )
+                # bid_data = await self.get_all_bid_data(dec_val_vi)
+                # for item in bid_data:
+                #     await self.channel_layer.group_send(
+                #         self.room_group_name,
+                #         {
+                #             "type": "bids_per_requirement",
+                #             'bid_id': item['bid_id'],
+                #             'bids_by': item['bid_by'],
+                #             'bid_req': item['requirement'],
+                #             'bid_rate': item['bid_rate']
+                #         }
+                #     )
 
 
 
@@ -481,13 +499,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'auction_start_status': event['auction_start_status']
         }))
 
+    # async def bids_per_requirement(self, event):
+    #     await self.send(text_data=json.dumps({
+    #         'type': 'bids_per_requirement',
+    #         'bid_id': event['bid_id'],
+    #         'bids_by': event['bids_by'],
+    #         'bid_req': event['bid_req'],
+    #         'bid_rate': event['bid_rate']
+    #     }))
     async def bids_per_requirement(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'bids_per_requirement',
-            'bid_id': event['bid_id'],
-            'bids_by': event['bids_by'],
-            'bid_req': event['bid_req'],
-            'bid_rate': event['bid_rate']
+            "type": "bids_per_requirement",
+            "bid_req": event["bid_req"],
+            "top_bidders": event["top_bidders"],
         }))
 
     async def send_bid_graph(self, event):
@@ -671,6 +695,99 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     },
                     'bid_rate': bid.rate
                 })
+        return result
+    #
+    # @ async_to_sync
+    # def users_bis_history(self):
+    #     all_bids = Bid.objects.all().values(
+    #         # "id", "user__username", "req__id",
+    #         # "req__loading_point", "req__unloading_point",
+    #         # "req__product", "req__truck_type",
+    #         # "rate", "created_at"
+    #         "id", "user__username", "req__id",
+    #         "req__loading_point", "req__unloading_point",
+    #         "req__product", "req__truck_type", "req__no_of_trucks", "req__notes", "req__drum_type_no_of_drums",
+    #         "req__approx_mat_mt", "req__weight_per_drum",
+    #         "rate", "created_at"
+    #     )
+    #     rank_df = pd.DataFrame(list(all_bids))
+    #
+    #     # make sure created_at is datetime
+    #     rank_df["created_at"] = pd.to_datetime(rank_df["created_at"])
+    #
+    #     # Pick the lowest rate per user per requirement, tie-break by earliest created_at
+    #     lowest_bids = rank_df.sort_values(["req__id", "rate", "created_at"]).groupby(
+    #         ["req__id", "user__username"], as_index=False
+    #     ).first()
+    #
+    #     # Rank them within each requirement (rate first, created_at as tiebreaker)
+    #     lowest_bids = lowest_bids.sort_values(["req__id", "rate", "created_at"])
+    #     lowest_bids["Rank"] = lowest_bids.groupby("req__id").cumcount() + 1
+    #
+    #     # Keep only ranks 1 to 4
+    #     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
+    #     return rank_df
+
+    @sync_to_async
+    def get_ranked_bids(self):
+        # 1️⃣ Fetch all bids with requirement + user info
+        all_bids = Bid.objects.select_related("req", "user").values(
+            "id",
+            "user__username",
+            "req__id",
+            "req__loading_point",
+            "req__unloading_point",
+            "req__product",
+            "req__truck_type",
+            "req__no_of_trucks",
+            "req__notes",
+            "req__drum_type_no_of_drums",
+            "req__approx_mat_mt",
+            "req__weight_per_drum",
+            "rate",
+            "created_at"
+        )
+
+        if not all_bids:
+            return []  # No bids yet
+
+        df = pd.DataFrame(list(all_bids))
+        df["created_at"] = pd.to_datetime(df["created_at"])
+
+        # 2️⃣ Pick lowest rate per user per requirement, tie-break by earliest time
+        lowest_bids = (
+            df.sort_values(["req__id", "rate", "created_at"])
+            .groupby(["req__id", "user__username"], as_index=False)
+            .first()
+        )
+
+        # 3️⃣ Rank within each requirement
+        lowest_bids = lowest_bids.sort_values(["req__id", "rate", "created_at"])
+        lowest_bids["rank"] = lowest_bids.groupby("req__id").cumcount() + 1
+
+        # 4️⃣ Keep only top 4 ranks
+        top4 = lowest_bids[lowest_bids["rank"] <= 4]
+
+        # 5️⃣ Convert to list of dicts (grouped by requirement)
+        result = []
+        for req_id, group in top4.groupby("req__id"):
+            requirement = group.iloc[0]  # pick first row to get requirement info
+            result.append({
+                "requirement": {
+                    "id": requirement["req__id"],
+                    "loading_point": requirement["req__loading_point"],
+                    "unloading_point": requirement["req__unloading_point"],
+                    "product": requirement["req__product"],
+                    "truck_type": requirement["req__truck_type"],
+                    "no_of_trucks": requirement["req__no_of_trucks"],
+                    "notes": requirement["req__notes"],
+                    "drum_type_no_of_drums": requirement["req__drum_type_no_of_drums"],
+                    "approx_mat_mt": requirement["req__approx_mat_mt"],
+                    "weight_per_drum": requirement["req__weight_per_drum"],
+                },
+                "top_bidders": group.to_dict("records")
+            })
+
         return result
 
 
