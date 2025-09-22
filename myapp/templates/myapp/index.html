@@ -515,277 +515,335 @@ else  {
         };
 
 
- function renderRequirements(requirements,auction_start_status) {
- const scrollY = window.scrollY;
+<!-- function renderRequirements(requirements,auction_start_status) {-->
+<!-- const scrollY = window.scrollY;-->
 
 
 
-<!--        console.log("requirements:", requirements);-->
+<!--&lt;!&ndash;        console.log("requirements:", requirements);&ndash;&gt;-->
 
-        const container = document.getElementById('main-container');
 <!--        const container = document.getElementById('main-container');-->
-        container.innerHTML = ` `;
+<!--&lt;!&ndash;        const container = document.getElementById('main-container');&ndash;&gt;-->
+<!--        container.innerHTML = ` `;-->
 
-        requirements.forEach((req, index) => {  // <-- index is here
-            const row = document.createElement('div');
-            row.className = 'row';
-            row.id = `req_row_${req.id}`;
+<!--        requirements.forEach((req, index) => {  // <&#45;&#45; index is here-->
+<!--            const row = document.createElement('div');-->
+<!--            row.className = 'row';-->
+<!--            row.id = `req_row_${req.id}`;-->
 
 
 
-             const leftCol = document.createElement('div');
-             leftCol.className = 'col col-left';
+<!--             const leftCol = document.createElement('div');-->
+<!--             leftCol.className = 'col col-left';-->
 
-            leftCol.innerHTML = `
-                <div style="display: flex; align-items: stretch;">
-                    <div class="vertical-label">
-                        <span>#REQUIREMENT ${index + 1}</span>
-                    </div>
-                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding-bottom: 0; padding-top: 0;">
-<!--                    <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">-->
-<!--                        <h4 style="margin: 0;"><strong>REQUIREMENT ID:${req.id} </strong> <span id="remaining-time-${req.id}"></span></h2>-->
+<!--            leftCol.innerHTML = `-->
+<!--                <div style="display: flex; align-items: stretch;">-->
+<!--                    <div class="vertical-label">-->
+<!--                        <span>#REQUIREMENT ${index + 1}</span>-->
+<!--                    </div>-->
+<!--                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding-bottom: 0; padding-top: 0;">-->
+
+
+
+
+
+<!--<div class="progress" style="height: 30px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">-->
+
+<!--  &lt;!&ndash; Shrinking bar &ndash;&gt;-->
+<!--  <div id="progress-bar-${req.id}"-->
+<!--       class="progress-bar green"-->
+<!--       style="width: 100%; height: 100%;">-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; Fixed text layer (stays in center regardless of bar width) &ndash;&gt;-->
+<!--  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;-->
+<!--              display: flex; align-items: center; justify-content: center;-->
+<!--              font-weight: bold; color: white; pointer-events: none;">-->
+<!--    REQUIREMENT ID: ${req.id} | <span id="remaining-time-${req.id}"></span>-->
+<!--  </div>-->
+
+<!--</div>-->
+
+
+
+
+<!--                    <div class="p-1" style="margin-left:0.5rem;">-->
+
+<!--                           <div class="row no-border">-->
+<!--                           <div class="col-md-6">-->
+<!--&lt;!&ndash;                             <div style="display: flex; gap: 10px;">&ndash;&gt;-->
+
+<!--                        <p style="margin:0;"><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>-->
+
+<!--                      <p style="margin:0;">-->
+<!--                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">-->
+<!--                             ${ req.loading_point_full_address}-->
+<!--                            </a>-->
+<!--                        </p>-->
+
+<!--                        </div>-->
+
+<!--                         <div class="col-md-6">-->
+
+
+<!--                          </div>-->
+<!--                          </div>-->
+<!--                            <p style="margin:0;"><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>-->
+
+
+<!--                        <p style="margin:0;">-->
+<!--                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">-->
+<!--                               ${req.unloading_point_full_address}-->
+<!--                            </a>-->
+<!--                        </p>-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+
+<!--                        <hr>-->
+<!--                        <div style="display: flex; gap: 5px;">-->
+<!--                                          <p style="margin:0;">-->
+<!--                                            <strong style="color: ${req.truck_type ? '#05ACFA' : '#EFADF0'};">Truck:</strong>-->
+<!--                                            ${req.truck_type || ''}-->
+<!--                                          </p>-->
+
+<!--                                          <p style="margin:0;">-->
+<!--                                            <strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong>-->
+<!--                                            ${req.no_of_trucks || ''}-->
+<!--                                          </p>-->
+
+<!--                                          <p style="margin:0;">-->
+<!--                              <strong style="color: ${req.product ? '#05ACFA' : '#EFADF0'};">-->
+<!--                                Product Type:-->
+<!--                              </strong>-->
+<!--                              ${req.product || ''} with ${req.drum_type_no_of_drums || ''} Drums-->
+<!--                            </p>-->
+
+<!--                            <p style="margin:0;">-->
+<!--                          <strong style="color: ${req.types ? '#05ACFA' : '#EFADF0'};">-->
+<!--                            Types:-->
+<!--                          </strong>-->
+<!--                          ${req.types || ''}-->
+<!--                        </p>-->
+<!--                                        </div>-->
+
+
+
+
+<!--                       <div style="display: flex; gap: 5px; margin:2;">-->
+<!--                        <p style="margin:0;">-->
+<!--                              <strong style="color: ${req.approx_mat_mt ? '#05ACFA' : '#EFADF0'};">-->
+<!--                                Approx Material Wait (MT):-->
+<!--                              </strong>-->
+<!--                              ${req.approx_mat_mt || ''}-->
+<!--                            </p>-->
+
+<!--                             <p style="margin:0;">-->
+<!--                          <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">-->
+<!--                            Weight Per Drum:-->
+<!--                          </strong>-->
+<!--                          ${req.weight_per_drum || ''}-->
+<!--                        </p>-->
+
+
+
+
+<!--                                              <p style="margin:0;">-->
+<!--                      <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">-->
+<!--                        Notes:-->
+<!--                      </strong>-->
+<!--                      ${req.notes || ''}-->
+<!--                    </p>-->
+<!--                        </div>-->
+<!--                                                   <hr>-->
+<!--                           <div style="display: flex; gap: 4px;">-->
+<!--                          <p style="margin:0;">-->
+<!--                            <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">-->
+<!--                              Ceiling Price:-->
+<!--                            </strong>-->
+<!--                            ${req.cel_price || ''}-->
+<!--                          </p>-->
+
+<!--                          <p style="margin:0;">-->
+<!--                            <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">-->
+<!--                              Minimal Decremental Value:-->
+<!--                            </strong>-->
+<!--                            ${req.min_dec_val || ''}-->
+<!--                          </p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <hr>-->
+<!--                    <h4 id= "previous_bids_${req.id}"></h4>-->
+<!--                   <p id="user_rank_${req.id}" style="color: lightgreen;"></p>-->
+
+<!--                  <div id="submit_bid_amt_${req.id}">-->
+<!--                        <div style="display: flex; gap: 6px; align-items: center;">-->
+<!--                            <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"-->
+<!--                                   style="flex: 1; padding: 8px; font-size: 14px;">-->
+<!--                            <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"-->
+<!--                                    style="flex: 2; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">-->
+<!--                                Submit Bid-->
+<!--                            </button>-->
+<!--                        </div>-->
 <!--                    </div>-->
 
 
 
+<!--               </div>-->
 
-<div class="progress" style="height: 30px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">
-
-  <!-- Shrinking bar -->
-  <div id="progress-bar-${req.id}"
-       class="progress-bar green"
-       style="width: 100%; height: 100%;">
-  </div>
-
-  <!-- Fixed text layer (stays in center regardless of bar width) -->
-  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-              display: flex; align-items: center; justify-content: center;
-              font-weight: bold; color: white; pointer-events: none;">
-    REQUIREMENT ID: ${req.id} | <span id="remaining-time-${req.id}"></span>
-  </div>
-
-</div>
+<!--              </div>-->
+<!--            `;-->
 
 
 
+<!--            if (auction_start_status===true){-->
+<!--           let submit_bid_amt = document.getElementById("submit_bid_amt");-->
+<!--            if (submit_bid_amt) {-->
+<!--                console.log("The element is present");-->
+<!--                submit_bid_amt.style.display = "block";-->
+<!--                          }-->
+<!--            }-->
 
+<!--            container.appendChild(row);-->
+<!--        });-->
+
+<!--    requirements.forEach(req => {-->
+<!--        const input = document.getElementById(`bid_amt_${req.id}`);-->
+<!--        if (input) {-->
+<!--            input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";-->
+<!--        }-->
+<!--    });-->
+
+<!--       window.scrollTo(0, scrollY);-->
+
+<!--// Restore input values and focus-->
+
+<!--function restoreInputs() {-->
+<!--    const container = document.getElementById("main-container");-->
+<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
+<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
+
+<!--    // Restore all saved input values-->
+<!--    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {-->
+<!--        const savedVal = localStorage.getItem(input.id);-->
+<!--        if (savedVal !== null) input.value = savedVal;-->
+<!--    });-->
+
+<!--    // Restore focus safely-->
+<!--    if (lastFocusedId) {-->
+<!--        const focusedInput = document.getElementById(lastFocusedId);-->
+<!--        if (focusedInput) {-->
+<!--            focusedInput.focus();-->
+<!--            // Only try to set cursor if input type allows it-->
+<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
+<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+<!--}-->
+
+
+function renderRequirements(requirements, auction_start_status) {
+    const scrollY = window.scrollY;
+    const container = document.getElementById('main-container');
+
+    // ✅ Build in memory first
+    const fragment = document.createDocumentFragment();
+
+    requirements.forEach((req, index) => {
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.id = `req_row_${req.id}`;
+
+        const leftCol = document.createElement('div');
+        leftCol.className = 'col col-left';
+
+        leftCol.innerHTML = `
+            <div style="display: flex; align-items: stretch;">
+                <div class="vertical-label">
+                    <span>#REQUIREMENT ${index + 1}</span>
+                </div>
+                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding:0;">
+                    <!-- ✅ your existing progress bar + requirement details -->
+                    <div class="progress" style="height: 30px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">
+                        <div id="progress-bar-${req.id}" class="progress-bar green" style="width: 100%; height: 100%;"></div>
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                    display: flex; align-items: center; justify-content: center;
+                                    font-weight: bold; color: white; pointer-events: none;">
+                            REQUIREMENT ID: ${req.id} | <span id="remaining-time-${req.id}"></span>
+                        </div>
+                    </div>
+
+                    <!-- rest of your details exactly as you have them -->
                     <div class="p-1" style="margin-left:0.5rem;">
+<!--                        <p style="margin:0;">-->
+<!--                            <strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong>-->
+<!--                            ${req.loading_point || ''}-->
+<!--                        </p>-->
+                        <!-- keep your other fields here (unloading, product, truck type, etc.) -->
 
-                           <div class="row no-border">
-                           <div class="col-md-6">
-<!--                             <div style="display: flex; gap: 10px;">-->
 
                         <p style="margin:0;"><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
 
-                      <p style="margin:0;">
+                           <p style="margin:0;">
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">
                              ${ req.loading_point_full_address}
                             </a>
                         </p>
-
-                        </div>
-
-                         <div class="col-md-6">
-
-
-                          </div>
-                          </div>
-                            <p style="margin:0;"><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>
-
-
-                        <p style="margin:0;">
-                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">
-                               ${req.unloading_point_full_address}
-                            </a>
-                        </p>
-<!--                        </div>-->
-
                         <hr>
-                        <div style="display: flex; gap: 5px;">
-                                          <p style="margin:0;">
-                                            <strong style="color: ${req.truck_type ? '#05ACFA' : '#EFADF0'};">Truck:</strong>
-                                            ${req.truck_type || ''}
-                                          </p>
+                        <h4 id="previous_bids_${req.id}"></h4>
+                        <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
 
-                                          <p style="margin:0;">
-                                            <strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong>
-                                            ${req.no_of_trucks || ''}
-                                          </p>
-
-                                          <p style="margin:0;">
-                              <strong style="color: ${req.product ? '#05ACFA' : '#EFADF0'};">
-                                Product Type:
-                              </strong>
-                              ${req.product || ''} with ${req.drum_type_no_of_drums || ''} Drums
-                            </p>
-
-                            <p style="margin:0;">
-                          <strong style="color: ${req.types ? '#05ACFA' : '#EFADF0'};">
-                            Types:
-                          </strong>
-                          ${req.types || ''}
-                        </p>
-                                        </div>
-
-
-
-
-                       <div style="display: flex; gap: 5px; margin:2;">
-                        <p style="margin:0;">
-                              <strong style="color: ${req.approx_mat_mt ? '#05ACFA' : '#EFADF0'};">
-                                Approx Material Wait (MT):
-                              </strong>
-                              ${req.approx_mat_mt || ''}
-                            </p>
-
-                             <p style="margin:0;">
-                          <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
-                            Weight Per Drum:
-                          </strong>
-                          ${req.weight_per_drum || ''}
-                        </p>
-
-
-
-
-                                              <p style="margin:0;">
-                      <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">
-                        Notes:
-                      </strong>
-                      ${req.notes || ''}
-                    </p>
-                        </div>
-                                                   <hr>
-                           <div style="display: flex; gap: 4px;">
-                          <p style="margin:0;">
-                            <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
-                              Ceiling Price:
-                            </strong>
-                            ${req.cel_price || ''}
-                          </p>
-
-                          <p style="margin:0;">
-                            <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">
-                              Minimal Decremental Value:
-                            </strong>
-                            ${req.min_dec_val || ''}
-                          </p>
+                        <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
+                                       style="flex: 1; padding: 8px; font-size: 14px;">
+                                <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
+                                        style="flex: 2; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                    Submit Bid
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <hr>
-                    <h4 id= "previous_bids_${req.id}"></h4>
-                   <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
+                </div>
+            </div>
+        `;
 
-                  <div id="submit_bid_amt_${req.id}">
-                        <div style="display: flex; gap: 6px; align-items: center;">
-                            <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
-                                   style="flex: 1; padding: 8px; font-size: 14px;">
-                            <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
-                                    style="flex: 2; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                                Submit Bid
-                            </button>
-                        </div>
-                    </div>
-
-
-
-               </div>
-
-              </div>
-            `;
-
-<!--            const rightCol = document.createElement('div');-->
-<!--            rightCol.className = 'col col-right';-->
-
-<!--            rightCol.innerHTML = `-->
-<!--            <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">-->
-<!--                        <h4 style="margin: 0;"><strong>BIDDER REQUIREMENT ID:</strong> ${req.id}</h2>-->
-<!--                    </div>-->
-<!--                    <div>-->
-<!--&lt;!&ndash;                  <h3 id="remaining-time-${req.id}"></h3>&ndash;&gt;-->
-<!--                        <div style="height: 40px; display: flex; background-color: transparent;">-->
-<!--                          <h3 id="remaining-time-${req.id}" style="margin: 0;"></h3>-->
-<!--                        </div>-->
-<!--                                          </div>-->
-
-<!--                  <div class="progress" style="height: 12px; margin-bottom: 10px;">-->
-
-<!--                   <div id="progress-bar-${req.id}"-->
-
-<!--                     class="progress-bar green"-->
-
-<!--                         role="progressbar"-->
-<!--                         style="width: 100%;"-->
-<!--                         aria-valuenow="100"-->
-<!--                         aria-valuemin="0"-->
-<!--                         aria-valuemax="100">-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <hr>-->
-
-<!--                <p id="previous_bids_${req.id}" style="color: yellow;"></p>-->
-
-<!--                <div>-->
-<!--                <p id="user_rank_${req.id}" style="color: lightgreen;"></p>-->
-<!--                </div>-->
-
-
-<!--               <div style="margin-top: 5px; display: flex; gap: 2px;">-->
-<!--                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount">-->
-<!--                    <button id="submitbid_${req.id}" onclick="submitBid(${req.id})">Submit Bid</button>-->
-<!--&lt;!&ndash;                    <button onclick="window.location.reload();">Refresh</button>&ndash;&gt;-->
-
-
-<!--                </div>-->
-
-<!--            `;-->
-
-            row.appendChild(leftCol);
-<!--            If auction is started then only append the right column-->
-
-<!--            if (auction_start_status===true){-->
-<!--            row.appendChild(rightCol);-->
-<!--            }-->
-
-            if (auction_start_status===true){
-           let submit_bid_amt = document.getElementById("submit_bid_amt");
-            if (submit_bid_amt) {
-                console.log("The element is present");
-                submit_bid_amt.style.display = "block";
-                          }
-            }
-
-            container.appendChild(row);
-        });
-
-    requirements.forEach(req => {
-        const input = document.getElementById(`bid_amt_${req.id}`);
-        if (input) {
-            input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";
-        }
+        row.appendChild(leftCol);
+        fragment.appendChild(row);
     });
 
-       window.scrollTo(0, scrollY);
+    // ✅ Replace DOM children at once → less flicker
+    container.replaceChildren(fragment);
 
-// Restore input values and focus
+    // ✅ Restore input values from localStorage
+    requirements.forEach(req => {
+        const input = document.getElementById(`bid_amt_${req.id}`);
+        if (input) input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";
+    });
+
+    // ✅ Restore focus and cursor
+    restoreInputs();
+
+    // ✅ Restore scroll after browser paints new DOM
+    requestAnimationFrame(() => {
+        window.scrollTo(0, scrollY);
+    });
+
+    updateBids();
+}
 
 function restoreInputs() {
-    const container = document.getElementById("main-container");
     const lastFocusedId = localStorage.getItem("last_focused_input");
     const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
 
-    // Restore all saved input values
     document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
         const savedVal = localStorage.getItem(input.id);
         if (savedVal !== null) input.value = savedVal;
     });
 
-    // Restore focus safely
     if (lastFocusedId) {
         const focusedInput = document.getElementById(lastFocusedId);
         if (focusedInput) {
             focusedInput.focus();
-            // Only try to set cursor if input type allows it
             if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
                 focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
             }
@@ -793,62 +851,17 @@ function restoreInputs() {
     }
 }
 
+
 // Call this after rendering your inputs
-restoreInputs();
+<!--restoreInputs();-->
 
+<!--   setTimeout(() => {-->
+<!--        window.scrollTo(0, scrollY);-->
+<!--&lt;!&ndash;        restoreInputs();&ndash;&gt;-->
+<!--    }, 100);-->
 
-
-// ✅ Delay scroll restore slightly so DOM has time to paint
-<!--setTimeout(() => {-->
-<!--    // First restore scroll-->
-<!--    const lastScrollPos = localStorage.getItem("last_scroll_position");-->
-<!--    if (lastScrollPos !== null) {-->
-<!--        window.scrollTo(0, parseInt(lastScrollPos, 10));-->
+<!--        updateBids();-->
 <!--    }-->
-
-<!--    // Then restore focus-->
-<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
-<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
-<!--    if (lastFocusedId) {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            focusedInput.focus();-->
-<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
-<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
-<!--}, 100);-->
-
-<!--setTimeout(() => {-->
-<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
-<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
-
-<!--    if (lastFocusedId) {-->
-<!--        // ✅ If user had focused an input, just focus it, do not restore scroll-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            focusedInput.focus();-->
-<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
-<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--            }-->
-<!--        }-->
-<!--    } else {-->
-<!--        // ✅ If no input was focused, restore scroll position-->
-<!--        const lastScrollPos = localStorage.getItem("last_scroll_position");-->
-<!--        if (lastScrollPos !== null) {-->
-<!--            window.scrollTo(0, parseInt(lastScrollPos, 10));-->
-<!--        }-->
-<!--    }-->
-<!--}, 100);-->
-
-   setTimeout(() => {
-        window.scrollTo(0, scrollY);
-<!--        restoreInputs();-->
-    }, 100);
-
-        updateBids();
-    }
 
 
 function updateBids() {
@@ -878,6 +891,8 @@ function updateBids() {
         }
     });
 }
+
+
 // Save input values in localStorage whenever user types
 document.addEventListener("input", (e) => {
     if (e.target.id.startsWith("bid_amt_")) {
