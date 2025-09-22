@@ -831,25 +831,58 @@ function renderRequirements(requirements, auction_start_status) {
     updateBids();
 }
 
+<!--function restoreInputs() {-->
+<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
+<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
+
+<!--    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {-->
+<!--        const savedVal = localStorage.getItem(input.id);-->
+<!--        if (savedVal !== null) input.value = savedVal;-->
+<!--    });-->
+
+<!--    if (lastFocusedId) {-->
+<!--        const focusedInput = document.getElementById(lastFocusedId);-->
+<!--        if (focusedInput) {-->
+<!--            focusedInput.focus();-->
+<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
+<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+<!--}-->
+
 function restoreInputs() {
     const lastFocusedId = localStorage.getItem("last_focused_input");
     const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
 
+    // ✅ Restore all saved input values (good)
     document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
         const savedVal = localStorage.getItem(input.id);
         if (savedVal !== null) input.value = savedVal;
     });
 
+    // ✅ Only restore focus if the field is actually still visible on screen
     if (lastFocusedId) {
         const focusedInput = document.getElementById(lastFocusedId);
         if (focusedInput) {
-            focusedInput.focus();
-            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
-                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
+            const rect = focusedInput.getBoundingClientRect();
+
+            // check if input is currently visible in viewport
+            const inViewport =
+                rect.top >= 0 &&
+                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight);
+
+            if (inViewport) {
+                // Only restore focus if the user is still seeing this field
+                focusedInput.focus();
+                if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
+                    focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
+                }
             }
         }
     }
 }
+
 
 
 // Call this after rendering your inputs
