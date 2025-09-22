@@ -741,17 +741,149 @@ else  {
 <!--}-->
 
 
-function renderRequirements(requirements, auction_start_status) {
-    const scrollY = window.scrollY;
-    const container = document.getElementById('main-container');
+<!--function renderRequirements(requirements, auction_start_status) {-->
+<!--    const scrollY = window.scrollY;-->
+<!--    const container = document.getElementById('main-container');-->
 
-    // ✅ Build in memory first
+<!--    // ✅ Build in memory first-->
+<!--    const fragment = document.createDocumentFragment();-->
+
+<!--    requirements.forEach((req, index) => {-->
+<!--        const row = document.createElement('div');-->
+<!--        row.className = 'row';-->
+<!--        row.id = `req_row_${req.id}`;-->
+
+<!--        const leftCol = document.createElement('div');-->
+<!--        leftCol.className = 'col col-left';-->
+
+<!--        leftCol.innerHTML = `-->
+<!--            <div style="display: flex; align-items: stretch;">-->
+<!--                <div class="vertical-label">-->
+<!--                    <span>#REQUIREMENT ${index + 1}</span>-->
+<!--                </div>-->
+<!--                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding:0;">-->
+<!--                    &lt;!&ndash; ✅ your existing progress bar + requirement details &ndash;&gt;-->
+<!--                    <div class="progress" style="height: 30px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">-->
+<!--                        <div id="progress-bar-${req.id}" class="progress-bar green" style="width: 100%; height: 100%;"></div>-->
+<!--                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;-->
+<!--                                    display: flex; align-items: center; justify-content: center;-->
+<!--                                    font-weight: bold; color: white; pointer-events: none;">-->
+<!--                            REQUIREMENT ID: ${req.id} | <span id="remaining-time-${req.id}"></span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; rest of your details exactly as you have them &ndash;&gt;-->
+<!--                    <div class="p-1" style="margin-left:0.5rem;">-->
+<!--&lt;!&ndash;                        <p style="margin:0;">&ndash;&gt;-->
+<!--&lt;!&ndash;                            <strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong>&ndash;&gt;-->
+<!--&lt;!&ndash;                            ${req.loading_point || ''}&ndash;&gt;-->
+<!--&lt;!&ndash;                        </p>&ndash;&gt;-->
+<!--                        &lt;!&ndash; keep your other fields here (unloading, product, truck type, etc.) &ndash;&gt;-->
+
+
+<!--                        <p style="margin:0;"><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>-->
+
+<!--                           <p style="margin:0;">-->
+<!--                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">-->
+<!--                             ${ req.loading_point_full_address}-->
+<!--                            </a>-->
+<!--                        </p>-->
+<!--                        <hr>-->
+<!--                        <h4 id="previous_bids_${req.id}"></h4>-->
+<!--                        <p id="user_rank_${req.id}" style="color: lightgreen;"></p>-->
+
+<!--                        <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">-->
+<!--                            <div style="display: flex; gap: 6px; align-items: center;">-->
+<!--                                <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"-->
+<!--                                       style="flex: 1; padding: 8px; font-size: 14px;">-->
+<!--                                <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"-->
+<!--                                        style="flex: 2; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">-->
+<!--                                    Submit Bid-->
+<!--                                </button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        `;-->
+
+<!--        row.appendChild(leftCol);-->
+<!--        fragment.appendChild(row);-->
+<!--    });-->
+
+<!--    // ✅ Replace DOM children at once → less flicker-->
+<!--    container.replaceChildren(fragment);-->
+
+<!--    // ✅ Restore input values from localStorage-->
+<!--    requirements.forEach(req => {-->
+<!--        const input = document.getElementById(`bid_amt_${req.id}`);-->
+<!--        if (input) input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";-->
+<!--    });-->
+
+<!--    // ✅ Restore focus and cursor-->
+<!--    restoreInputs();-->
+
+<!--    // ✅ Restore scroll after browser paints new DOM-->
+<!--    requestAnimationFrame(() => {-->
+<!--        window.scrollTo(0, scrollY);-->
+<!--    });-->
+
+<!--    updateBids();-->
+<!--}-->
+
+
+<!--function restoreInputs() {-->
+<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
+<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
+
+<!--    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {-->
+<!--        const savedVal = localStorage.getItem(input.id);-->
+<!--        if (savedVal !== null) input.value = savedVal;-->
+<!--    });-->
+
+<!--    if (lastFocusedId) {-->
+<!--        const focusedInput = document.getElementById(lastFocusedId);-->
+<!--        if (focusedInput) {-->
+<!--            focusedInput.focus();-->
+<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
+<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+
+<!--    }-->
+
+<!--}-->
+
+
+function renderRequirements(requirements, auction_start_status) {
+    const container = document.getElementById('main-container');
+    const scrollY = window.scrollY;
+    const focusedInput = document.activeElement;
+    const focusedId = focusedInput?.id;
+
+    // Build document fragment in memory
     const fragment = document.createDocumentFragment();
 
     requirements.forEach((req, index) => {
-        const row = document.createElement('div');
-        row.className = 'row';
+        // Skip updating the row if its input is currently focused
+        const existingRow = document.getElementById(`req_row_${req.id}`);
+        if (focusedId === `bid_amt_${req.id}`) {
+            fragment.appendChild(existingRow);
+            return;
+        }
+
+        // Preserve existing input value
+        let savedValue = "";
+        if (existingRow) {
+            const input = existingRow.querySelector(`#bid_amt_${req.id}`);
+            if (input) savedValue = input.value;
+        }
+
+        // Create row
+        const row = existingRow || document.createElement('div');
         row.id = `req_row_${req.id}`;
+        row.className = 'row';
 
         const leftCol = document.createElement('div');
         leftCol.className = 'col col-left';
@@ -762,7 +894,6 @@ function renderRequirements(requirements, auction_start_status) {
                     <span>#REQUIREMENT ${index + 1}</span>
                 </div>
                 <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding:0;">
-                    <!-- ✅ your existing progress bar + requirement details -->
                     <div class="progress" style="height: 30px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">
                         <div id="progress-bar-${req.id}" class="progress-bar green" style="width: 100%; height: 100%;"></div>
                         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -772,20 +903,11 @@ function renderRequirements(requirements, auction_start_status) {
                         </div>
                     </div>
 
-                    <!-- rest of your details exactly as you have them -->
                     <div class="p-1" style="margin-left:0.5rem;">
-<!--                        <p style="margin:0;">-->
-<!--                            <strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong>-->
-<!--                            ${req.loading_point || ''}-->
-<!--                        </p>-->
-                        <!-- keep your other fields here (unloading, product, truck type, etc.) -->
-
-
-                        <p style="margin:0;"><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
-
-                           <p style="margin:0;">
-                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">
-                             ${ req.loading_point_full_address}
+                        <p style="margin:0;"><strong style="color: ${req.loading_point ? '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
+                        <p style="margin:0;">
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')}" target="_blank">
+                                ${req.loading_point_full_address}
                             </a>
                         </p>
                         <hr>
@@ -795,9 +917,9 @@ function renderRequirements(requirements, auction_start_status) {
                         <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
                             <div style="display: flex; gap: 6px; align-items: center;">
                                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
-                                       style="flex: 1; padding: 8px; font-size: 14px;">
+                                       value="${savedValue}" style="flex: 1; padding: 8px; font-size: 14px;">
                                 <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
-                                        style="flex: 2; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        style="flex: 2; padding: 8px; font-size: 14px;">
                                     Submit Bid
                                 </button>
                             </div>
@@ -811,68 +933,46 @@ function renderRequirements(requirements, auction_start_status) {
         fragment.appendChild(row);
     });
 
-    // ✅ Replace DOM children at once → less flicker
+    // Replace DOM at once
     container.replaceChildren(fragment);
 
-    // ✅ Restore input values from localStorage
-    requirements.forEach(req => {
-        const input = document.getElementById(`bid_amt_${req.id}`);
-        if (input) input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";
-    });
-
-    // ✅ Restore focus and cursor
+    // Restore focus and input values
     restoreInputs();
 
-    // ✅ Restore scroll after browser paints new DOM
-    requestAnimationFrame(() => {
-        window.scrollTo(0, scrollY);
-    });
+    // Restore scroll
+    requestAnimationFrame(() => window.scrollTo(0, scrollY));
 
     updateBids();
 }
 
-
+// Restore focus and saved input values
 function restoreInputs() {
     const lastFocusedId = localStorage.getItem("last_focused_input");
-    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
 
     document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
         const savedVal = localStorage.getItem(input.id);
         if (savedVal !== null) input.value = savedVal;
     });
 
-<!--    if (lastFocusedId) {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            focusedInput.focus();-->
-<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
-<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
-
-
     if (lastFocusedId) {
         const focusedInput = document.getElementById(lastFocusedId);
-        if (focusedInput) {
-            const rect = focusedInput.getBoundingClientRect();
-
-            // check if input is currently visible in viewport
-            const inViewport =
-                rect.top >= 0 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight);
-
-            if (inViewport) {
-                // Only restore focus if the user is still seeing this field
-                focusedInput.focus();
-                if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
-                    focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
-                }
-            }
-        }
+        if (focusedInput) focusedInput.focus();
     }
-
 }
+
+// Save input values and focus immediately
+document.addEventListener("input", (e) => {
+    if (e.target.id.startsWith("bid_amt_")) {
+        localStorage.setItem(e.target.id, e.target.value);
+    }
+});
+
+document.addEventListener("focusin", (e) => {
+    if (e.target.id.startsWith("bid_amt_")) {
+        localStorage.setItem("last_focused_input", e.target.id);
+    }
+});
+
 
 <!--function restoreInputs() {-->
 <!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
