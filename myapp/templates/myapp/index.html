@@ -841,36 +841,36 @@ function restoreInputs() {
         if (savedVal !== null) input.value = savedVal;
     });
 
-<!--    if (lastFocusedId) {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            focusedInput.focus();-->
-<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
-<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
-
-
     if (lastFocusedId) {
         const focusedInput = document.getElementById(lastFocusedId);
         if (focusedInput) {
-            const rect = focusedInput.getBoundingClientRect();
-
-            // check if input is currently visible in viewport
-            const inViewport =
-                rect.top >= 0 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight);
-
-            if (inViewport) {
-                // Only restore focus if the user is still seeing this field
-                focusedInput.focus();
-                if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
-                    focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
-                }
+            focusedInput.focus();
+            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
+                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
             }
         }
     }
+
+
+<!--    if (lastFocusedId) {-->
+<!--        const focusedInput = document.getElementById(lastFocusedId);-->
+<!--        if (focusedInput) {-->
+<!--            const rect = focusedInput.getBoundingClientRect();-->
+
+<!--            // check if input is currently visible in viewport-->
+<!--            const inViewport =-->
+<!--                rect.top >= 0 &&-->
+<!--                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight);-->
+
+<!--            if (inViewport) {-->
+<!--                // Only restore focus if the user is still seeing this field-->
+<!--                focusedInput.focus();-->
+<!--                if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
+<!--                    focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
+<!--                }-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
 
 }
 
