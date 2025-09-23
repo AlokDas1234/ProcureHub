@@ -578,16 +578,6 @@ input:checked + .slider:before {
 
 
 
-
-<!--                                <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">-->
-<!--                                    <strong>Unloading:</strong> {{ requirement.unloading_point }}-->
-<!--                                </p>-->
-
-
-<!--                    <label  for="loading_point_full">3. Loading Point Full Address</label>-->
-<!--                    <textarea class="form-control" name="loading_point_full"  rows="4" placeholder="Enter full loading address" required>"{{ requirement.loading_point_full_address }}"</textarea>-->
-
-
             <p><strong></strong> {{ requirement.unloading_point_full_address }}</p>
 
                 <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.unloading_point_full_address|urlencode }}" target="_blank">
@@ -609,9 +599,7 @@ input:checked + .slider:before {
                                     </p>
                                 </div>
                         </div>
-<!--           <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">-->
-<!--                <strong>7. Qty:</strong> {{ requirement.qty }}-->
-<!--            </p>-->
+
                          <div style="display: flex; gap: 5px;">
                          <p><strong>Product Type:</strong> {{ requirement.product }}</p>
                             <p><strong>Types:</strong> {{ requirement.types }}</p>
@@ -641,13 +629,7 @@ input:checked + .slider:before {
                 </div>
 
             </div>
-<!--          <button-->
-<!--    id="delAllReq"-->
-<!--    onclick="delReq('delAll')"-->
-<!--    class="btn btn-danger "-->
-<!--    style="width: 100%; margin-top: 1rem;">-->
-<!--    Delete All Requirements-->
-<!--        </button>-->
+
 
         </div>
 
@@ -669,28 +651,6 @@ input:checked + .slider:before {
 
 
 </div>
-
-<!--            <div style="text-align:right">-->
-<!--                <form method="POST" action="{% url 'delete_all_bids' %}"-->
-<!--                          onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
-<!--                        {% csrf_token %}-->
-<!--                        <button id="del_bids_btn" type="submit"  style="display:none">-->
-<!--                            Delete All Bids-->
-<!--                        </button>-->
-<!--                    </form>-->
-
-
-<!--            </div>-->
-
-<!--    <div class="d-flex justify-content-end">-->
-<!--      <form method="POST" action="{% url 'delete_all_bids' %}"-->
-<!--            onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
-<!--          {% csrf_token %}-->
-<!--          <button id="del_bids_btn" type="submit" class="btn btn-danger mt-3 mb-0" style="display:none;">-->
-<!--              Delete All Bids-->
-<!--          </button>-->
-<!--      </form>-->
-<!--    </div>-->
 
 
 <div class="row">
@@ -754,7 +714,7 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 <!--    });-->
 <!--    }-->
   if (data.type === 'timer_update') {
-<!--        console.log("Update Timer:", data.minutes);-->
+        console.log("Update Timer:", data.minutes);
 
         // Convert remaining time string (e.g., "0:08:05") to seconds
         function parseTimeToSeconds(timeStr) {
@@ -775,20 +735,30 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
         // Calculate percentage for progress bar
         const percent = Math.max(0, (remainingSeconds / totalSeconds) * 100);
 
-        Object.keys(bidGroups).forEach(reqId => {
-            const timerEl = document.getElementById(`remaining-time-${reqId}`);
-            if (timerEl) {
-                timerEl.textContent = `Remaining Time: ${data.minutes}`;
-            }
 
-            const progressEl = document.getElementById(`progress-bar-${reqId}`);
-            if (progressEl) {
-                progressEl.style.width = `${percent}%`;
-            }
-        });
+
+    document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {
+        timerEl.textContent = `Remaining Time: ${data.minutes}`;
+    });
+
+    document.querySelectorAll('[id^="progress-bar-"]').forEach(progressEl => {
+        progressEl.style.width = `${percent}%`;
+               });
+
+<!--            const timerEl = document.getElementById(`remaining-time-${reqId}`);-->
+<!--            if (timerEl) {-->
+<!--                timerEl.textContent = `Remaining Time: ${data.minutes}`;-->
+<!--            }-->
+
+<!--            const progressEl = document.getElementById(`progress-bar-${reqId}`);-->
+<!--            if (progressEl) {-->
+<!--                progressEl.style.width = `${percent}%`;-->
+<!--            }-->
+<!--        });-->
     }
 
      if (data.type === 'timer_update' && data.auction_started === false) {
+      console.log("Auction  not Started")
 
 
     let timer = document.getElementById("start_status");
@@ -819,6 +789,7 @@ let current_time_div = document.getElementById("current_time_div");
 }
 
     else if (data.type === 'timer_update' && data.auction_started === true) {
+    console.log("Auction Started")
 
 
    let timer = document.getElementById("start_status");
@@ -854,71 +825,15 @@ else   {
     let timer = document.getElementById("start_status");
     timer.innerText = `Auction Ended !`;
 }
-<!--        if (data.type === 'bids_per_requirement') {-->
-<!--            const bidReq = data.bid_req;-->
-<!--            const reqId = bidReq.id;-->
-<!--            const bidder = data.bids_by;-->
-<!--            const bidRate = data.bid_rate;-->
-
-<!--            console.log(`Bid req: ${bidReq}`);-->
-<!--            console.log(`Bid id: ${reqId}`);-->
-<!--            console.log(`Bidder : ${bidder}`);-->
-<!--            console.log(`bidRate : ${bidRate}`);-->
-
-<!--            if (!bidGroups[reqId]) {-->
-<!--                bidGroups[reqId] = {-->
-<!--                    info: bidReq,-->
-<!--                    bidders: {}-->
-<!--                };-->
-<!--            }-->
-
-<!--            if (!bidGroups[reqId].bidders[bidder]) {-->
-<!--&lt;!&ndash;            console.log("Bid is not present");&ndash;&gt;-->
-<!--                bidGroups[reqId].bidders[bidder] = [];-->
-<!--            }-->
-
-<!--            bidGroups[reqId].bidders[bidder].push(bidRate);-->
-<!--&lt;!&ndash;             console.log("Bid is present");&ndash;&gt;-->
-
-<!--            renderBids();-->
-<!--        }-->
 
 
 if (data.type === 'bids_per_requirement') {
-
 console.log("Bid data:",data)
+console.log("Bid Requirement:",data.bid_req)
+console.log("Bid  Top Bidders :",data.top_bidders)
 
-<!--    const bidReq = data.bid_req;-->
-<!--    const reqId = bidReq.id;-->
-<!--    const bidder = data.bids_by;-->
-<!--    const bidRate = data.bid_rate;-->
+renderBids(data);
 
-<!--&lt;!&ndash;    console.log("Bid req:", bidReq);&ndash;&gt;-->
-<!--    console.log("Bid id:", reqId);-->
-<!--    console.log("Bidder:", bidder);-->
-<!--    console.log("Bid rate:", bidRate);-->
-
-<!--    // ✅ Initialize requirement entry if not exists-->
-<!--    if (!bidGroups[reqId]) {-->
-<!--        bidGroups[reqId] = {-->
-<!--            info: bidReq,-->
-<!--            bidders: {}-->
-<!--        };-->
-<!--    }-->
-
-<!--    const bidderBids = bidGroups[reqId].bidders[bidder] || [];-->
-
-<!--    // ✅ Deduplicate: only push if new value-->
-<!--    if (bidderBids[bidderBids.length - 1] !== bidRate) {-->
-<!--        bidderBids.push(bidRate);-->
-<!--    }-->
-
-<!--    // ✅ Sort each bidder's bids (so last is always lowest)-->
-<!--    bidderBids.sort((a, b) => a - b);-->
-
-<!--    bidGroups[reqId].bidders[bidder] = bidderBids;-->
-
-<!--    renderBids();-->
 }
 
 
@@ -951,104 +866,21 @@ console.log("Bid data:",data)
     };
 
 
-
-<!--function renderBids() {-->
-<!--    Object.keys(bidGroups).forEach(reqId => {-->
-<!--        const group = bidGroups[reqId];-->
-<!--        const req = group.info;-->
-
-<!--        // Find the matching bid div-->
-<!--        const bidDiv = document.getElementById(`bid-card-${req.id}`);-->
-<!--        if (!bidDiv) return; // No matching requirement-->
-<!--        let del_bid_btn=document.getElementById("del_bids_btn");-->
-<!--        del_bid_btn.style.display="block";-->
-<!--        let download_bid_div=document.getElementById("download_bids_div");-->
-<!--        download_bid_div.style.display="block";-->
-
-
-<!--&lt;!&ndash;        del_bid_btn.classList.add("btn", "btn-danger", "align-right","w-50", "mt-3", "mb-0");&ndash;&gt;-->
-
-<!--&lt;!&ndash;        del_bid_btn.className="btn btn-danger w-50 mt-3 mb-0";&ndash;&gt;-->
-
-<!--        // Start fresh-->
-<!--        bidDiv.innerHTML = `-->
-<!--            <h1>RECEIVED BIDS:</h1>-->
-<!--            <hr>-->
-<!--             <div style="height: 45px; display: flex; background-color: transparent;">-->
-<!--           <h4 id="remaining-time-${req.id}"></h4>-->
-<!--           </div>-->
-<!--           <div class="progress" style="height: 18px;">-->
-<!--        <div id="progress-bar-${req.id}"-->
-<!--             class="progress-bar bg-success"-->
-<!--             role="progressbar"-->
-<!--             style="width: 100%;"-->
-<!--             aria-valuenow="100"-->
-<!--             aria-valuemin="0"-->
-<!--             aria-valuemax="100">-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <hr>-->
-<!--             <hr>-->
-<!--            <p><strong>Bid Req ID:</strong> ${req.id}</p>-->
-<!--            <p><strong>1.Loading:</strong> ${req.loading_point}</p>-->
-<!--            <p><strong>2.Unloading:</strong> ${req.unloading_point}</p>-->
-<!--            <hr>-->
-<!--        `;-->
-
-<!--        const biddersArray = Object.entries(group.bidders);-->
-
-<!--        // Sort by lowest rate-->
-<!--        biddersArray.sort((a, b) => {-->
-<!--            const minA = Math.min(...a[1]);-->
-<!--            const minB = Math.min(...b[1]);-->
-<!--            return minA - minB;-->
-<!--        });-->
-
-<!--        // Show top 3 bidders-->
-<!--        biddersArray.slice(0, 3).forEach(([bidder, rates], i) => {-->
-<!--            const rateStr = rates.join(" >> ₹");-->
-<!--            bidDiv.innerHTML += `-->
-<!--                <p><strong>1.Rank: L${i + 1}</strong></p>-->
-<!--                <p><strong>2.Bidder:</strong> ${bidder}</p>-->
-<!--                <p><strong>3.Rate:</strong> ₹${rateStr}</p>-->
-<!--                <hr>-->
-
-
-<!--&lt;!&ndash;                <h3>Approve Bid</h3>&ndash;&gt;-->
-<!--&lt;!&ndash;                <label for ="bid-approve" class="switch">&ndash;&gt;-->
-<!--&lt;!&ndash;                  <input  id="bid-approve"  name="bid-approve" type="checkbox" checked>&ndash;&gt;-->
-<!--&lt;!&ndash;                  <span class="slider round"></span>&ndash;&gt;-->
-<!--&lt;!&ndash;                </label>&ndash;&gt;-->
-
-<!--            `;-->
-<!--        });-->
-
-<!--        // Show the bid card-->
-
-
-
-<!--        bidDiv.style.display = "block";-->
-<!--    });-->
-<!--}-->
-function renderBids() {
-    Object.keys(bidGroups).forEach(reqId => {
-        const group = bidGroups[reqId];
-        const req = group.info;
-
+function renderBids(data) {
+        let req=data.bid_req;
         const bidDiv = document.getElementById(`bid-card-${req.id}`);
         if (!bidDiv) return;
-
         let del_bid_btn = document.getElementById("del_bids_btn");
         let download_bid_div = document.getElementById("download_bids_div");
         if (del_bid_btn) del_bid_btn.style.display = "block";
         if (download_bid_div) download_bid_div.style.display = "block";
-
         bidDiv.innerHTML = `
             <h1>RECEIVED BIDS:</h1>
             <hr>
             <div style="height: 45px; display: flex; background-color: transparent;">
                 <h4 id="remaining-time-${req.id}"></h4>
             </div>
+
             <div class="progress" style="height: 18px;">
                 <div id="progress-bar-${req.id}" class="progress-bar bg-success"
                     role="progressbar" style="width: 100%;" aria-valuenow="100"
@@ -1061,31 +893,20 @@ function renderBids() {
             <hr>
         `;
 
-        // Convert bidders object into array
-        const biddersArray = Object.entries(group.bidders);
 
-        // Sort by the lowest *latest* bid
-        biddersArray.sort((a, b) => {
-            const minA = Math.min(...a[1]);
-            const minB = Math.min(...b[1]);
-            return minA - minB;
-        });
-
-        // Show top 3 bidders with their history
-        biddersArray.slice(0, 3).forEach(([bidder, rates], i) => {
-            const uniqueRates = [...new Set(rates)].sort((a, b) => a - b); // remove duplicates
-            const rateStr = uniqueRates.join(" >> ₹");
+        data.top_bidders.forEach(top_bidder=>{
 
             bidDiv.innerHTML += `
-                <p><strong>1.Rank: L${i + 1}</strong></p>
-                <p><strong>2.Bidder:</strong> ${bidder}</p>
-                <p><strong>3.Rate:</strong> ₹${rateStr}</p>
+                <p><strong>1.Rank: L${top_bidder.rank}</strong></p>
+                <p><strong>2.Bidder:</strong> ${top_bidder.username}</p>
+                <p><strong>3.Rate:</strong> ₹${top_bidder.rate}</p>
                 <hr>
             `;
-        });
+             })
+<!--        });-->
 
         bidDiv.style.display = "block";
-    });
+<!--    });-->
 }
 
 
@@ -1093,7 +914,6 @@ function renderBids() {
    socket.onopen = function(event) {
 <!--            console.log("WebSocket is open now.");-->
 <!--            socket.send(JSON.stringify({ type: 'grouped_bid' }));-->
-
         };
 
     socket.onclose = () => console.log("WebSocket closed.");
@@ -1253,26 +1073,12 @@ document.getElementById("bulk-upload-btn").addEventListener("click", () => {
 
 
 <script>
-<!--function loadPost() {-->
-<!--    if (socket.readyState === WebSocket.OPEN) {-->
-<!--        socket.send(JSON.stringify({ action: "load_requirements" }));-->
-<!--    } else {-->
-<!--        alert("WebSocket not ready");-->
-<!--    }-->
-<!--}-->
 
 function closeModal() {
     document.getElementById("upload-modal").style.display = "none";
     location.reload();  // Optional: refresh to reflect uploaded data
 }
 </script>
-
-
-<!--<script>-->
-<!--    $(document).ready(function () {-->
-<!--        $('.selectpicker').selectpicker();-->
-<!--    });-->
-<!--</script>-->
 
 
 <script>

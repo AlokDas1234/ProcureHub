@@ -208,6 +208,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             r['min_dec_val'] = 0
                         # print("Reqs2 inside if:", reqs)
                     # print("Reqs2:",reqs)
+                    """After Ending the auction still sending requirements so bidder can view their req"""
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
@@ -218,15 +219,44 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                         }
                     )
-            else:
+                    """After Ending the auction still sending the following so bidder can view their bids"""
 
+                    bid_group_data = await self.get_all_bid_group(username)
+                    # print("bid_group_data in connect:",bid_group_data)
+
+                    await self.send(text_data=json.dumps({
+                        'type': 'grouped_bid',
+                        'bid_group_data': bid_group_data
+
+                    }))
+            else:
                 if hasattr(self, "timer_task") and not self.timer_task.done():
                     self.timer_task.cancel()
                     try:
                         await self.timer_task
                     except asyncio.CancelledError:
                         print("Cancelled timer task")
+
                 # print("Auction Ended")
+                reqs = await sync_to_async(get_all_requirements)()
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        'type': 'load_requirements',
+                        'requirements': reqs,
+                        'len_reqs': len(reqs),
+                        "auction_start_status": auction_start,
+                    }
+                )
+
+                bid_group_data = await self.get_all_bid_group(username)
+                # print("bid_group_data in connect:",bid_group_data)
+
+                await self.send(text_data=json.dumps({
+                    'type': 'grouped_bid',
+                    'bid_group_data': bid_group_data
+
+                }))
 
         else:
             await self.send(text_data=json.dumps({"message": "Login"}))
@@ -237,7 +267,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         user = self.scope['user']
-
         if text_data_json.get("type") == "submit_bid":
             req_id = text_data_json.get("req_id")
             bid_amt = text_data_json.get("bid_amt")
@@ -254,9 +283,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             general_access, minutes, start_time,g_access,use_cel,dec_val_vi = await self.get_general_access()
             clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
-            existing_bids = await sync_to_async(
-                Bid.objects.filter(user=user, req=requirement).count
-            )()
+            # existing_bids = await sync_to_async(
+            #     Bid.objects.filter(user=user, req=requirement).count
+            # )()
 
             last_minute = timedelta(minutes=1)
             if bid_amt and remaining <= last_minute:
@@ -312,7 +341,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
             '''This is for getting  the lowest bid price than the previous one'''
-
             for rate in user_bid:
                 # print("Submitted Rate", rate.rate)
                 # print("Submitted Rate Type", type(rate.rate))
@@ -332,13 +360,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 last_bid = user_bid[-1].rate
                 # print("last_bid from receive:", last_bid)
                 if last_bid and int(req_.min_dec_val != 0):
+                    print("Bid dec val inside if:", valid_bid_dec_val)
+                    print("Last_Bid inside if:", last_bid)
                     # print("Decremental val is called:")
                     decremental_value = int(last_bid) - int(req_.min_dec_val)
-                    # print("decremental_value:", decremental_value)
+                    print("decremental_value:", decremental_value)
 
                     if decremental_value <= int(bid_amt):
-                        # print("decremental_value inside loop:", decremental_value)
-                        # print("Bid Amount:", int(bid_amt))
+                        print("decremental_value inside loop:", decremental_value)
+                        print("Bid Amount:", int(bid_amt))
 
                         if dec_val_vi:
                             valid_bid_dec_val = False
@@ -353,8 +383,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 'type': 'valid_bid',
                                 'valid_bid': "Decrease the bidding price more to compete",
                             }))
-                # print("Valid Bid dec status:", valid_bid_dec_val)
-                # print("Last_Bid:", last_bid)
+                print("Valid Bid dec status:", valid_bid_dec_val)
+                print("Last_Bid:", last_bid)
 
 
             else:
@@ -377,102 +407,92 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
             # ✅ Only use user_access (boolean), don’t check user_exist == True
-            if (
-                    auction_end_status is False
-                    # and existing_bids < 5
-                    and general_access
-                    and user_access  # True/False
-                    and valid_bid
-                    and valid_bid_cel_price
-                    and valid_bid_dec_val
-            ):
-                if use_cel and valid_bid_cel_price:
-                    """Updating ceiling price"""
-                    await self.update_req_cel_price(req_, bid_amt)
+            if auction_end_status==False:
+                if (
+                        # auction_end_status is False
+                        # and existing_bids < 5
+                        general_access
+                        and user_access  # True/False
+                        and valid_bid
+                        and valid_bid_cel_price
+                        and valid_bid_dec_val
+                ):
+                    if use_cel and valid_bid_cel_price:
+                        """Updating ceiling price"""
+                        await self.update_req_cel_price(req_, bid_amt)
 
-                bid_instance = await sync_to_async(Bid.objects.create)(
-                    user=user,
-                    req=requirement,
-                    rate=bid_amt
-                )
+                    bid_instance = await sync_to_async(Bid.objects.create)(
+                        user=user,
+                        req=requirement,
+                        rate=bid_amt
+                    )
 
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "send_grouped_bid"
-                    }
-                )
-
-                reqs=await self. get_all_requirements()
-                # print("dec_val_vi3:", dec_val_vi)
-                if not dec_val_vi:
-                    # reqs[0].update({'min_dec_val': 0})
-                    for r in reqs:  # loop through all requirements
-                        r['min_dec_val'] = 0
-                auction_start=True
-                # print("reqs3:",reqs)
-
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        'type': 'load_requirements',
-                        'requirements': reqs,
-                        'len_reqs': len(reqs),
-                        "auction_start_status": auction_start,
-                    }
-                )
-
-                ranked_bids = await self.get_ranked_bids()
-                for item in ranked_bids:
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
-                            "type": "bids_per_requirement",
-                            "bid_req": item["requirement"],
-                            "top_bidders": [
-                                {
-                                    "username": bidder["user__username"],
-                                    "rate": bidder["rate"],
-                                    "rank": bidder["rank"],
-                                }
-                                for bidder in item["top_bidders"]
-                            ]
+                            "type": "send_grouped_bid"
                         }
                     )
 
-                # await self.channel_layer.group_send(
-                #     self.room_group_name,{
-                #
-                #         'type': 'bids_per_requirement',
-                #         'bid_id': bid_instance.id,
-                #         'bids_by': user.username,
-                #         'bid_req': {
-                #             'id': requirement.id,
-                #             'loading_point': requirement.loading_point,
-                #             'unloading_point': requirement.unloading_point,
-                #             'loading_point_full_address': requirement.loading_point_full_address,
-                #             'unloading_point_full_address': requirement.unloading_point_full_address,
-                #             'truck_type': requirement.truck_type,
-                #             'no_of_trucks': requirement.no_of_trucks,
-                #             # 'qty': requirement.qty,
-                #             'notes': requirement.notes,
-                #             'drum_type_no_of_drums': requirement.drum_type_no_of_drums,
-                #             'product': requirement.product,
-                #             'weight_per_drum': requirement.weight_per_drum,
-                #             'approx_mat_mt': requirement.approx_mat_mt,
-                #             'types': requirement.types,
-                #             'cel_price': requirement.cel_price,
-                #         },
-                #         'bid_rate': bid_amt
-                #     }
-                # )
+                    reqs=await self. get_all_requirements()
+                    # print("dec_val_vi3:", dec_val_vi)
+                    if not dec_val_vi:
+                        # reqs[0].update({'min_dec_val': 0})
+                        for r in reqs:  # loop through all requirements
+                            r['min_dec_val'] = 0
+                    auction_start=True
+                    # print("reqs3:",reqs)
 
-            else:
-                # ❌ Send error if auction closed or too many bids
-                await self.send(text_data=json.dumps({
-                    'type': 'error',
-                    'message': 'You can only place up to 5 bids for the same requirement or auction ended.'
-                }))
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            'type': 'load_requirements',
+                            'requirements': reqs,
+                            'len_reqs': len(reqs),
+                            "auction_start_status": auction_start,
+                        }
+                    )
+
+                    ranked_bids = await self.get_ranked_bids()
+                    for item in ranked_bids:
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                "type": "bids_per_requirement",
+                                "bid_req": item["requirement"],
+                                "top_bidders": [
+                                    {
+                                        "username": bidder["username"],
+                                        "rate": bidder["rate"],
+                                        "rank": bidder["rank"],
+                                    }
+                                    for bidder in item["top_bidders"]
+                                ]
+                            }
+                        )
+                else:
+                    # bid_group_data = await self.get_all_bid_group(username)
+                    # # print("bid_group_data in connect:",bid_group_data)
+                    #
+                    # await self.send(text_data=json.dumps({
+                    #     'type': 'grouped_bid',
+                    #     'bid_group_data': bid_group_data
+                    #
+                    # }))
+                    # await self.channel_layer.group_send(
+                    #     self.room_group_name,
+                    #     {
+                    #         "type": "send_grouped_bid"
+                    #     }
+                    # )
+
+                    # ❌ Send error if auction closed or too many bids
+                    await self.send(text_data=json.dumps({
+                        'type': 'error',
+                        'message': 'Auction ended.'
+                    }))
+
+
 
             # image_base64 = await self.get_bid_report_plot()
             # await self.channel_layer.group_send(
@@ -746,7 +766,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def get_ranked_bids(self):
-        # 1️⃣ Fetch all bids with requirement + user info
+        """This get_rank_bids is for super user"""
+        # 1️⃣ Fetch all bids
         all_bids = Bid.objects.select_related("req", "user").values(
             "id",
             "user__username",
@@ -765,61 +786,77 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
         if not all_bids:
-            return []  # No bids yet
+            return []
 
         df = pd.DataFrame(list(all_bids))
         df["created_at"] = pd.to_datetime(df["created_at"])
+        df["rate"] = df["rate"].astype(float)
 
-        # 2️⃣ Pick lowest rate per user per requirement, tie-break by earliest time
-        lowest_bids = (
-            df.sort_values(["req__id", "rate", "created_at"])
-            .groupby(["req__id", "user__username"], as_index=False)
-            .first()
+        # 2️⃣ Collect all bids per user + req, keep order by created_at
+        df = df.sort_values(["req__id", "user__username", "created_at"])
+        all_bids_per_user = (
+            df.groupby(["req__id", "user__username"])
+            .agg({
+                "rate": lambda x: " >> ".join(str(r) for r in x.tolist()),
+                "created_at": "first",  # first bid time
+                "req__loading_point": "first",
+                "req__unloading_point": "first",
+                # "req__product": "first",
+                # "req__truck_type": "first",
+                # "req__no_of_trucks": "first",
+                # "req__notes": "first",
+                # "req__drum_type_no_of_drums": "first",
+                # "req__approx_mat_mt": "first",
+                # "req__weight_per_drum": "first",
+            })
+            .reset_index()
         )
 
-        # 3️⃣ Rank within each requirement
-        lowest_bids = lowest_bids.sort_values(["req__id", "rate", "created_at"])
-        lowest_bids["rank"] = lowest_bids.groupby("req__id").cumcount() + 1
+        # 3️⃣ Extract lowest bid (first number from ">>")
+        all_bids_per_user["lowest_rate"] = all_bids_per_user["rate"].apply(
+            lambda s: float(s.split(" >> ")[0])
+        )
 
-        # 4️⃣ Keep only top 4 ranks
-        top4 = lowest_bids[lowest_bids["rank"] <= 4].copy()
+        # 4️⃣ Rank bidders within each requirement
+        all_bids_per_user = all_bids_per_user.sort_values(
+            ["req__id", "lowest_rate", "created_at"]
+        )
+        all_bids_per_user["rank"] = (
+                all_bids_per_user.groupby("req__id").cumcount() + 1
+        )
 
-        # ✅ Ensure native Python types (avoid numpy serialization issues)
-        top4["rank"] = top4["rank"].astype(int)
-        top4["rate"] = top4["rate"].astype(float)
-        top4["req__id"] = top4["req__id"].astype(int)
-        top4["no_of_trucks"] = top4["req__no_of_trucks"].astype(int)
+        # 5️⃣ Keep only top 4
+        top4 = all_bids_per_user[all_bids_per_user["rank"] <= 4]
 
-        # 5️⃣ Convert to list of dicts (grouped by requirement)
+        # 6️⃣ Build response
         result = []
         for req_id, group in top4.groupby("req__id"):
-            requirement = group.iloc[0]  # pick first row to get requirement info
+            req = group.iloc[0]
             result.append({
                 "requirement": {
-                    "id": int(requirement["req__id"]),
-                    "loading_point": str(requirement["req__loading_point"]),
-                    "unloading_point": str(requirement["req__unloading_point"]),
-                    "product": str(requirement["req__product"]),
-                    "truck_type": str(requirement["req__truck_type"]),
-                    "no_of_trucks": int(requirement["req__no_of_trucks"]),
-                    "notes": str(requirement["req__notes"]),
-                    "drum_type_no_of_drums": str(requirement["req__drum_type_no_of_drums"]),
-                    "approx_mat_mt": float(requirement["req__approx_mat_mt"]) if requirement[
-                        "req__approx_mat_mt"] else None,
-                    "weight_per_drum": float(requirement["req__weight_per_drum"]) if requirement[
-                        "req__weight_per_drum"] else None,
+                    "id": str(req["req__id"]),
+                    "loading_point": str(req["req__loading_point"]),
+                    "unloading_point": str(req["req__unloading_point"]),
+                    # "product": str(req["req__product"]),
+                    # "truck_type": str(req["req__truck_type"]),
+                    # "no_of_trucks": str(req["req__no_of_trucks"]),
+                    # "notes": str(req["req__notes"]),
+                    # "drum_type_no_of_drums": str(req["req__drum_type_no_of_drums"]),
+                    # "approx_mat_mt": str(req["req__approx_mat_mt"]),
+                    # "weight_per_drum": str(req["req__weight_per_drum"]),
                 },
                 "top_bidders": [
                     {
-                        "username": str(b["user__username"]),
-                        "rate": float(b["rate"]),
-                        "rank": int(b["rank"]),
+                        "username": str(row["user__username"]),
+                        "rate": str(row["rate"]),  # e.g. "1500 >> 1400 >> 1350"
+                        "rank": str(row["rank"]),
                     }
-                    for _, b in group.iterrows()
+                    for _, row in group.iterrows()
                 ]
             })
 
         return result
+
 
     @sync_to_async
     def get_all_bid_group(self, username):
