@@ -73,7 +73,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if  self.scope['user'].is_superuser:
                 '''Only admin is subscribed to this channel'''
                 ranked_bids = await self.get_ranked_bids()
-
                 for item in ranked_bids:
                     await self.channel_layer.group_send(
                         self.room_group_name,
@@ -82,7 +81,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             "bid_req": item["requirement"],
                             "top_bidders": [
                                 {
-                                    "username": bidder["user__username"],
+                                    "username": bidder["username"],
                                     "rate": bidder["rate"],
                                     "rank": bidder["rank"],
                                 }
@@ -423,33 +422,50 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     }
                 )
 
+                ranked_bids = await self.get_ranked_bids()
+                for item in ranked_bids:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "bids_per_requirement",
+                            "bid_req": item["requirement"],
+                            "top_bidders": [
+                                {
+                                    "username": bidder["user__username"],
+                                    "rate": bidder["rate"],
+                                    "rank": bidder["rank"],
+                                }
+                                for bidder in item["top_bidders"]
+                            ]
+                        }
+                    )
 
-                await self.channel_layer.group_send(
-                    self.room_group_name,{
-
-                        'type': 'bids_per_requirement',
-                        'bid_id': bid_instance.id,
-                        'bids_by': user.username,
-                        'bid_req': {
-                            'id': requirement.id,
-                            'loading_point': requirement.loading_point,
-                            'unloading_point': requirement.unloading_point,
-                            'loading_point_full_address': requirement.loading_point_full_address,
-                            'unloading_point_full_address': requirement.unloading_point_full_address,
-                            'truck_type': requirement.truck_type,
-                            'no_of_trucks': requirement.no_of_trucks,
-                            # 'qty': requirement.qty,
-                            'notes': requirement.notes,
-                            'drum_type_no_of_drums': requirement.drum_type_no_of_drums,
-                            'product': requirement.product,
-                            'weight_per_drum': requirement.weight_per_drum,
-                            'approx_mat_mt': requirement.approx_mat_mt,
-                            'types': requirement.types,
-                            'cel_price': requirement.cel_price,
-                        },
-                        'bid_rate': bid_amt
-                    }
-                )
+                # await self.channel_layer.group_send(
+                #     self.room_group_name,{
+                #
+                #         'type': 'bids_per_requirement',
+                #         'bid_id': bid_instance.id,
+                #         'bids_by': user.username,
+                #         'bid_req': {
+                #             'id': requirement.id,
+                #             'loading_point': requirement.loading_point,
+                #             'unloading_point': requirement.unloading_point,
+                #             'loading_point_full_address': requirement.loading_point_full_address,
+                #             'unloading_point_full_address': requirement.unloading_point_full_address,
+                #             'truck_type': requirement.truck_type,
+                #             'no_of_trucks': requirement.no_of_trucks,
+                #             # 'qty': requirement.qty,
+                #             'notes': requirement.notes,
+                #             'drum_type_no_of_drums': requirement.drum_type_no_of_drums,
+                #             'product': requirement.product,
+                #             'weight_per_drum': requirement.weight_per_drum,
+                #             'approx_mat_mt': requirement.approx_mat_mt,
+                #             'types': requirement.types,
+                #             'cel_price': requirement.cel_price,
+                #         },
+                #         'bid_rate': bid_amt
+                #     }
+                # )
 
             else:
                 # ❌ Send error if auction closed or too many bids
@@ -766,7 +782,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         lowest_bids["rank"] = lowest_bids.groupby("req__id").cumcount() + 1
 
         # 4️⃣ Keep only top 4 ranks
-        top4 = lowest_bids[lowest_bids["rank"] <= 4]
+        top4 = lowest_bids[lowest_bids["rank"] <= 4].copy()
+
+        # ✅ Ensure native Python types (avoid numpy serialization issues)
+        top4["rank"] = top4["rank"].astype(int)
+        top4["rate"] = top4["rate"].astype(float)
+        top4["req__id"] = top4["req__id"].astype(int)
+        top4["no_of_trucks"] = top4["req__no_of_trucks"].astype(int)
 
         # 5️⃣ Convert to list of dicts (grouped by requirement)
         result = []
@@ -774,22 +796,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
             requirement = group.iloc[0]  # pick first row to get requirement info
             result.append({
                 "requirement": {
-                    "id": requirement["req__id"],
-                    "loading_point": requirement["req__loading_point"],
-                    "unloading_point": requirement["req__unloading_point"],
-                    "product": requirement["req__product"],
-                    "truck_type": requirement["req__truck_type"],
-                    "no_of_trucks": requirement["req__no_of_trucks"],
-                    "notes": requirement["req__notes"],
-                    "drum_type_no_of_drums": requirement["req__drum_type_no_of_drums"],
-                    "approx_mat_mt": requirement["req__approx_mat_mt"],
-                    "weight_per_drum": requirement["req__weight_per_drum"],
+                    "id": int(requirement["req__id"]),
+                    "loading_point": str(requirement["req__loading_point"]),
+                    "unloading_point": str(requirement["req__unloading_point"]),
+                    "product": str(requirement["req__product"]),
+                    "truck_type": str(requirement["req__truck_type"]),
+                    "no_of_trucks": int(requirement["req__no_of_trucks"]),
+                    "notes": str(requirement["req__notes"]),
+                    "drum_type_no_of_drums": str(requirement["req__drum_type_no_of_drums"]),
+                    "approx_mat_mt": float(requirement["req__approx_mat_mt"]) if requirement[
+                        "req__approx_mat_mt"] else None,
+                    "weight_per_drum": float(requirement["req__weight_per_drum"]) if requirement[
+                        "req__weight_per_drum"] else None,
                 },
-                "top_bidders": group.to_dict("records")
+                "top_bidders": [
+                    {
+                        "username": str(b["user__username"]),
+                        "rate": float(b["rate"]),
+                        "rank": int(b["rank"]),
+                    }
+                    for _, b in group.iterrows()
+                ]
             })
 
         return result
-
 
     @sync_to_async
     def get_all_bid_group(self, username):

@@ -885,37 +885,40 @@ else   {
 
 
 if (data.type === 'bids_per_requirement') {
-    const bidReq = data.bid_req;
-    const reqId = bidReq.id;
-    const bidder = data.bids_by;
-    const bidRate = data.bid_rate;
 
-<!--    console.log("Bid req:", bidReq);-->
-    console.log("Bid id:", reqId);
-    console.log("Bidder:", bidder);
-    console.log("Bid rate:", bidRate);
+console.log("Bid data:",data)
 
-    // ✅ Initialize requirement entry if not exists
-    if (!bidGroups[reqId]) {
-        bidGroups[reqId] = {
-            info: bidReq,
-            bidders: {}
-        };
-    }
+<!--    const bidReq = data.bid_req;-->
+<!--    const reqId = bidReq.id;-->
+<!--    const bidder = data.bids_by;-->
+<!--    const bidRate = data.bid_rate;-->
 
-    const bidderBids = bidGroups[reqId].bidders[bidder] || [];
+<!--&lt;!&ndash;    console.log("Bid req:", bidReq);&ndash;&gt;-->
+<!--    console.log("Bid id:", reqId);-->
+<!--    console.log("Bidder:", bidder);-->
+<!--    console.log("Bid rate:", bidRate);-->
 
-    // ✅ Deduplicate: only push if new value
-    if (bidderBids[bidderBids.length - 1] !== bidRate) {
-        bidderBids.push(bidRate);
-    }
+<!--    // ✅ Initialize requirement entry if not exists-->
+<!--    if (!bidGroups[reqId]) {-->
+<!--        bidGroups[reqId] = {-->
+<!--            info: bidReq,-->
+<!--            bidders: {}-->
+<!--        };-->
+<!--    }-->
 
-    // ✅ Sort each bidder's bids (so last is always lowest)
-    bidderBids.sort((a, b) => a - b);
+<!--    const bidderBids = bidGroups[reqId].bidders[bidder] || [];-->
 
-    bidGroups[reqId].bidders[bidder] = bidderBids;
+<!--    // ✅ Deduplicate: only push if new value-->
+<!--    if (bidderBids[bidderBids.length - 1] !== bidRate) {-->
+<!--        bidderBids.push(bidRate);-->
+<!--    }-->
 
-    renderBids();
+<!--    // ✅ Sort each bidder's bids (so last is always lowest)-->
+<!--    bidderBids.sort((a, b) => a - b);-->
+
+<!--    bidGroups[reqId].bidders[bidder] = bidderBids;-->
+
+<!--    renderBids();-->
 }
 
 
