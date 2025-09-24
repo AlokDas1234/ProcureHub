@@ -231,13 +231,25 @@ button {
         margin: 0 0 1px 0;   /* tight spacing */
     }
 
-    /* Inputs and buttons smaller and full width */
-    input[type="number"], .submit-btn {
-        font-size: 11px;
-        padding: 3px;
+<!--    /* Inputs and buttons smaller and full width */-->
+<!--    input[type="number"], .submit-btn {-->
+<!--        font-size: 11px;-->
+<!--        padding: 3px;-->
+<!--        width: 100%;-->
+<!--        box-sizing: border-box;-->
+<!--    }-->
+input[type="number"], .submit-btn {
+        font-size: 10px;       /* smaller text */
+        padding: 2px 4px;      /* less padding */
+        height: 24px;          /* fixed small height */
         width: 100%;
         box-sizing: border-box;
     }
+
+    .submit-btn {
+        line-height: 1.2;      /* reduce line height to shrink button */
+    }
+}
 
     /* Optional: reduce spacing in inner containers */
     .row .p-1 {
