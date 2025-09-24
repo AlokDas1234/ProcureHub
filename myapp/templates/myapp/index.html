@@ -1096,7 +1096,7 @@ function updateBids() {
                 field.querySelector(".visible-rates").textContent = allRates.join(" > ");
                 btn.textContent = "Show Less";
             } else {
-                field.querySelector(".visible-rates").textContent = allRates.slice(-10).join(" > ");
+                field.querySelector(".visible-rates").textContent = allRates.slice(-5).join(" > ");
                 btn.textContent = "Show All";
             }
         };
