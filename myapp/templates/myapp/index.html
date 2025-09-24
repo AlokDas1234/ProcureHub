@@ -1075,7 +1075,7 @@ function updateBids() {
         if (!field) return;
 
         const allRates = bidsByReq[reqId];
-        const showLimit = 10; // number of bids to show by default
+        const showLimit = 5; // number of bids to show by default
         let visibleRates = allRates.slice(-showLimit); // last 10 bids
 
         // Render visible rates
@@ -1096,7 +1096,7 @@ function updateBids() {
                 field.querySelector(".visible-rates").textContent = allRates.join(" > ");
                 btn.textContent = "Show Less";
             } else {
-                field.querySelector(".visible-rates").textContent = allRates.slice(-5).join(" > ");
+                field.querySelector(".visible-rates").textContent = allRates.slice(-showLimit).join(" > ");
                 btn.textContent = "Show All";
             }
         };
