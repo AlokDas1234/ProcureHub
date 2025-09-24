@@ -190,43 +190,63 @@ button {
         transform: scale(0.97);
         background-color: #00408d;
     }
-
 @media (max-width: 768px) {
+
     /* Stack rows vertically */
     .row {
-        flex-direction: column;  /* ✅ correct */
+        flex-direction: column;   /* stack vertically */
         align-items: stretch;
-        margin-bottom: 4px;
-        padding: 2px;
+        margin-bottom: 2px;       /* minimal spacing between rows */
+        padding: 1px;             /* reduce internal padding */
+        border-radius: 3px;
     }
 
-    /* Make vertical label horizontal on mobile */
+    /* Vertical label: narrow and smaller */
     .vertical-label {
-<!--        writing-mode: horizontal-tb; /* ✅ horizontal */-->
-      writing-mode: vertical-rl;
-        transform: none;
-        font-size: 14px;
-        padding: 1px 2px;
-        text-align: left;
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        font-size: 12px;      /* smaller font */
+        width: 20px;          /* narrow strip */
+        height: auto;
+        padding: 1px 1px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     /* Progress bar smaller */
     .progress {
-        height: 16px;
-        margin-bottom: 4px;
+        height: 12px;
+        margin-bottom: 2px;
     }
 
-    /* Reduce font-size and spacing */
+    .progress-bar {
+        height: 100%;
+    }
+
+    /* Requirement details smaller */
     .row p, .row strong {
-        font-size: 12px;
-        margin: 0 0 2px 0;
+        font-size: 11px;
+        margin: 0 0 1px 0;   /* tight spacing */
     }
 
     /* Inputs and buttons smaller and full width */
     input[type="number"], .submit-btn {
-        font-size: 12px;
-        padding: 4px;
+        font-size: 11px;
+        padding: 3px;
         width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Optional: reduce spacing in inner containers */
+    .row .p-1 {
+        padding: 2px 0 2px 0;
+    }
+
+    /* Optional: reduce horizontal gaps inside flex containers */
+    .row > div > div {
+        gap: 2px;
     }
 }
 
