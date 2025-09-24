@@ -191,47 +191,44 @@ button {
         background-color: #00408d;
     }
 
-
-        @media (max-width: 768px) {
+@media (max-width: 768px) {
     /* Stack rows vertically */
     .row {
-        flex-direction: rows;
+        flex-direction: column;  /* ✅ correct */
         align-items: stretch;
-        margin-bottom: 4px;  /* reduce spacing between requirements */
-        padding: 1px;        /* reduce padding inside each requirement */
+        margin-bottom: 4px;
+        padding: 2px;
     }
 
-    /* Make vertical label horizontal */
+    /* Make vertical label horizontal on mobile */
     .vertical-label {
-<!--        writing-mode: horizontal-tb;-->
-            writing-mode: vertical-rl;
-       transform: rotate(180deg);
-
-        display: flex;
-        font-size: 16px;     /* smaller font */
-<!--        padding: 1px 1px;-->
+        writing-mode: horizontal-tb; /* ✅ horizontal */
+        transform: none;
+        font-size: 14px;
+        padding: 1px 2px;
         text-align: left;
     }
 
-    /* Reduce progress bar height */
+    /* Progress bar smaller */
     .progress {
-        height: 20px;
-        margin-bottom: 6px;
+        height: 16px;
+        margin-bottom: 4px;
     }
 
-    /* Reduce font-size of requirement details */
+    /* Reduce font-size and spacing */
     .row p, .row strong {
-        font-size: 14px;
+        font-size: 12px;
         margin: 0 0 2px 0;
     }
 
-    /* Make inputs/buttons smaller and full width */
+    /* Inputs and buttons smaller and full width */
     input[type="number"], .submit-btn {
-        font-size: 14px;
-        padding: 5px;
+        font-size: 12px;
+        padding: 4px;
         width: 100%;
     }
 }
+
 
 
     </style>
