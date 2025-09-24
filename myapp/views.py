@@ -388,7 +388,7 @@ def admin_dashboard(request):
     if request.method == "POST":
         start_time_str=request.POST.get("start_time")
         minute=request.POST.get("minute")
-        # print("Start_time Time:", start_time_str)
+        print("Auction duration in minutes:", minute)
 
         if start_time_str:
             # Parse the datetime-local string into a datetime object

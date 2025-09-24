@@ -230,14 +230,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                     }))
             else:
-                if hasattr(self, "timer_task") and not self.timer_task.done():
-                    self.timer_task.cancel()
-                    try:
-                        await self.timer_task
-                    except asyncio.CancelledError:
-                        print("Cancelled timer task")
 
                 # print("Auction Ended")
+                auction_start=False
                 reqs = await sync_to_async(get_all_requirements)()
                 await self.channel_layer.group_send(
                     self.room_group_name,
@@ -257,6 +252,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'bid_group_data': bid_group_data
 
                 }))
+                if hasattr(self, "timer_task") and not self.timer_task.done():
+                    self.timer_task.cancel()
+                    try:
+                        await self.timer_task
+                    except asyncio.CancelledError:
+                        print("Cancelled timer task")
 
         else:
             await self.send(text_data=json.dumps({"message": "Login"}))
@@ -287,28 +288,49 @@ class ChatConsumer(AsyncWebsocketConsumer):
             #     Bid.objects.filter(user=user, req=requirement).count
             # )()
 
-            last_minute = timedelta(minutes=1)
-            if bid_amt and remaining <= last_minute:
-                # print("User submitted  the bid last minute")
-                g_access.minutes += 2
-                await sync_to_async(g_access.save)()
-                # GeneralAccess.save()
 
-                general_access, minutes, start_time,g_access,use_cel,dec_val_vi= await self.get_general_access()
-                clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+
+            from django.utils import timezone
+            import pytz
+            kolkata_tz = pytz.timezone("Asia/Kolkata")
+            # Convert everything to Kolkata time
+            clt_kolkata = clt.astimezone(kolkata_tz)
+            start_time_kolkata = start_time.astimezone(kolkata_tz)
+            end_times_kolkata = end_times.astimezone(kolkata_tz)
+
+            # print("clt_kolkata:", clt_kolkata)
+            # print("start_time_kolkata:", start_time_kolkata)
+            # print("end_times_kolkata:", end_times_kolkata)
+            # print("remaining:", remaining)
 
             auction_end_status = False
-            if clt >= end_times:
-                """Auction Ended"""
-                # print("Auction Ended")
+            if clt_kolkata >= end_times_kolkata:
+                print("Auction Ended")
                 auction_end_status = True
-            if clt <= start_time:
-                """Auction not started"""
-                # print("Auction Not Started")
+            if clt_kolkata <= start_time_kolkata:
+                print("Auction Not Started")
                 auction_end_status = True
 
-            # print("User:",user)
-            # print("User Name:",user.username)
+            if auction_end_status==False:
+                last_minute = timedelta(minutes=1)
+                if bid_amt and remaining <= last_minute:
+                    # print("User submitted  the bid last minute")
+                    g_access.minutes += 2
+                    await sync_to_async(g_access.save)()
+                    # GeneralAccess.save()
+
+                    general_access, minutes, start_time, g_access, use_cel, dec_val_vi = await self.get_general_access()
+
+                    clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+                    # print("end_times:", end_times)
+            else:
+                await self.send(text_data=json.dumps({
+                    'type': 'valid_bid',
+                     'valid_bid': " Auction Ended.",
+                }))
+                return  #
+
+
             user_ = await sync_to_async(User.objects.get)(username=user.username)
             '''All the user previous bids in user_bid'''
             user_bid = await sync_to_async(list)(Bid.objects.filter(user=user_, req=requirement.id))
@@ -337,6 +359,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'type': 'valid_bid',
                         'valid_bid': "Place lowest bid price than ceiling price {}".format(req_.cel_price),
                     }))
+                    return  #
 
 
 
@@ -354,17 +377,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type': 'valid_bid',
                     'valid_bid':"Enter lowest bid amount than the previous one.",
                 }))
+                return  #
 
             valid_bid_dec_val = True
             if user_bid:  # make sure it's not empty
                 last_bid = user_bid[-1].rate
+
+
                 # print("last_bid from receive:", last_bid)
                 if last_bid and int(req_.min_dec_val != 0):
-                    print("Bid dec val inside if:", valid_bid_dec_val)
-                    print("Last_Bid inside if:", last_bid)
+                    # print("Bid dec val inside if:", valid_bid_dec_val)
+                    # print("Last_Bid inside if:", last_bid)
                     # print("Decremental val is called:")
                     decremental_value = int(last_bid) - int(req_.min_dec_val)
-                    print("decremental_value:", decremental_value)
+                    # print("decremental_value:", decremental_value)
 
                     if decremental_value <= int(bid_amt):
                         print("decremental_value inside loop:", decremental_value)
@@ -377,14 +403,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 'valid_bid': "Enter amount lower than the minimal decremental value {}".format(
                                     req_.min_dec_val),
                             }))
+                            return  #
                         if not dec_val_vi:
                             valid_bid_dec_val = False
                             await self.send(text_data=json.dumps({
                                 'type': 'valid_bid',
                                 'valid_bid': "Decrease the bidding price more to compete",
                             }))
-                print("Valid Bid dec status:", valid_bid_dec_val)
-                print("Last_Bid:", last_bid)
+                            return  #
+                # print("Valid Bid dec status:", valid_bid_dec_val)
+                # print("Last_Bid:", last_bid)
+
 
 
             else:
@@ -398,7 +427,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                              'valid_bid': "Enter amount lower than the minimal decremental value {}".format(
                                  req_.min_dec_val),
                         }))
-
+                        return  #
             try:
                 user_exist = await sync_to_async(UserAccess.objects.get)(user=user_)
                 user_access = user_exist.can_view_requirements
@@ -406,12 +435,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 user_access = False
 
 
+            # print("auction_end_status outside:",auction_end_status)
             # ✅ Only use user_access (boolean), don’t check user_exist == True
             if auction_end_status==False:
+                # print("auction_end_status inside :", auction_end_status)
+
                 if (
-                        # auction_end_status is False
+                        auction_end_status is False
                         # and existing_bids < 5
-                        general_access
+                        and general_access
                         and user_access  # True/False
                         and valid_bid
                         and valid_bid_cel_price
@@ -420,6 +452,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     if use_cel and valid_bid_cel_price:
                         """Updating ceiling price"""
                         await self.update_req_cel_price(req_, bid_amt)
+                        # print("Auction_end_status before saving:", auction_end_status)
+                        # print("Bid Amount:", bid_amt)
 
                     bid_instance = await sync_to_async(Bid.objects.create)(
                         user=user,
@@ -955,6 +989,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 if remaining.total_seconds() <= 0:
                     # print("Auction time reached, stopping timer.")
                     break
+
 
                 # Send only the time update
                 if clt <= start_time:

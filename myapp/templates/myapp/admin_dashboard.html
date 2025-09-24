@@ -224,6 +224,24 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+<!--#start_status {-->
+<!--  display: block;             /* block-level element */-->
+<!--  min-height: 1.8em;          /* fixes vertical flicker */-->
+<!--  min-width: 280px;           /* reserve width for longest string */-->
+<!--  white-space: nowrap;        /* keep text on one line */-->
+<!--  text-align: left;           /* or center, as you need */-->
+<!--}-->
+
+#start_status {
+  display: block;
+  min-height: 1.8em;           /* reserve height for flicker-free updates */
+  min-width: 60%;              /* relative to parent container */
+  white-space: nowrap;         /* prevent line breaks */
+  text-align: center;          /* looks good on both mobile & desktop */
+  overflow: hidden;            /* prevent overflow issues */
+}
+
 </style>
 
 
@@ -515,8 +533,12 @@ input:checked + .slider:before {
     <div class="row">
           <div class="col-md-6   p-1">
             <h3 class="mb-4 text-primary font-weight-bold">4. BIDDING STATUS:</h3>
-            <h4 style="color:blue;" id="start_status"></h4>
-               <h3 id="auction_status" class="text-align:left;"></h3>
+<!--            <h4 style="color:blue;" id="start_status"></h4>-->
+<!--               <h3 id="auction_status" class="text-align:left;"></h3>-->
+              <div style="display: flex; justify-content: left; width: 100%;">
+  <h4 id="start_status"></h4>
+   </div>
+
               &nbsp
         <h3 id="current_time_div" style="text-align:left;"></h3>
               &nbsp
@@ -714,7 +736,7 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 <!--    });-->
 <!--    }-->
   if (data.type === 'timer_update') {
-        console.log("Update Timer:", data.minutes);
+<!--        console.log("Update Timer:", data.minutes);-->
 
         // Convert remaining time string (e.g., "0:08:05") to seconds
         function parseTimeToSeconds(timeStr) {
@@ -758,11 +780,19 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
     }
 
      if (data.type === 'timer_update' && data.auction_started === false) {
-      console.log("Auction  not Started")
+<!--      console.log("Auction  not Started")-->
 
 
-    let timer = document.getElementById("start_status");
-    timer.innerText = `Auction will start in: ${data.minutes}`;
+<!--    let timer = document.getElementById("start_status");-->
+<!--    timer.innerText = `Auction will start in: ${data.minutes}`;-->
+
+let timer = document.getElementById("start_status");
+timer.innerText = data.minutes
+    ? `Auction will start in: ${data.minutes}`
+    : "\u00A0";   // keeps empty space when no text
+
+
+
 
 let current_time_div = document.getElementById("current_time_div");
   current_time_div.innerHTML = `
@@ -789,11 +819,15 @@ let current_time_div = document.getElementById("current_time_div");
 }
 
     else if (data.type === 'timer_update' && data.auction_started === true) {
-    console.log("Auction Started")
+<!--    console.log("Auction Started")-->
 
 
-   let timer = document.getElementById("start_status");
-  timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;
+<!--   let timer = document.getElementById("start_status");-->
+<!--  timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;-->
+let timer = document.getElementById("start_status");
+timer.innerText = data.minutes
+    ? `Auction Started Time Left: ${data.minutes}`
+    : "\u00A0";   // keeps empty space when no text
 
 
 let current_time_div = document.getElementById("current_time_div");
@@ -822,15 +856,19 @@ let current_time_div = document.getElementById("current_time_div");
 
 
 else   {
-    let timer = document.getElementById("start_status");
-    timer.innerText = `Auction Ended !`;
+<!--    let timer = document.getElementById("start_status");-->
+<!--    timer.innerText = `Auction Ended !`;-->
+
+let timer = document.getElementById("start_status");
+timer.innerText = `Auction Ended !` || "\u00A0";
+
 }
 
 
 if (data.type === 'bids_per_requirement') {
-console.log("Bid data:",data)
-console.log("Bid Requirement:",data.bid_req)
-console.log("Bid  Top Bidders :",data.top_bidders)
+<!--console.log("Bid data:",data)-->
+<!--console.log("Bid Requirement:",data.bid_req)-->
+<!--console.log("Bid  Top Bidders :",data.top_bidders)-->
 
 renderBids(data);
 
