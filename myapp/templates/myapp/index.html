@@ -191,6 +191,46 @@ button {
         background-color: #00408d;
     }
 
+
+        @media (max-width: 768px) {
+    /* Stack rows vertically */
+    .row {
+        flex-direction: rows;
+        align-items: stretch;
+        margin-bottom: 4px;  /* reduce spacing between requirements */
+        padding: 1px;        /* reduce padding inside each requirement */
+    }
+
+    /* Make vertical label horizontal */
+    .vertical-label {
+        writing-mode: horizontal-tb;
+        transform: none;
+        font-size: 16px;     /* smaller font */
+        padding: 1px 1px;
+        text-align: left;
+    }
+
+    /* Reduce progress bar height */
+    .progress {
+        height: 20px;
+        margin-bottom: 6px;
+    }
+
+    /* Reduce font-size of requirement details */
+    .row p, .row strong {
+        font-size: 14px;
+        margin: 0 0 2px 0;
+    }
+
+    /* Make inputs/buttons smaller and full width */
+    input[type="number"], .submit-btn {
+        font-size: 14px;
+        padding: 5px;
+        width: 100%;
+    }
+}
+
+
     </style>
 </head>
 <body>
@@ -811,10 +851,6 @@ function renderRequirements(requirements, auction_start_status) {
                                             ${req.truck_type || ''}
                                           </p>
 
-<!--                                          <p style="margin:0;">-->
-<!--                                            <strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong>-->
-<!--                                            ${req.no_of_trucks || ''}-->
-<!--                                          </p>-->
 
                                           <p style="margin:0;">
                               <strong style="color: ${req.product ? '#05ACFA' : '#EFADF0'};">
@@ -959,72 +995,13 @@ function restoreInputs() {
     }
 
 
-<!--    if (lastFocusedId) {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            const rect = focusedInput.getBoundingClientRect();-->
-
-<!--            // check if input is currently visible in viewport-->
-<!--            const inViewport =-->
-<!--                rect.top >= 0 &&-->
-<!--                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight);-->
-
-<!--            if (inViewport) {-->
-<!--                // Only restore focus if the user is still seeing this field-->
-<!--                focusedInput.focus();-->
-<!--                if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
-<!--                    focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--                }-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
 
 }
-
-<!--function restoreInputs() {-->
-<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
-<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
-
-<!--    // ✅ Restore all saved input values (good)-->
-<!--    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {-->
-<!--        const savedVal = localStorage.getItem(input.id);-->
-<!--        if (savedVal !== null) input.value = savedVal;-->
-<!--    });-->
-
-<!--    // ✅ Only restore focus if the field is actually still visible on screen-->
-<!--    if (lastFocusedId) {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            const rect = focusedInput.getBoundingClientRect();-->
-
-<!--            // check if input is currently visible in viewport-->
-<!--            const inViewport =-->
-<!--                rect.top >= 0 &&-->
-<!--                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight);-->
-
-<!--            if (inViewport) {-->
-<!--                // Only restore focus if the user is still seeing this field-->
-<!--                focusedInput.focus();-->
-<!--                if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
-<!--                    focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--                }-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
-<!--}-->
 
 
 
 // Call this after rendering your inputs
-<!--restoreInputs();-->
 
-<!--   setTimeout(() => {-->
-<!--        window.scrollTo(0, scrollY);-->
-<!--&lt;!&ndash;        restoreInputs();&ndash;&gt;-->
-<!--    }, 100);-->
-
-<!--        updateBids();-->
-<!--    }-->
 
 
 function updateBids() {
@@ -1063,24 +1040,7 @@ document.addEventListener("input", (e) => {
     }
 });
 
-<!--window.addEventListener("beforeunload", () => {-->
-<!--    const active = document.activeElement;-->
-<!--    if (active && active.tagName === "INPUT" && active.id.startsWith("bid_amt_")) {-->
-<!--        localStorage.setItem("last_focused_input", active.id);-->
-<!--        localStorage.setItem("last_cursor_position", active.selectionStart);-->
-<!--    } else {-->
-<!--        localStorage.removeItem("last_focused_input");-->
-<!--        localStorage.removeItem("last_cursor_position");-->
-<!--    }-->
-<!--});-->
 
-<!--// Save last focused input and cursor position immediately on focus-->
-<!--document.addEventListener("focusin", (e) => {-->
-<!--    if (e.target.tagName === "INPUT" && e.target.id.startsWith("bid_amt_")) {-->
-<!--        localStorage.setItem("last_focused_input", e.target.id);-->
-<!--        localStorage.setItem("last_cursor_position", e.target.selectionStart || 0);-->
-<!--    }-->
-<!--});-->
 document.addEventListener("focusin", (e) => {
     if (e.target.tagName === "INPUT" && e.target.id.startsWith("bid_amt_")) {
         localStorage.setItem("last_focused_input", e.target.id);
@@ -1091,10 +1051,7 @@ document.addEventListener("focusin", (e) => {
     }
 });
 
-<!--    // Save scroll position before refresh or navigation-->
-<!--window.addEventListener("beforeunload", () => {-->
-<!--    localStorage.setItem("last_scroll_position", window.scrollY);-->
-<!--});-->
+
 
 
 
