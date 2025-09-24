@@ -1025,12 +1025,39 @@ function restoreInputs() {
 
 
 
-function updateBids() {
+<!--function updateBids() {-->
 
+<!--    // Group this user’s bids by requirement-->
+<!--    const bidsByReq = {};-->
+<!--    userBids.forEach(bid => {-->
+<!--        if (!bidsByReq[bid.id]) {   // ✅ use `id` instead of `req_id`-->
+<!--            bidsByReq[bid.id] = [];-->
+<!--        }-->
+<!--        bidsByReq[bid.id].push(bid.rate);-->
+<!--    });-->
+
+<!--    // Show bid history-->
+<!--    Object.keys(bidsByReq).forEach(reqId => {-->
+<!--        const field = document.getElementById(`previous_bids_${reqId}`);-->
+<!--        if (field) {-->
+<!--            field.textContent = `Rates History: ${bidsByReq[reqId].join(">")}`;-->
+<!--        }-->
+<!--    });-->
+
+<!--    // Show rank-->
+<!--    latestUserRanks.forEach(rank => {-->
+<!--        const field = document.getElementById(`user_rank_${rank.bid_id}`);  // ✅ use bid_id-->
+<!--        if (field) {-->
+<!--            field.textContent = `Rank: ${rank.rank} (Last Bid: ₹${rank.bid_rate})`;-->
+<!--        }-->
+<!--    });-->
+<!--}-->
+
+function updateBids() {
     // Group this user’s bids by requirement
     const bidsByReq = {};
     userBids.forEach(bid => {
-        if (!bidsByReq[bid.id]) {   // ✅ use `id` instead of `req_id`
+        if (!bidsByReq[bid.id]) {
             bidsByReq[bid.id] = [];
         }
         bidsByReq[bid.id].push(bid.rate);
@@ -1039,19 +1066,45 @@ function updateBids() {
     // Show bid history
     Object.keys(bidsByReq).forEach(reqId => {
         const field = document.getElementById(`previous_bids_${reqId}`);
-        if (field) {
-            field.textContent = `Rates History: ${bidsByReq[reqId].join(">")}`;
-        }
+        if (!field) return;
+
+        const allRates = bidsByReq[reqId];
+        const showLimit = 10; // number of bids to show by default
+        let visibleRates = allRates.slice(-showLimit); // last 10 bids
+
+        // Render visible rates
+        field.innerHTML = `
+            <span class="visible-rates">${visibleRates.join(" > ")}</span>
+            ${allRates.length > showLimit ? `<button class="toggle-rates" data-req="${reqId}" style="margin-left:5px; font-size:12px;">Show All</button>` : ''}
+        `;
     });
 
-    // Show rank
+    // Add event listeners for Show All / Show Less buttons
+    document.querySelectorAll(".toggle-rates").forEach(btn => {
+        btn.onclick = () => {
+            const reqId = btn.getAttribute("data-req");
+            const field = document.getElementById(`previous_bids_${reqId}`);
+            const allRates = bidsByReq[reqId];
+
+            if (btn.textContent === "Show All") {
+                field.querySelector(".visible-rates").textContent = allRates.join(" > ");
+                btn.textContent = "Show Less";
+            } else {
+                field.querySelector(".visible-rates").textContent = allRates.slice(-10).join(" > ");
+                btn.textContent = "Show All";
+            }
+        };
+    });
+
+    // Show rank as before
     latestUserRanks.forEach(rank => {
-        const field = document.getElementById(`user_rank_${rank.bid_id}`);  // ✅ use bid_id
+        const field = document.getElementById(`user_rank_${rank.bid_id}`);
         if (field) {
             field.textContent = `Rank: ${rank.rank} (Last Bid: ₹${rank.bid_rate})`;
         }
     });
 }
+
 
 
 // Save input values in localStorage whenever user types
