@@ -949,11 +949,11 @@ function renderRequirements(requirements, auction_start_status) {
                         </div>
                     </div>
 
-
-
-
                         <hr>
-                        <h4 id="previous_bids_${req.id}"></h4>
+                       <div style="margin:0; padding:0;">
+                            <h4 id="previous_bids_${req.id}"></h4>
+                        </div>
+
                         <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
 
                         <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
