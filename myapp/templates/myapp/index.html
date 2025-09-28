@@ -828,7 +828,7 @@ function renderRequirements(requirements, auction_start_status) {
                 </div>
                 <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding:0;">
                     <!-- ✅ your existing progress bar + requirement details -->
-                    <div class="progress" style="height: 20px; margin-bottom: 8px; position: relative; border-radius: 5px; overflow: hidden;">
+                    <div class="progress" style="height: 30px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">
                         <div id="progress-bar-${req.id}" class="progress-bar green" style="width: 100%; height: 100%;"></div>
                         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
                                     display: flex; align-items: center; justify-content: center;
@@ -844,7 +844,7 @@ function renderRequirements(requirements, auction_start_status) {
 
                         <div class="row no-border">
                            <div class="col-md-6">
-                             <div style="display: flex; gap: 10px;">
+<!--                             <div style="display: flex; gap: 10px;">-->
 
                         <p style="margin:0;"><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
 
@@ -853,8 +853,6 @@ function renderRequirements(requirements, auction_start_status) {
                              ${ req.loading_point_full_address}
                             </a>
                         </p>
-                                                </div>
-
 
                         </div>
 
@@ -863,7 +861,6 @@ function renderRequirements(requirements, auction_start_status) {
 
                           </div>
                           </div>
-                              <div style="display: flex; gap: 10px;">
                             <p style="margin:0;"><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>
 
 
@@ -872,7 +869,7 @@ function renderRequirements(requirements, auction_start_status) {
                                ${req.unloading_point_full_address}
                             </a>
                         </p>
-                        </div>
+<!--                        </div>-->
 
                         <hr>
                         <div style="display: flex; gap: 5px;">
@@ -940,64 +937,30 @@ function renderRequirements(requirements, auction_start_status) {
                       ${req.notes || ''}
                     </p>
                         </div>
+                                                   <hr>
+                           <div style="display: flex; gap: 4px;">
+                          <p style="margin:0;">
+                            <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
+                              Ceiling Price:
+                            </strong>
+                            ${req.cel_price || ''}
+                          </p>
 
-<!--                           <div style="display: flex; gap: 4px;">-->
-<!--                          <p style="margin:0;">-->
-<!--                            <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">-->
-<!--                              Ceiling Price:-->
-<!--                            </strong>-->
-<!--                            ${req.cel_price || ''}-->
-<!--                          </p>-->
-
-<!--                          <p style="margin:0;">-->
-<!--                            <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">-->
-<!--                              Minimal Decremental Value:-->
-<!--                            </strong>-->
-<!--                            ${req.min_dec_val || ''}-->
-<!--                          </p>-->
-<!--                        </div>-->
- <hr>
-<!--                    <div style="display: flex; gap: 4px;">-->
-
-<!--                      ${req.cel_price ? `-->
-<!--                        <p style="margin:0;">-->
-<!--                          <strong style="color:#05ACFA;">Ceiling Price:</strong>-->
-<!--                          ${req.cel_price}-->
-<!--                        </p>` : ''}-->
-
-<!--                      ${req.min_dec_val ? `-->
-<!--                        <p style="margin:0;">-->
-<!--                          <strong style="color:#05ACFA;">Minimal Decremental Value:</strong>-->
-<!--                          ${req.min_dec_val}-->
-<!--                        </p>` : ''}-->
-
-<!--                    </div>-->
-<!--                      <hr>-->
-
-${(req.cel_price || req.min_dec_val) ? `
-  <div style="display: flex; gap: 4px;">
-
-    ${req.cel_price ? `
-      <p style="margin:0;">
-        <strong style="color:#05ACFA;">Ceiling Price:</strong>
-        ${req.cel_price}
-      </p>` : ''}
-
-    ${req.min_dec_val ? `
-      <p style="margin:0;">
-        <strong style="color:#05ACFA;">Minimal Decremental Value:</strong>
-        ${req.min_dec_val}
-      </p>` : ''}
-
-  </div>
-  <hr>
-` : ''}
-
+                          <p style="margin:0;">
+                            <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">
+                              Minimal Decremental Value:
+                            </strong>
+                            ${req.min_dec_val || ''}
+                          </p>
+                        </div>
                     </div>
+
+                        <hr>
                        <div style="margin:0; padding:0;">
                             <p id="previous_bids_${req.id}" style="margin:0; font-weight:bold;"></p>
                             <p id="user_rank_${req.id}" style="margin:0; color: lightgreen;"></p>
                         </div>
+
 
                         <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
                             <div style="display: flex; gap: 6px; align-items: center;">
@@ -1096,54 +1059,8 @@ function restoreInputs() {
 <!--    });-->
 <!--}-->
 
-<!--function updateBids() {-->
-<!--    // Group this user’s bids by requirement-->
-<!--    const bidsByReq = {};-->
-<!--    userBids.forEach(bid => {-->
-<!--        if (!bidsByReq[bid.id]) {-->
-<!--            bidsByReq[bid.id] = [];-->
-<!--        }-->
-<!--        bidsByReq[bid.id].push(bid.rate);-->
-<!--    });-->
-
-<!--    // Show bid history-->
-<!--    Object.keys(bidsByReq).forEach(reqId => {-->
-<!--        const field = document.getElementById(`previous_bids_${reqId}`);-->
-<!--        if (!field) return;-->
-
-<!--        const allRates = bidsByReq[reqId];-->
-<!--        const showLimit = 5; // number of bids to show by default-->
-<!--        let visibleRates = allRates.slice(-showLimit); // last 10 bids-->
-
-<!--        // Render visible rates-->
-<!--        field.innerHTML = `-->
-<!--            <span class="visible-rates">${visibleRates.join(" > ")}</span>-->
-<!--            ${allRates.length > showLimit ? `<button class="toggle-rates" data-req="${reqId}" style="margin-left:5px; font-size:12px;">Show All</button>` : ''}-->
-<!--        `;-->
-<!--    });-->
-
-<!--    // Add event listeners for Show All / Show Less buttons-->
-<!--    document.querySelectorAll(".toggle-rates").forEach(btn => {-->
-<!--        btn.onclick = () => {-->
-<!--            const reqId = btn.getAttribute("data-req");-->
-<!--            const field = document.getElementById(`previous_bids_${reqId}`);-->
-<!--            const allRates = bidsByReq[reqId];-->
-
-<!--            if (btn.textContent === "Show All") {-->
-<!--                field.querySelector(".visible-rates").textContent = allRates.join(" > ");-->
-<!--                btn.textContent = "Show Less";-->
-<!--            } else {-->
-<!--                field.querySelector(".visible-rates").textContent = allRates.slice(-showLimit).join(" > ");-->
-<!--                btn.textContent = "Show All";-->
-<!--            }-->
-<!--        };-->
-<!--    });-->
-
-
-// Track toggle states for each requirement locally
-const toggleState = {}; // { reqId: "all" | "less" }
-
 function updateBids() {
+    // Group this user’s bids by requirement
     const bidsByReq = {};
     userBids.forEach(bid => {
         if (!bidsByReq[bid.id]) {
@@ -1152,53 +1069,38 @@ function updateBids() {
         bidsByReq[bid.id].push(bid.rate);
     });
 
+    // Show bid history
     Object.keys(bidsByReq).forEach(reqId => {
         const field = document.getElementById(`previous_bids_${reqId}`);
         if (!field) return;
 
         const allRates = bidsByReq[reqId];
-        const showLimit = 5;
+        const showLimit = 5; // number of bids to show by default
+        let visibleRates = allRates.slice(-showLimit); // last 10 bids
 
-        // Decide what to render based on saved state
-        let visibleRates;
-        if (toggleState[reqId] === "all") {
-            visibleRates = allRates;
-        } else {
-            visibleRates = allRates.slice(-showLimit);
-        }
-
-        // Render
+        // Render visible rates
         field.innerHTML = `
             <span class="visible-rates">${visibleRates.join(" > ")}</span>
-            ${allRates.length > showLimit ?
-              `<button class="toggle-rates" data-req="${reqId}" style="margin-left:5px; font-size:12px;">
-                  ${toggleState[reqId] === "all" ? "Show Less" : "Show All"}
-               </button>`
-              : ''}
+            ${allRates.length > showLimit ? `<button class="toggle-rates" data-req="${reqId}" style="margin-left:5px; font-size:12px;">Show All</button>` : ''}
         `;
     });
 
-    // Add listeners
+    // Add event listeners for Show All / Show Less buttons
     document.querySelectorAll(".toggle-rates").forEach(btn => {
         btn.onclick = () => {
             const reqId = btn.getAttribute("data-req");
+            const field = document.getElementById(`previous_bids_${reqId}`);
             const allRates = bidsByReq[reqId];
 
-            if (toggleState[reqId] === "all") {
-                // Switch to "less"
-                toggleState[reqId] = "less";
-                btn.textContent = "Show All";
-                btn.previousElementSibling.textContent = allRates.slice(-5).join(" > ");
-            } else {
-                // Switch to "all"
-                toggleState[reqId] = "all";
+            if (btn.textContent === "Show All") {
+                field.querySelector(".visible-rates").textContent = allRates.join(" > ");
                 btn.textContent = "Show Less";
-                btn.previousElementSibling.textContent = allRates.join(" > ");
+            } else {
+                field.querySelector(".visible-rates").textContent = allRates.slice(-showLimit).join(" > ");
+                btn.textContent = "Show All";
             }
         };
     });
-
-
 
     // Show rank as before
     latestUserRanks.forEach(rank => {
