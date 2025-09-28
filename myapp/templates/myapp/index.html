@@ -719,6 +719,27 @@ function restoreInputs() {
 }
 
 
+let keyboardOpen = false;
+
+window.addEventListener("resize", () => {
+    // Mobile trick: viewport height shrinks when keyboard opens
+    keyboardOpen = window.innerHeight < screen.height - 100;
+});
+
+function restoreInputs() {
+    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
+        const savedVal = localStorage.getItem(input.id);
+        if (savedVal !== null) input.value = savedVal;
+    });
+
+    if (keyboardOpen) {
+        const lastFocusedId = localStorage.getItem("last_focused_input");
+        if (lastFocusedId) {
+            const focusedInput = document.getElementById(lastFocusedId);
+            if (focusedInput) focusedInput.focus();
+        }
+    }
+}
 
 
 // Call this after rendering your inputs
