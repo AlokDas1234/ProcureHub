@@ -692,9 +692,39 @@ ${(req.cel_price || req.min_dec_val) ? `
         requirements.forEach((req, i) => {
             const existing = container.children[i];
             const newRow = fragment.children[i];
-            if (!existing || existing.id !== newRow.id || existing.innerHTML !== newRow.innerHTML) {
-                container.replaceChild(newRow, existing);
-            }
+<!--            if (!existing || existing.id !== newRow.id || existing.innerHTML !== newRow.innerHTML) {-->
+<!--                container.replaceChild(newRow, existing);-->
+<!--            }-->
+             if (!existing) {
+                    container.appendChild(newRow);
+                    return;
+                }
+                if (existing.contains(document.activeElement)) {
+        // Just update dynamic parts instead of replacing the whole row
+        // Example: update progress bar + text fields
+        const newProgress = newRow.querySelector(`#progress-bar-${req.id}`);
+        const oldProgress = existing.querySelector(`#progress-bar-${req.id}`);
+        if (oldProgress && newProgress) {
+            oldProgress.className = newProgress.className;
+            oldProgress.style.width = newProgress.style.width;
+        }
+
+        const newRemain = newRow.querySelector(`#remaining-time-${req.id}`);
+        const oldRemain = existing.querySelector(`#remaining-time-${req.id}`);
+        if (oldRemain && newRemain) {
+            oldRemain.textContent = newRemain.textContent;
+        }
+
+        // (you can add more patching here as needed)
+    }
+    else {
+        // Safe to replace if user is not typing in this row
+        if (existing.id !== newRow.id || existing.innerHTML !== newRow.innerHTML) {
+            container.replaceChild(newRow, existing);
+        }
+    }
+
+
         });
     }
 
