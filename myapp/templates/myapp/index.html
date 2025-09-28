@@ -254,7 +254,7 @@ button {
     let latestUserRanks = [];
     let userBids = [];   // ✅ declare here
 <!--    console.log("allGroupedBids:",allGroupedBids);-->
-<!--    console.log("latestUserRanks:",latestUserRanks);-->
+    console.log("latestUserRanks:",latestUserRanks);
 <!--    console.log("userBids:",userBids);-->
 
 <!--    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/room1/`);-->
@@ -650,10 +650,10 @@ ${(req.cel_price || req.min_dec_val) ? `
                             <div style="display: flex; gap: 6px; align-items: center;">
                                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
                                        style="flex: 1; padding: 8px; font-size: 14px;">
-                                <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
-                                        style="flex: 2; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                                    Submit Bid
-                                </button>
+                                    <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
+                                            style="flex: 2; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        Submit Bid
+                                    </button>
                             </div>
                         </div>
                     </div>
@@ -692,6 +692,7 @@ ${(req.cel_price || req.min_dec_val) ? `
         requirements.forEach((req, i) => {
             const existing = container.children[i];
             const newRow = fragment.children[i];
+             if (!newRow) return;
 <!--            if (!existing || existing.id !== newRow.id || existing.innerHTML !== newRow.innerHTML) {-->
 <!--                container.replaceChild(newRow, existing);-->
 <!--            }-->
@@ -699,7 +700,14 @@ ${(req.cel_price || req.min_dec_val) ? `
                     container.appendChild(newRow);
                     return;
                 }
-                if (existing.contains(document.activeElement)) {
+
+                if (!existing.contains(document.activeElement)) {
+        // Safe to replace when no active input inside
+        if (existing.id !== newRow.id || existing.innerHTML !== newRow.innerHTML) {
+            container.replaceChild(newRow, existing);
+        }}
+
+               else{
         // Just update dynamic parts instead of replacing the whole row
         // Example: update progress bar + text fields
         const newProgress = newRow.querySelector(`#progress-bar-${req.id}`);
@@ -715,14 +723,15 @@ ${(req.cel_price || req.min_dec_val) ? `
             oldRemain.textContent = newRemain.textContent;
         }
 
+         const newRank = newRow.querySelector(`#user_rank_${req.id}`);
+        const oldRank = existing.querySelector(`#user_rank_${req.id}`);
+        if (oldRank && newRank) {
+            oldRank.textContent = newRank.textContent;
+        }
+
         // (you can add more patching here as needed)
     }
-    else {
-        // Safe to replace if user is not typing in this row
-        if (existing.id !== newRow.id || existing.innerHTML !== newRow.innerHTML) {
-            container.replaceChild(newRow, existing);
-        }
-    }
+
 
 
         });
