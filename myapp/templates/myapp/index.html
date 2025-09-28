@@ -31,52 +31,8 @@
     padding: 0;   /* optional, removes extra spacing */
 }
 
-<!--.col-left {-->
-<!--  flex: 0 0 70%; /* Take 70% of available width */-->
-<!--  max-width: 70%;-->
-<!--}-->
-<!--.col-right {-->
-<!--  flex: 0 0 30%; /* Take 30% of available width */-->
-<!--  max-width: 30%;-->
-<!--}-->
-
-<!--/* Your existing columns */-->
-<!--.col-left {-->
-<!--  flex: 0 0 70%;-->
-<!--  max-width: 70%;-->
-<!--}-->
-<!--.col-right {-->
-<!--  flex: 0 0 30%;-->
-<!--  max-width: 30%;-->
-<!--}-->
-
-<!--/* ✅ Make it mobile-friendly */-->
-<!--@media (max-width: 768px) {-->
-<!--  .row {-->
-<!--    flex-direction: column; /* stack columns vertically */-->
-<!--  }-->
-
-<!--  .col-left, .col-right {-->
-<!--    flex: 0 0 100%;-->
-<!--    max-width: 100%;-->
-<!--  }-->
-
-<!--  .col-right {-->
-<!--    margin-top: 5px; /* add spacing between left and right on mobile */-->
-<!--  }-->
-<!--}-->
 
 
-
-<!--        .col {-->
-<!--            flex: 1;-->
-<!--            background-color: #222;-->
-<!--            padding: 5px;-->
-<!--            border-radius: 4px;-->
-<!--        }-->
-<!--        .col p {-->
-<!--            margin: 4px 0;-->
-<!--        }-->
 
 
 /* Desktop layout */
@@ -85,27 +41,6 @@
   max-width: 100%;
 }
 
-<!--.col-right {-->
-<!--  flex: 0 0 30%;-->
-<!--  max-width: 30%;-->
-<!--}-->
-
-/* ✅ Make it mobile-friendly */
-<!--@media (max-width: 768px) {-->
-<!--  .row {-->
-<!--    flex-direction: column; /* stack vertically */-->
-<!--    align-items: flex-start; /* ✅ stop forcing equal height */-->
-<!--  }-->
-
-<!--  .col-left,-->
-<!-- {-->
-<!--    flex: 1 1 100%; /* ✅ let them expand naturally */-->
-<!--    max-width: 100%;-->
-<!--  }-->
-
-<!--  .col-right {-->
-<!--    margin-top: 10px; /* add spacing between sections */-->
-<!--  }-->
 }
 
 body {
@@ -122,17 +57,6 @@ button {
   flex: 1; /* ✅ makes buttons scale properly */
 }
 
-<!--        button {-->
-<!--            background-color: #05aafc;-->
-<!--            color: white;-->
-<!--            border: none;-->
-<!--            padding: 5px 10px;-->
-<!--            border-radius: 4px;-->
-<!--            cursor: pointer;-->
-<!--        }-->
-<!--        button:hover {-->
-<!--            background-color: #1dde8a;-->
-<!--        }-->
         input {
             padding: 4px;
             width: 80%;
@@ -344,24 +268,6 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
     };
 
-<!--    function submitBid(reqId) {-->
-<!--        const button = document.querySelector(`#submitbid_${reqId}`);-->
-<!--        const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);-->
-
-<!--        if (bidAmtInput && bidAmtInput.value.trim()) {-->
-<!--            button.disabled = true;-->
-<!--            socket.send(JSON.stringify({-->
-<!--                type: 'submit_bid',-->
-<!--                req_id: reqId,-->
-<!--                bid_amt: bidAmtInput.value.trim()-->
-<!--            }));-->
-<!--            setTimeout(() => {-->
-<!--            bidAmtInput.value = "";-->
-<!--            localStorage.removeItem("bid_amt_"+reqId);-->
-
-<!--        }, 300);-->
-<!--        }-->
-<!--    }-->
 
 
 
@@ -582,231 +488,6 @@ else  {
         };
 
 
-<!-- function renderRequirements(requirements,auction_start_status) {-->
-<!-- const scrollY = window.scrollY;-->
-
-
-
-<!--&lt;!&ndash;        console.log("requirements:", requirements);&ndash;&gt;-->
-
-<!--        const container = document.getElementById('main-container');-->
-<!--&lt;!&ndash;        const container = document.getElementById('main-container');&ndash;&gt;-->
-<!--        container.innerHTML = ` `;-->
-
-<!--        requirements.forEach((req, index) => {  // <&#45;&#45; index is here-->
-<!--            const row = document.createElement('div');-->
-<!--            row.className = 'row';-->
-<!--            row.id = `req_row_${req.id}`;-->
-
-
-
-<!--             const leftCol = document.createElement('div');-->
-<!--             leftCol.className = 'col col-left';-->
-
-<!--            leftCol.innerHTML = `-->
-<!--                <div style="display: flex; align-items: stretch;">-->
-<!--                    <div class="vertical-label">-->
-<!--                        <span>#REQUIREMENT ${index + 1}</span>-->
-<!--                    </div>-->
-<!--                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding-bottom: 0; padding-top: 0;">-->
-
-
-
-
-
-<!--<div class="progress" style="height: 30px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">-->
-
-<!--  &lt;!&ndash; Shrinking bar &ndash;&gt;-->
-<!--  <div id="progress-bar-${req.id}"-->
-<!--       class="progress-bar green"-->
-<!--       style="width: 100%; height: 100%;">-->
-<!--  </div>-->
-
-<!--  &lt;!&ndash; Fixed text layer (stays in center regardless of bar width) &ndash;&gt;-->
-<!--  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;-->
-<!--              display: flex; align-items: center; justify-content: center;-->
-<!--              font-weight: bold; color: white; pointer-events: none;">-->
-<!--    REQUIREMENT ID: ${req.id} | <span id="remaining-time-${req.id}"></span>-->
-<!--  </div>-->
-
-<!--</div>-->
-
-
-
-
-<!--                    <div class="p-1" style="margin-left:0.5rem;">-->
-
-<!--                           <div class="row no-border">-->
-<!--                           <div class="col-md-6">-->
-<!--&lt;!&ndash;                             <div style="display: flex; gap: 10px;">&ndash;&gt;-->
-
-<!--                        <p style="margin:0;"><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>-->
-
-<!--                      <p style="margin:0;">-->
-<!--                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">-->
-<!--                             ${ req.loading_point_full_address}-->
-<!--                            </a>-->
-<!--                        </p>-->
-
-<!--                        </div>-->
-
-<!--                         <div class="col-md-6">-->
-
-
-<!--                          </div>-->
-<!--                          </div>-->
-<!--                            <p style="margin:0;"><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>-->
-
-
-<!--                        <p style="margin:0;">-->
-<!--                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">-->
-<!--                               ${req.unloading_point_full_address}-->
-<!--                            </a>-->
-<!--                        </p>-->
-<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
-
-<!--                        <hr>-->
-<!--                        <div style="display: flex; gap: 5px;">-->
-<!--                                          <p style="margin:0;">-->
-<!--                                            <strong style="color: ${req.truck_type ? '#05ACFA' : '#EFADF0'};">Truck:</strong>-->
-<!--                                            ${req.truck_type || ''}-->
-<!--                                          </p>-->
-
-<!--                                          <p style="margin:0;">-->
-<!--                                            <strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong>-->
-<!--                                            ${req.no_of_trucks || ''}-->
-<!--                                          </p>-->
-
-<!--                                          <p style="margin:0;">-->
-<!--                              <strong style="color: ${req.product ? '#05ACFA' : '#EFADF0'};">-->
-<!--                                Product Type:-->
-<!--                              </strong>-->
-<!--                              ${req.product || ''} with ${req.drum_type_no_of_drums || ''} Drums-->
-<!--                            </p>-->
-
-<!--                            <p style="margin:0;">-->
-<!--                          <strong style="color: ${req.types ? '#05ACFA' : '#EFADF0'};">-->
-<!--                            Types:-->
-<!--                          </strong>-->
-<!--                          ${req.types || ''}-->
-<!--                        </p>-->
-<!--                                        </div>-->
-
-
-
-
-<!--                       <div style="display: flex; gap: 5px; margin:2;">-->
-<!--                        <p style="margin:0;">-->
-<!--                              <strong style="color: ${req.approx_mat_mt ? '#05ACFA' : '#EFADF0'};">-->
-<!--                                Approx Material Wait (MT):-->
-<!--                              </strong>-->
-<!--                              ${req.approx_mat_mt || ''}-->
-<!--                            </p>-->
-
-<!--                             <p style="margin:0;">-->
-<!--                          <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">-->
-<!--                            Weight Per Drum:-->
-<!--                          </strong>-->
-<!--                          ${req.weight_per_drum || ''}-->
-<!--                        </p>-->
-
-
-
-
-<!--                                              <p style="margin:0;">-->
-<!--                      <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">-->
-<!--                        Notes:-->
-<!--                      </strong>-->
-<!--                      ${req.notes || ''}-->
-<!--                    </p>-->
-<!--                        </div>-->
-<!--                                                   <hr>-->
-<!--                           <div style="display: flex; gap: 4px;">-->
-<!--                          <p style="margin:0;">-->
-<!--                            <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">-->
-<!--                              Ceiling Price:-->
-<!--                            </strong>-->
-<!--                            ${req.cel_price || ''}-->
-<!--                          </p>-->
-
-<!--                          <p style="margin:0;">-->
-<!--                            <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">-->
-<!--                              Minimal Decremental Value:-->
-<!--                            </strong>-->
-<!--                            ${req.min_dec_val || ''}-->
-<!--                          </p>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <hr>-->
-<!--                    <h4 id= "previous_bids_${req.id}"></h4>-->
-<!--                   <p id="user_rank_${req.id}" style="color: lightgreen;"></p>-->
-
-<!--                  <div id="submit_bid_amt_${req.id}">-->
-<!--                        <div style="display: flex; gap: 6px; align-items: center;">-->
-<!--                            <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"-->
-<!--                                   style="flex: 1; padding: 8px; font-size: 14px;">-->
-<!--                            <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"-->
-<!--                                    style="flex: 2; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">-->
-<!--                                Submit Bid-->
-<!--                            </button>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-
-
-<!--               </div>-->
-
-<!--              </div>-->
-<!--            `;-->
-
-
-
-<!--            if (auction_start_status===true){-->
-<!--           let submit_bid_amt = document.getElementById("submit_bid_amt");-->
-<!--            if (submit_bid_amt) {-->
-<!--                console.log("The element is present");-->
-<!--                submit_bid_amt.style.display = "block";-->
-<!--                          }-->
-<!--            }-->
-
-<!--            container.appendChild(row);-->
-<!--        });-->
-
-<!--    requirements.forEach(req => {-->
-<!--        const input = document.getElementById(`bid_amt_${req.id}`);-->
-<!--        if (input) {-->
-<!--            input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";-->
-<!--        }-->
-<!--    });-->
-
-<!--       window.scrollTo(0, scrollY);-->
-
-<!--// Restore input values and focus-->
-
-<!--function restoreInputs() {-->
-<!--    const container = document.getElementById("main-container");-->
-<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
-<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
-
-<!--    // Restore all saved input values-->
-<!--    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {-->
-<!--        const savedVal = localStorage.getItem(input.id);-->
-<!--        if (savedVal !== null) input.value = savedVal;-->
-<!--    });-->
-
-<!--    // Restore focus safely-->
-<!--    if (lastFocusedId) {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            focusedInput.focus();-->
-<!--            // Only try to set cursor if input type allows it-->
-<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
-<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
-<!--}-->
-
 
 function renderRequirements(requirements, auction_start_status) {
     const scrollY = window.scrollY;
@@ -828,7 +509,7 @@ function renderRequirements(requirements, auction_start_status) {
                 </div>
                 <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding:0;">
                     <!-- ✅ your existing progress bar + requirement details -->
-                    <div class="progress" style="height: 30px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">
+                    <div class="progress" style="height: 20px; margin-bottom: 8px; position: relative; border-radius: 5px; overflow: hidden;">
                         <div id="progress-bar-${req.id}" class="progress-bar green" style="width: 100%; height: 100%;"></div>
                         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
                                     display: flex; align-items: center; justify-content: center;
@@ -844,7 +525,7 @@ function renderRequirements(requirements, auction_start_status) {
 
                         <div class="row no-border">
                            <div class="col-md-6">
-<!--                             <div style="display: flex; gap: 10px;">-->
+                             <div style="display: flex; gap: 10px;">
 
                         <p style="margin:0;"><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
 
@@ -853,6 +534,8 @@ function renderRequirements(requirements, auction_start_status) {
                              ${ req.loading_point_full_address}
                             </a>
                         </p>
+                                                </div>
+
 
                         </div>
 
@@ -861,6 +544,7 @@ function renderRequirements(requirements, auction_start_status) {
 
                           </div>
                           </div>
+                              <div style="display: flex; gap: 10px;">
                             <p style="margin:0;"><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>
 
 
@@ -869,7 +553,7 @@ function renderRequirements(requirements, auction_start_status) {
                                ${req.unloading_point_full_address}
                             </a>
                         </p>
-<!--                        </div>-->
+                        </div>
 
                         <hr>
                         <div style="display: flex; gap: 5px;">
@@ -889,15 +573,6 @@ function renderRequirements(requirements, auction_start_status) {
                                             <strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong>
                                             ${req.no_of_trucks || ''}
                                           </p>
-<!--                                <p style="margin:0;">-->
-<!--                                -->
-<!--                                  <strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">-->
-<!--                                    No of Truck:-->
-<!--                                  </strong>-->
-<!--                                  <span style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">-->
-<!--                                    ${req.no_of_trucks || ''}-->
-<!--                                  </span>-->
-<!--                                </p>-->
 
 
 
@@ -937,30 +612,35 @@ function renderRequirements(requirements, auction_start_status) {
                       ${req.notes || ''}
                     </p>
                         </div>
-                                                   <hr>
-                           <div style="display: flex; gap: 4px;">
-                          <p style="margin:0;">
-                            <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
-                              Ceiling Price:
-                            </strong>
-                            ${req.cel_price || ''}
-                          </p>
 
-                          <p style="margin:0;">
-                            <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">
-                              Minimal Decremental Value:
-                            </strong>
-                            ${req.min_dec_val || ''}
-                          </p>
-                        </div>
+
+ <hr>
+
+
+${(req.cel_price || req.min_dec_val) ? `
+  <div style="display: flex; gap: 4px;">
+
+    ${req.cel_price ? `
+      <p style="margin:0;">
+        <strong style="color:#05ACFA;">Ceiling Price:</strong>
+        ${req.cel_price}
+      </p>` : ''}
+
+    ${req.min_dec_val ? `
+      <p style="margin:0;">
+        <strong style="color:#05ACFA;">Minimal Decremental Value:</strong>
+        ${req.min_dec_val}
+      </p>` : ''}
+
+  </div>
+  <hr>
+` : ''}
+
                     </div>
-
-                        <hr>
                        <div style="margin:0; padding:0;">
                             <p id="previous_bids_${req.id}" style="margin:0; font-weight:bold;"></p>
                             <p id="user_rank_${req.id}" style="margin:0; color: lightgreen;"></p>
                         </div>
-
 
                         <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
                             <div style="display: flex; gap: 6px; align-items: center;">
@@ -1031,36 +711,10 @@ function restoreInputs() {
 
 
 
-<!--function updateBids() {-->
-
-<!--    // Group this user’s bids by requirement-->
-<!--    const bidsByReq = {};-->
-<!--    userBids.forEach(bid => {-->
-<!--        if (!bidsByReq[bid.id]) {   // ✅ use `id` instead of `req_id`-->
-<!--            bidsByReq[bid.id] = [];-->
-<!--        }-->
-<!--        bidsByReq[bid.id].push(bid.rate);-->
-<!--    });-->
-
-<!--    // Show bid history-->
-<!--    Object.keys(bidsByReq).forEach(reqId => {-->
-<!--        const field = document.getElementById(`previous_bids_${reqId}`);-->
-<!--        if (field) {-->
-<!--            field.textContent = `Rates History: ${bidsByReq[reqId].join(">")}`;-->
-<!--        }-->
-<!--    });-->
-
-<!--    // Show rank-->
-<!--    latestUserRanks.forEach(rank => {-->
-<!--        const field = document.getElementById(`user_rank_${rank.bid_id}`);  // ✅ use bid_id-->
-<!--        if (field) {-->
-<!--            field.textContent = `Rank: ${rank.rank} (Last Bid: ₹${rank.bid_rate})`;-->
-<!--        }-->
-<!--    });-->
-<!--}-->
+// Track toggle states for each requirement locally
+const toggleState = {}; // { reqId: "all" | "less" }
 
 function updateBids() {
-    // Group this user’s bids by requirement
     const bidsByReq = {};
     userBids.forEach(bid => {
         if (!bidsByReq[bid.id]) {
@@ -1069,38 +723,53 @@ function updateBids() {
         bidsByReq[bid.id].push(bid.rate);
     });
 
-    // Show bid history
     Object.keys(bidsByReq).forEach(reqId => {
         const field = document.getElementById(`previous_bids_${reqId}`);
         if (!field) return;
 
         const allRates = bidsByReq[reqId];
-        const showLimit = 5; // number of bids to show by default
-        let visibleRates = allRates.slice(-showLimit); // last 10 bids
+        const showLimit = 5;
 
-        // Render visible rates
+        // Decide what to render based on saved state
+        let visibleRates;
+        if (toggleState[reqId] === "all") {
+            visibleRates = allRates;
+        } else {
+            visibleRates = allRates.slice(-showLimit);
+        }
+
+        // Render
         field.innerHTML = `
             <span class="visible-rates">${visibleRates.join(" > ")}</span>
-            ${allRates.length > showLimit ? `<button class="toggle-rates" data-req="${reqId}" style="margin-left:5px; font-size:12px;">Show All</button>` : ''}
+            ${allRates.length > showLimit ?
+              `<button class="toggle-rates" data-req="${reqId}" style="margin-left:5px; font-size:12px;">
+                  ${toggleState[reqId] === "all" ? "Show Less" : "Show All"}
+               </button>`
+              : ''}
         `;
     });
 
-    // Add event listeners for Show All / Show Less buttons
+    // Add listeners
     document.querySelectorAll(".toggle-rates").forEach(btn => {
         btn.onclick = () => {
             const reqId = btn.getAttribute("data-req");
-            const field = document.getElementById(`previous_bids_${reqId}`);
             const allRates = bidsByReq[reqId];
 
-            if (btn.textContent === "Show All") {
-                field.querySelector(".visible-rates").textContent = allRates.join(" > ");
-                btn.textContent = "Show Less";
-            } else {
-                field.querySelector(".visible-rates").textContent = allRates.slice(-showLimit).join(" > ");
+            if (toggleState[reqId] === "all") {
+                // Switch to "less"
+                toggleState[reqId] = "less";
                 btn.textContent = "Show All";
+                btn.previousElementSibling.textContent = allRates.slice(-5).join(" > ");
+            } else {
+                // Switch to "all"
+                toggleState[reqId] = "all";
+                btn.textContent = "Show Less";
+                btn.previousElementSibling.textContent = allRates.join(" > ");
             }
         };
     });
+
+
 
     // Show rank as before
     latestUserRanks.forEach(rank => {
