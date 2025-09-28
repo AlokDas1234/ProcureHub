@@ -682,28 +682,42 @@ ${(req.cel_price || req.min_dec_val) ? `
 }
 
 
-function restoreInputs() {
-    const lastFocusedId = localStorage.getItem("last_focused_input");
-    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);
+<!--function restoreInputs() {-->
+<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
+<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
 
+<!--    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {-->
+<!--        const savedVal = localStorage.getItem(input.id);-->
+<!--        if (savedVal !== null) input.value = savedVal;-->
+<!--    });-->
+
+<!--    if (lastFocusedId) {-->
+<!--        const focusedInput = document.getElementById(lastFocusedId);-->
+<!--        if (focusedInput) {-->
+<!--            focusedInput.focus();-->
+<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
+<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+
+
+
+<!--}-->
+function restoreInputs() {
     document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
         const savedVal = localStorage.getItem(input.id);
         if (savedVal !== null) input.value = savedVal;
     });
 
-    if (lastFocusedId) {
-        const focusedInput = document.getElementById(lastFocusedId);
-        if (focusedInput) {
-            focusedInput.focus();
-            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {
-                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);
-            }
-        }
-    }
-
-
-
+    // ❌ Remove auto-focus → prevents unwanted scroll jump
+    // const lastFocusedId = localStorage.getItem("last_focused_input");
+    // if (lastFocusedId) {
+    //     const focusedInput = document.getElementById(lastFocusedId);
+    //     if (focusedInput) focusedInput.focus();
+    // }
 }
+
 
 
 
