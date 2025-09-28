@@ -271,6 +271,39 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
 
 
+<!--function submitBid(reqId) {-->
+<!--    const button = document.querySelector(`#submitbid_${reqId}`);-->
+<!--    const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);-->
+
+<!--    if (bidAmtInput && bidAmtInput.value.trim()) {-->
+<!--        button.disabled = true;-->
+
+<!--        // ✅ Clear storage immediately (before re-render)-->
+<!--        try {-->
+<!--            localStorage.removeItem("bid_amt_" + reqId);-->
+<!--            localStorage.removeItem("last_focused_input");-->
+<!--            localStorage.removeItem("last_cursor_position");-->
+
+<!--        } catch (e) {-->
+<!--            console.error("Failed to clear localStorage:", e);-->
+<!--        }-->
+
+<!--        socket.send(JSON.stringify({-->
+<!--            type: 'submit_bid',-->
+<!--            req_id: reqId,-->
+<!--            bid_amt: bidAmtInput.value.trim()-->
+<!--        }));-->
+
+<!--        // ✅ Clear input field immediately, not delayed-->
+<!--        bidAmtInput.value = "";-->
+
+<!--        setTimeout(() => {-->
+<!--            button.disabled = false;-->
+<!--&lt;!&ndash;            socket.send(JSON.stringify({ type: 'grouped_bid' }));&ndash;&gt;-->
+<!--        }, 300);-->
+<!--    }-->
+<!--}-->
+
 function submitBid(reqId) {
     const button = document.querySelector(`#submitbid_${reqId}`);
     const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);
@@ -278,12 +311,10 @@ function submitBid(reqId) {
     if (bidAmtInput && bidAmtInput.value.trim()) {
         button.disabled = true;
 
-        // ✅ Clear storage immediately (before re-render)
         try {
             localStorage.removeItem("bid_amt_" + reqId);
             localStorage.removeItem("last_focused_input");
             localStorage.removeItem("last_cursor_position");
-
         } catch (e) {
             console.error("Failed to clear localStorage:", e);
         }
@@ -294,16 +325,16 @@ function submitBid(reqId) {
             bid_amt: bidAmtInput.value.trim()
         }));
 
-        // ✅ Clear input field immediately, not delayed
-        bidAmtInput.value = "";
+        // ✅ Don’t clear value (keeps keyboard open)
+        // Instead, auto-select so new input replaces old
+        bidAmtInput.focus();
+        bidAmtInput.select();
 
         setTimeout(() => {
             button.disabled = false;
-<!--            socket.send(JSON.stringify({ type: 'grouped_bid' }));-->
         }, 300);
     }
 }
-
 
 
 
