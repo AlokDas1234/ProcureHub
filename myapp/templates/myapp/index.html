@@ -492,6 +492,10 @@ else  {
 function renderRequirements(requirements, auction_start_status) {
     const scrollY = window.scrollY;
     const container = document.getElementById('main-container');
+
+    const activeElement = document.activeElement;
+    const activeId = activeElement && activeElement.id;
+
     const fragment = document.createDocumentFragment();
 
     requirements.forEach((req, index) => {
@@ -661,19 +665,53 @@ ${(req.cel_price || req.min_dec_val) ? `
         fragment.appendChild(row);
     });
 
-    // ✅ Replace DOM children at once → less flicker
-    container.replaceChildren(fragment);
+<!--    // ✅ Replace DOM children at once → less flicker-->
+<!--    container.replaceChildren(fragment);-->
 
-    // ✅ Restore input values from localStorage
-    requirements.forEach(req => {
-        const input = document.getElementById(`bid_amt_${req.id}`);
-        if (input) input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";
-    });
+<!--    // ✅ Restore input values from localStorage-->
+<!--    requirements.forEach(req => {-->
+<!--        const input = document.getElementById(`bid_amt_${req.id}`);-->
+<!--        if (input) input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";-->
+<!--    });-->
 
-    // ✅ Restore focus and cursor
-    restoreInputs();
+<!--    // ✅ Restore focus and cursor-->
+<!--    restoreInputs();-->
 
-    // ✅ Restore scroll after browser paints new DOM
+<!--    // ✅ Restore scroll after browser paints new DOM-->
+<!--    requestAnimationFrame(() => {-->
+<!--        window.scrollTo(0, scrollY);-->
+<!--    });-->
+
+<!--    updateBids();-->
+
+   // ✅ Instead of replaceChildren (kills focus), patch manually
+    if (container.children.length !== requirements.length) {
+        container.replaceChildren(fragment);
+    } else {
+        // Update row-by-row
+        requirements.forEach((req, i) => {
+            const existing = container.children[i];
+            const newRow = fragment.children[i];
+            if (!existing || existing.id !== newRow.id || existing.innerHTML !== newRow.innerHTML) {
+                container.replaceChild(newRow, existing);
+            }
+        });
+    }
+
+    // ✅ If user was typing, re-focus only that input (keyboard stays open)
+    if (activeId) {
+        const stillThere = document.getElementById(activeId);
+        if (stillThere) {
+            stillThere.focus();
+            // put cursor at end if it’s a number input
+            if (stillThere.type === "number") {
+                const val = stillThere.value;
+                stillThere.value = "";
+                stillThere.value = val;
+            }
+        }
+    }
+
     requestAnimationFrame(() => {
         window.scrollTo(0, scrollY);
     });
