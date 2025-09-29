@@ -327,8 +327,9 @@ function submitBid(reqId) {
 
         // ✅ Don’t clear value (keeps keyboard open)
         // Instead, auto-select so new input replaces old
-        bidAmtInput.value = "";
+
         bidAmtInput.focus();
+        bidAmtInput.value = "";
         bidAmtInput.select();
 
         setTimeout(() => {

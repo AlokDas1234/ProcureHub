@@ -286,86 +286,155 @@ input:checked + .slider:before {
 
          <h3 class="mb-4 text-primary font-weight-bold">1.SINGLE REQUIREMENT ENTRY:</h3>
                 <hr>
-        <div class="row">
+<!--        <div class="row">-->
 
-            <!-- Left Column -->
-
-
-                <div  class="form-group">
-                    <div class="form-group">
-                    <label for="loading_point">1. Loading Point</label>
-                    <input type="text" class="form-control" name="loading_point" id="loading_point" required>
-                         <label for="loading_point_full_address">2. Loading Point Full Address</label>
-                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>
-                </div>
-
-                            <div class="form-group">
-                                <label for="unloading_point">3. Unloading Point</label>
-                                <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
-                            </div>
+<!--            &lt;!&ndash; Left Column &ndash;&gt;-->
 
 
-
-                <div class="form-group">
-                    <label for="unloading_point_full_address">4. Unloading Point Full Address</label>
-                    <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>
-                </div>
-            </div>
-
-            <!-- Middle Column -->
-            <div class="col-md-4 mb-4">
-
-                <div class="form-group">
-                    <label for="truck_type">5. Truck Type</label>
-                    <input type="text" class="form-control" name="truck_type" required>
-                </div>
-                <div class="form-group">
-                    <label for="no_of_trucks">6. No of Trucks</label>
-                    <input type="number" class="form-control" name="no_of_trucks" required>
-                </div>
-<!--                <div class="form-group">-->
-<!--                    <label for="qty">7. Quantity</label>-->
-<!--                    <input type="number" class="form-control" name="qty" required>-->
+<!--                <div  class="form-group">-->
+<!--                    <div class="form-group">-->
+<!--                    <label for="loading_point">1. Loading Point</label>-->
+<!--                    <input type="text" class="form-control" name="loading_point" id="loading_point" required>-->
+<!--                         <label for="loading_point_full_address">2. Loading Point Full Address</label>-->
+<!--                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>-->
 <!--                </div>-->
-                <div class="form-group">
-                    <label for="product">7. Product Type</label>
-                    <input type="text" class="form-control" name="product" required>
-                </div>
-                 <div class="form-group">
-                    <label for="notes">8. Notes</label>
-                    <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>
-                </div>
-            </div>
 
-            <!-- Right Column -->
-            <div class="col-md-4 mb-4">
+<!--                            <div class="form-group">-->
+<!--                                <label for="unloading_point">3. Unloading Point</label>-->
+<!--                                <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>-->
+<!--                            </div>-->
 
-                <div class="form-group">
-                    <label for="drum_type_no_of_drums">9. Drum Type & No of Drums</label>
-                    <input type="text" class="form-control" name="drum_type_no_of_drums" required>
-                </div>
-                <div class="form-group">
-                    <label for="weight_per_drum">10. Weight per Drum</label>
-                    <input type="text" class="form-control" name="weight_per_drum" required>
-                </div>
-                <div class="form-group">
-                    <label for="approx_mat_mt">11. Approx Material Wait(MT)</label>
-                    <input type="text" class="form-control" name="approx_mat_mt" required>
-                </div>
-                <div class="form-group">
-                    <label for="types">12. Types</label>
-                    <input type="text" class="form-control" name="types" required>
-                </div>
-                <div class="form-group mb-0">
-                    <label for="cel_price">13. Ceiling Price</label>
-                    <input type="number" class="form-control" name="cel_price" required>
-                </div>
-                 <div class="form-group mb-0">
-                    <label for="min_dec_val">14. Minimal Decremental value </label>
-                    <input type="number" class="form-control" name="min_dec_val" required>
-                </div>
-            </div>
+
+
+<!--                <div class="form-group">-->
+<!--                    <label for="unloading_point_full_address">4. Unloading Point Full Address</label>-->
+<!--                    <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Middle Column &ndash;&gt;-->
+<!--            <div class="col-md-4 mb-4">-->
+<!--                <div class="form-group">-->
+<!--                    <label for="truck_type">5. Truck Type</label>-->
+<!--                    <input type="text" class="form-control" name="truck_type" required>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <label for="no_of_trucks">6. No of Trucks</label>-->
+<!--                    <input type="number" class="form-control" name="no_of_trucks" required>-->
+<!--                </div>-->
+<!--&lt;!&ndash;                <div class="form-group">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <label for="qty">7. Quantity</label>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <input type="number" class="form-control" name="qty" required>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--                <div class="form-group">-->
+<!--                    <label for="product">7. Product Type</label>-->
+<!--                    <input type="text" class="form-control" name="product" required>-->
+<!--                </div>-->
+<!--                 <div class="form-group">-->
+<!--                    <label for="notes">8. Notes</label>-->
+<!--                    <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Right Column &ndash;&gt;-->
+<!--            <div class="col-md-4 mb-4">-->
+
+<!--                <div class="form-group">-->
+<!--                    <label for="drum_type_no_of_drums">9. Drum Type & No of Drums</label>-->
+<!--                    <input type="text" class="form-control" name="drum_type_no_of_drums" required>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <label for="weight_per_drum">10. Weight per Drum</label>-->
+<!--                    <input type="text" class="form-control" name="weight_per_drum" required>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <label for="approx_mat_mt">11. Approx Material Wait(MT)</label>-->
+<!--                    <input type="text" class="form-control" name="approx_mat_mt" required>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <label for="types">12. Types</label>-->
+<!--                    <input type="text" class="form-control" name="types" required>-->
+<!--                </div>-->
+<!--                <div class="form-group mb-0">-->
+<!--                    <label for="cel_price">13. Ceiling Price</label>-->
+<!--                    <input type="number" class="form-control" name="cel_price" required>-->
+<!--                </div>-->
+<!--                 <div class="form-group mb-0">-->
+<!--                    <label for="min_dec_val">14. Minimal Decremental value </label>-->
+<!--                    <input type="number" class="form-control" name="min_dec_val" required>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <div class="row">
+    <!-- Left Column -->
+    <div class="col-12 col-sm-6 col-md-4 mb-4">
+        <div class="form-group">
+            <label for="loading_point">1. Loading Point</label>
+            <input type="text" class="form-control" name="loading_point" id="loading_point" required>
         </div>
+        <div class="form-group">
+            <label for="loading_point_full_address">2. Loading Point Full Address</label>
+            <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="unloading_point">3. Unloading Point</label>
+            <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
+        </div>
+        <div class="form-group">
+            <label for="unloading_point_full_address">4. Unloading Point Full Address</label>
+            <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>
+        </div>
+    </div>
+
+    <!-- Middle Column -->
+    <div class="col-12 col-sm-6 col-md-4 mb-4">
+        <div class="form-group">
+            <label for="truck_type">5. Truck Type</label>
+            <input type="text" class="form-control" name="truck_type" required>
+        </div>
+        <div class="form-group">
+            <label for="no_of_trucks">6. No of Trucks</label>
+            <input type="number" class="form-control" name="no_of_trucks" required>
+        </div>
+        <div class="form-group">
+            <label for="product">7. Product Type</label>
+            <input type="text" class="form-control" name="product" required>
+        </div>
+        <div class="form-group">
+            <label for="notes">8. Notes</label>
+            <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-12 col-sm-6 col-md-4 mb-4">
+        <div class="form-group">
+            <label for="drum_type_no_of_drums">9. Drum Type & No of Drums</label>
+            <input type="text" class="form-control" name="drum_type_no_of_drums" required>
+        </div>
+        <div class="form-group">
+            <label for="weight_per_drum">10. Weight per Drum</label>
+            <input type="text" class="form-control" name="weight_per_drum" required>
+        </div>
+        <div class="form-group">
+            <label for="approx_mat_mt">11. Approx Material Wait(MT)</label>
+            <input type="text" class="form-control" name="approx_mat_mt" required>
+        </div>
+        <div class="form-group">
+            <label for="types">12. Types</label>
+            <input type="text" class="form-control" name="types" required>
+        </div>
+        <div class="form-group mb-0">
+            <label for="cel_price">13. Ceiling Price</label>
+            <input type="number" class="form-control" name="cel_price" required>
+        </div>
+        <div class="form-group mb-0">
+            <label for="min_dec_val">14. Minimal Decremental value</label>
+            <input type="number" class="form-control" name="min_dec_val" required>
+        </div>
+    </div>
+</div>
+
 
 
     </div>
@@ -453,6 +522,8 @@ input:checked + .slider:before {
         <div class="container mt-4">
          <label for="start_time"><strong><h5>1.Bidding Start Time:</h5></strong> </label>
        <input type="datetime-local" name="start_time" id="start_time" required>
+             </div>
+          <div class="container mt-4">
           <label for="minute"> <strong><h5> 2.Bidding Time in Minute:</h5></strong> </label>
        <input type="number" name="minute" id="minute" required>
         </div>
@@ -919,7 +990,7 @@ function renderBids(data) {
                 <h4 id="remaining-time-${req.id}"></h4>
             </div>
 
-            <div class="progress" style="height: 18px;">
+            <div class="progress" style="height: 25px;">
                 <div id="progress-bar-${req.id}" class="progress-bar bg-success"
                     role="progressbar" style="width: 100%;" aria-valuenow="100"
                     aria-valuemin="0" aria-valuemax="100"></div>
