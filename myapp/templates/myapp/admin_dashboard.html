@@ -40,6 +40,9 @@
         p {
             margin: 5px 0;
         }
+        .progress-bar {
+  transition: width 0.5s ease;
+}
 
 .requirement-card {
     display: flex;
@@ -161,6 +164,24 @@
 }
 
 
+@media (max-width: 576px) {
+  .form-group {
+    margin-bottom: 0.75rem; /* tighter spacing */
+  }
+
+  .form-label {
+    font-size: 0.9rem; /* smaller label text */
+  }
+
+  .form-control {
+    padding: 0.35rem 0.5rem; /* smaller input height */
+    font-size: 0.9rem;
+  }
+
+  h5, strong {
+    font-size: 1rem; /* avoid giant headings in labels */
+  }
+}
 
 
 </style>
