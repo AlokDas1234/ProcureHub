@@ -22,6 +22,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+
         }
         .container {
             display: flex;
@@ -323,10 +324,10 @@ input:checked + .slider:before {
 
 
 
-<form  class="col-10 mx-auto card p-3 shadow-sm" id="requisition-update" method="POST" action="{% url 'requirements' %}">
+<form style="background-color:#28414D; border: 2px solid #888;  color:white;  border-radius: 5px;" class="col-12 mx-auto  card p-3 shadow-sm" id="requisition-update" method="POST" action="{% url 'requirements' %}">
     {% csrf_token %}
 
-    <div class="container-fluid mt-4">
+    <div class="container-fluid mt-4" >
 
          <h3 class="mb-4 text-primary font-weight-bold">1.SINGLE REQUIREMENT ENTRY:</h3>
                 <hr>
@@ -409,75 +410,75 @@ input:checked + .slider:before {
 <!--                </div>-->
 <!--            </div>-->
 <!--        </div>-->
-        <div class="row">
+        <div class="row" >
     <!-- Left Column -->
-    <div class="col-12 col-sm-6 col-md-4 mb-4">
-        <div class="form-group">
-            <label for="loading_point">1. Loading Point</label>
-            <input type="text" class="form-control" name="loading_point" id="loading_point" required>
-        </div>
-        <div class="form-group">
-            <label for="loading_point_full_address">2. Loading Point Full Address</label>
-            <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="unloading_point">3. Unloading Point</label>
-            <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
-        </div>
-        <div class="form-group">
-            <label for="unloading_point_full_address">4. Unloading Point Full Address</label>
-            <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>
-        </div>
-    </div>
+           <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="loading_point">1. Loading Point</label>
+                    <input type="text" class="form-control" name="loading_point" id="loading_point" required>
+                </div>
+                <div class="form-group">
+                    <label for="loading_point_full_address">2. Loading Point Full Address</label>
+                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="unloading_point">3.Unloading Point</label>
+                    <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
+                </div>
+                <div class="form-group">
+                    <label for="unloading_point_full_address">4. Unloading Point Full Address</label>
+                    <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>
+                </div>
+           </div>
 
     <!-- Middle Column -->
-    <div class="col-12 col-sm-6 col-md-4 mb-4">
-        <div class="form-group">
-            <label for="truck_type">5. Truck Type</label>
-            <input type="text" class="form-control" name="truck_type" required>
-        </div>
-        <div class="form-group">
-            <label for="no_of_trucks">6. No of Trucks</label>
-            <input type="number" class="form-control" name="no_of_trucks" required>
-        </div>
-        <div class="form-group">
-            <label for="product">7. Product Type</label>
-            <input type="text" class="form-control" name="product" required>
-        </div>
-        <div class="form-group">
-            <label for="notes">8. Notes</label>
-            <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>
-        </div>
-    </div>
+            <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="truck_type">5. Truck Type</label>
+                        <input type="text" class="form-control" name="truck_type" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="no_of_trucks">6. No of Trucks</label>
+                        <input type="number" class="form-control" name="no_of_trucks" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product">7. Product Type</label>
+                        <input type="text" class="form-control" name="product" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">8. Notes</label>
+                        <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>
+                    </div>
+            </div>
 
     <!-- Right Column -->
-    <div class="col-12 col-sm-6 col-md-4 mb-4">
-        <div class="form-group">
-            <label for="drum_type_no_of_drums">9. Drum Type & No of Drums</label>
-            <input type="text" class="form-control" name="drum_type_no_of_drums" required>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="drum_type_no_of_drums">9. Drum Type & No of Drums</label>
+                    <input type="text" class="form-control" name="drum_type_no_of_drums" required>
+                </div>
+                <div class="form-group">
+                    <label for="weight_per_drum">10. Weight per Drum</label>
+                    <input type="text" class="form-control" name="weight_per_drum" required>
+                </div>
+                <div class="form-group">
+                    <label for="approx_mat_mt">11. Approx Material Wait(MT)</label>
+                    <input type="text" class="form-control" name="approx_mat_mt" required>
+                </div>
+                <div class="form-group">
+                    <label for="types">12. Types</label>
+                    <input type="text" class="form-control" name="types" required>
+                </div>
+                <div class="form-group mb-0">
+                    <label for="cel_price">13. Ceiling Price</label>
+                    <input type="number" class="form-control" name="cel_price" required>
+                </div>
+                <div class="form-group mb-0">
+                    <label for="min_dec_val">14. Minimal Decremental value</label>
+                    <input type="number" class="form-control" name="min_dec_val" required>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="weight_per_drum">10. Weight per Drum</label>
-            <input type="text" class="form-control" name="weight_per_drum" required>
-        </div>
-        <div class="form-group">
-            <label for="approx_mat_mt">11. Approx Material Wait(MT)</label>
-            <input type="text" class="form-control" name="approx_mat_mt" required>
-        </div>
-        <div class="form-group">
-            <label for="types">12. Types</label>
-            <input type="text" class="form-control" name="types" required>
-        </div>
-        <div class="form-group mb-0">
-            <label for="cel_price">13. Ceiling Price</label>
-            <input type="number" class="form-control" name="cel_price" required>
-        </div>
-        <div class="form-group mb-0">
-            <label for="min_dec_val">14. Minimal Decremental value</label>
-            <input type="number" class="form-control" name="min_dec_val" required>
-        </div>
-    </div>
-</div>
 
 
 
@@ -493,7 +494,7 @@ input:checked + .slider:before {
 
 
 
-<div class=" card p-4 mt-2 mx-auto border-1">
+<div class=" card p-4 mt-2 mx-auto border-1" style="background-color:#28414D; border: 2px solid #888;  color:white;  border-radius: 5px;">
 <h3 class="mb-4 text-primary font-weight-bold">2.BULK UPLOAD REQUIREMENTS:</h3>
 
     <hr>
@@ -558,93 +559,79 @@ input:checked + .slider:before {
 
 
 
-<div class="container-fluid mt-4 mb-4">
+<div class="card mt-5 mb-5 mx-auto border-2 ">
+      <div  style="background-color:#28414D; border: 2px solid #888;  color:white;  border-radius: 5px;">
+
     <form  method="POST" action="{% url 'admin_dashboard' %}">
         <h3 class="mb-4 text-primary font-weight-bold">3. USER PERMISSION & POST REQUIREMENTS:</h3>
         <hr>
         {% csrf_token %}
-        <div class="container mt-4">
          <label for="start_time"><strong><h5>1.Bidding Start Time:</h5></strong> </label>
        <input type="datetime-local" name="start_time" id="start_time" required>
-             </div>
-          <div class="container mt-4">
           <label for="minute"> <strong><h5> 2.Bidding Time in Minute:</h5></strong> </label>
        <input type="number" name="minute" id="minute" required>
-        </div>
+
         &nbsp
 
        <h5 class="mb-3">3. Post Requirement</h5>
-        <div class="access-toggle mb-4">
-            <button type="button" class="toggle-btn no" data-value="no">NO</button>
-            <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>
-
-        </div>
+            <div class="access-toggle mb-4">
+                <button type="button" class="toggle-btn no" data-value="no">NO</button>
+                <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>
+            </div>
         <input type="hidden" name="access" id="accessInput" value="yes">
-
          <h5 class="mb-3">4.Use Ceiling Price</h5>
-        <div class="access-toggle mb-4">
-            <button type="button" class="toggle-btn-cel no active" data-value="no">NO</button>
-            <button type="button" class="toggle-btn-cel yes " data-value="yes">YES</button>
-        </div>
+            <div class="access-toggle mb-4">
+                <button type="button" class="toggle-btn-cel no active" data-value="no">NO</button>
+                <button type="button" class="toggle-btn-cel yes " data-value="yes">YES</button>
+            </div>
         <input type="hidden" name="use_cel" id="useCelPrice" value="no">
-
         <h5 class="mb-3">5.Decremental Value Visibility</h5>
-        <div class="access-toggle mb-4">
-            <button type="button" class="toggle-btn-dec no active" data-value="no">NO</button>
-            <button type="button" class="toggle-btn-dec yes " data-value="yes">YES</button>
-        </div>
+            <div class="access-toggle mb-4">
+                <button type="button" class="toggle-btn-dec no active" data-value="no">NO</button>
+                <button type="button" class="toggle-btn-dec yes " data-value="yes">YES</button>
+            </div>
         <input type="hidden" name="dec_val_vi" id="decValVisibility" value="no">
-
-
-
         <h5 class="mb-3">6. Individual User Access</h5>
-        <div class="form-group">
-            <label for="user">Select Users:</label>
-            <select id="userDropdown" name="user" multiple class="selectpicker"
-                    data-live-search="true" data-actions-box="true">
-                <!-- Options will be added by JavaScript -->
-            </select>
-        </div>
-
-        <div class="container-fluid">
-            <div class="row">
-                <div  class="col-md-6   p-1">
-            <button class="btn btn-primary px-5" type="submit" style="border-radius: 8px;width:100%;">
-               Start
-            </button>
-                    </div>
-                  </form>
-                  <div  class="col-md-6   p-1">
-                      <form  method="POST" action="{% url 'stop_bid' %}" >
-                             {% csrf_token %}
-
-                         <button class="btn btn-danger px-5"  type="submit" style="border-radius: 8px;width:100%;">
-                            Stop
+                <div class="form-group">
+                    <label for="user">Select Users:</label>
+                    <select id="userDropdown" name="user" multiple class="selectpicker"
+                            data-live-search="true" data-actions-box="true">
+                        <!-- Options will be added by JavaScript -->
+                    </select>
+                </div>
+<!--        <div class="container-fluid">-->
+                <div class="row">
+                    <div  class="col-md-6 ">
+                        <button class="btn btn-primary px-5" type="submit" style="border-radius: 8px;width:100%;">
+                                       Start
                         </button>
-                      </form>
+                    </div>
+                                      </form>
+                     <div  class="col-md-6 mb-2 ">
+                        <form  method="POST" action="{% url 'stop_bid' %}" >
+                            {% csrf_token %}
+                            <button class="btn btn-danger px-5"  type="submit" style="border-radius: 8px;width:100%;">
+                                Stop
+                            </button>
+                        </form>
                         <div>
-                </div>
-        </div>
-
-<!--    </form>-->
-<!--    <form method="POST" action="{% url 'extend_page' %}">-->
-<!--         <label for="name">Extend</label>-->
-<!--        <input type="number" name="extend" id="extendInput" >-->
-<!--    </form>-->
 
                 </div>
+
+<!--        </div>-->
+                     </div>
 </div>
 
 
 
 
 
-
+ </div>
 
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<div class="container-fluid" style="background-color:#41938a29">
+<div class="container-fluid mt-3"  style="background-color:#28414D;  border-radius: 5px;">
     <div class="row">
           <div class="col-md-6   p-1">
             <h3 class="mb-4 text-primary font-weight-bold">4. BIDDING STATUS:</h3>
@@ -661,7 +648,7 @@ input:checked + .slider:before {
               &nbsp
         <h3 id="end_time_div" style="text-align:left;"></h3>
               &nbsp
-              <h3 style="color:blue;">Total requirements: {{requirements|length}}</h3>
+              <h3 style="color:white;">Total requirements: {{requirements|length}}</h3>
           </div>
             <div class="col-md-6   p-1">
 <!--              <img id="bidGraph" src="" style="max-width:100%; border:1px solid #ddd;" />-->
@@ -670,7 +657,7 @@ input:checked + .slider:before {
 
         <div id="refresh-container" style="text-align:center;">
 
-             <div class="d-flex justify-content-left mt-4 ">
+             <div class="d-flex justify-content-left mt-4 mb-2 ">
                     <button onclick="window.location.reload();" class="btn btn-primary px-5"  style="border-radius: 10px;width:100%;">
                        Refresh
                     </button>
@@ -902,8 +889,8 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 <!--    timer.innerText = `Auction will start in: ${data.minutes}`;-->
 
 let timer = document.getElementById("start_status");
-timer.innerText = data.minutes
-    ? `Auction will start in: ${data.minutes}`
+timer.innerHTML= data.minutes
+    ? `<span style="color:white; font-weight:400;">AUCTION WILL STARTS IN: ${data.minutes}</span>`
     : "\u00A0";   // keeps empty space when no text
 
 
@@ -911,21 +898,21 @@ timer.innerText = data.minutes
 
 let current_time_div = document.getElementById("current_time_div");
   current_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">CURRENT TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.clt}</span>
+    <span style="color:white; font-weight:400;">CURRENT TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.clt}</span>
   `;
 
  let start_time_div = document.getElementById("start_time_div");
   start_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">AUCTION START TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
+    <span style="color:white; font-weight:400;">AUCTION START TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
   `;
 
 
  let end_time_div = document.getElementById("end_time_div");
   end_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">AUCTION END TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
+    <span style="color:white; font-weight:400;">AUCTION END TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
   `;
 
 
@@ -940,28 +927,29 @@ let current_time_div = document.getElementById("current_time_div");
 <!--   let timer = document.getElementById("start_status");-->
 <!--  timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;-->
 let timer = document.getElementById("start_status");
-timer.innerText = data.minutes
-    ? `Auction Started Time Left: ${data.minutes}`
+timer.innerHTML = data.minutes
+    ? `  <span style="color:white; font-weight:400;">AUCTION STARTED TIME LEFT: ${data.minutes}</span><br>
+   `
     : "\u00A0";   // keeps empty space when no text
 
 
 let current_time_div = document.getElementById("current_time_div");
   current_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">CURRENT TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.clt}</span>
+    <span style="color:white; font-weight:400;">CURRENT TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.clt}</span>
   `;
 
  let start_time_div = document.getElementById("start_time_div");
   start_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">AUCTION START TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
+    <span style="color:white; font-weight:400;">AUCTION START TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
   `;
 
 
  let end_time_div = document.getElementById("end_time_div");
   end_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">AUCTION END TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
+    <span style="color:white; font-weight:400;">AUCTION END TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
   `;
 
 
@@ -975,7 +963,7 @@ else   {
 <!--    timer.innerText = `Auction Ended !`;-->
 
 let timer = document.getElementById("start_status");
-timer.innerText = `Auction Ended !` || "\u00A0";
+timer.innerHTML= ` <span style="color:white; font-weight:400;">AUCTION ENDED</span><br>` || "\u00A0";
 
 }
 
