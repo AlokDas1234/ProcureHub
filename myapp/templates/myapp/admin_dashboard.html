@@ -515,7 +515,7 @@ input:checked + .slider:before {
 
 
 <div class="container-fluid mt-4 mb-4">
-    <form class=" col-8 card p-4 mx-auto border-2  .bg-primary.bg-gradient" method="POST" action="{% url 'admin_dashboard' %}">
+    <form  method="POST" action="{% url 'admin_dashboard' %}">
         <h3 class="mb-4 text-primary font-weight-bold">3. USER PERMISSION & POST REQUIREMENTS:</h3>
         <hr>
         {% csrf_token %}
