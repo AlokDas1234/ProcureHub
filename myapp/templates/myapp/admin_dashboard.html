@@ -162,24 +162,47 @@
 .toggle-btn-dec:not(.active) {
     opacity: 0.6;
 }
-
-
 @media (max-width: 576px) {
-  .form-group {
-    margin-bottom: 0.75rem; /* tighter spacing */
+  /* Tighter vertical spacing */
+  .form-group,
+  .mb-3 {
+    margin-bottom: 0.5rem !important;
   }
 
+  /* Labels smaller but still readable */
   .form-label {
-    font-size: 0.9rem; /* smaller label text */
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem; /* tighten gap */
+    display: block;
   }
 
+  /* Inputs: shorter height + smaller text */
   .form-control {
-    padding: 0.35rem 0.5rem; /* smaller input height */
-    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
   }
 
-  h5, strong {
-    font-size: 1rem; /* avoid giant headings in labels */
+  /* Headings inside forms */
+  h5 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  strong {
+    font-weight: 600; /* softer bold */
+  }
+
+  /* Buttons: compact but clickable */
+  .btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+
+  /* Reduce card padding */
+  .card.p-4 {
+    padding: 1rem !important;
   }
 }
 
