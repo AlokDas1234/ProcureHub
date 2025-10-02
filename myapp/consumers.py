@@ -848,7 +848,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # 3️⃣ Extract lowest bid (first number from ">>")
         all_bids_per_user["lowest_rate"] = all_bids_per_user["rate"].apply(
-            lambda s: float(s.split(" >> ")[0])
+            lambda s: min(float(r) for r in s.split(" >> "))
+
         )
 
         # 4️⃣ Rank bidders within each requirement

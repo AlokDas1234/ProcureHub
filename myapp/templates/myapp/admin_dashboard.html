@@ -23,11 +23,13 @@
         body {
             font-family: Arial, sans-serif;
 
+
         }
         .container {
             display: flex;
             justify-content: space-between;
             padding: 5px;
+
         }
         .left,.middle, .right {
             width: 100%;
@@ -39,7 +41,7 @@
             text-align: center;
         }
         p {
-            margin: 5px 0;
+            margin: 0px 0;
         }
         .progress-bar {
   transition: width 0.5s ease;
@@ -187,7 +189,7 @@
   /* Headings inside forms */
   h5 {
     font-size: 1rem;
-    margin-bottom: 0.5rem;
+<!--    margin-bottom: 0.5rem;-->
   }
 
   strong {
@@ -291,7 +293,7 @@ input:checked + .slider:before {
 
 
 </head>
-<body>
+<body >
 <h1 style="text-align:center;">PROCURE HUB</h1>
    <style>
 .gradient-hr {
@@ -330,86 +332,8 @@ input:checked + .slider:before {
     <div class="container-fluid mt-4" >
 
          <h3 class="mb-4 text-primary font-weight-bold">1.SINGLE REQUIREMENT ENTRY:</h3>
-                <hr>
-<!--        <div class="row">-->
+              <hr class="gradient-hr">
 
-<!--            &lt;!&ndash; Left Column &ndash;&gt;-->
-
-
-<!--                <div  class="form-group">-->
-<!--                    <div class="form-group">-->
-<!--                    <label for="loading_point">1. Loading Point</label>-->
-<!--                    <input type="text" class="form-control" name="loading_point" id="loading_point" required>-->
-<!--                         <label for="loading_point_full_address">2. Loading Point Full Address</label>-->
-<!--                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>-->
-<!--                </div>-->
-
-<!--                            <div class="form-group">-->
-<!--                                <label for="unloading_point">3. Unloading Point</label>-->
-<!--                                <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>-->
-<!--                            </div>-->
-
-
-
-<!--                <div class="form-group">-->
-<!--                    <label for="unloading_point_full_address">4. Unloading Point Full Address</label>-->
-<!--                    <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Middle Column &ndash;&gt;-->
-<!--            <div class="col-md-4 mb-4">-->
-<!--                <div class="form-group">-->
-<!--                    <label for="truck_type">5. Truck Type</label>-->
-<!--                    <input type="text" class="form-control" name="truck_type" required>-->
-<!--                </div>-->
-<!--                <div class="form-group">-->
-<!--                    <label for="no_of_trucks">6. No of Trucks</label>-->
-<!--                    <input type="number" class="form-control" name="no_of_trucks" required>-->
-<!--                </div>-->
-<!--&lt;!&ndash;                <div class="form-group">&ndash;&gt;-->
-<!--&lt;!&ndash;                    <label for="qty">7. Quantity</label>&ndash;&gt;-->
-<!--&lt;!&ndash;                    <input type="number" class="form-control" name="qty" required>&ndash;&gt;-->
-<!--&lt;!&ndash;                </div>&ndash;&gt;-->
-<!--                <div class="form-group">-->
-<!--                    <label for="product">7. Product Type</label>-->
-<!--                    <input type="text" class="form-control" name="product" required>-->
-<!--                </div>-->
-<!--                 <div class="form-group">-->
-<!--                    <label for="notes">8. Notes</label>-->
-<!--                    <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Right Column &ndash;&gt;-->
-<!--            <div class="col-md-4 mb-4">-->
-
-<!--                <div class="form-group">-->
-<!--                    <label for="drum_type_no_of_drums">9. Drum Type & No of Drums</label>-->
-<!--                    <input type="text" class="form-control" name="drum_type_no_of_drums" required>-->
-<!--                </div>-->
-<!--                <div class="form-group">-->
-<!--                    <label for="weight_per_drum">10. Weight per Drum</label>-->
-<!--                    <input type="text" class="form-control" name="weight_per_drum" required>-->
-<!--                </div>-->
-<!--                <div class="form-group">-->
-<!--                    <label for="approx_mat_mt">11. Approx Material Wait(MT)</label>-->
-<!--                    <input type="text" class="form-control" name="approx_mat_mt" required>-->
-<!--                </div>-->
-<!--                <div class="form-group">-->
-<!--                    <label for="types">12. Types</label>-->
-<!--                    <input type="text" class="form-control" name="types" required>-->
-<!--                </div>-->
-<!--                <div class="form-group mb-0">-->
-<!--                    <label for="cel_price">13. Ceiling Price</label>-->
-<!--                    <input type="number" class="form-control" name="cel_price" required>-->
-<!--                </div>-->
-<!--                 <div class="form-group mb-0">-->
-<!--                    <label for="min_dec_val">14. Minimal Decremental value </label>-->
-<!--                    <input type="number" class="form-control" name="min_dec_val" required>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
         <div class="row" >
     <!-- Left Column -->
            <div class="col-sm-3">
@@ -490,14 +414,14 @@ input:checked + .slider:before {
 </form>
 
 <!-- Bulk Upload Section -->
-<hr>
+<!--<hr class="gradient-hr">-->
 
 
 
 <div class=" card p-4 mt-2 mx-auto border-1" style="background-color:#28414D; border: 2px solid #888;  color:white;  border-radius: 5px;">
 <h3 class="mb-4 text-primary font-weight-bold">2.BULK UPLOAD REQUIREMENTS:</h3>
 
-    <hr>
+<hr class="gradient-hr">
     <!-- Button to download template from the dynamic view -->
          <div class="col-2">
             <a href="{% url 'download_template' %}">
@@ -564,7 +488,7 @@ input:checked + .slider:before {
 
     <form  method="POST" action="{% url 'admin_dashboard' %}">
         <h3 class="mb-4 text-primary font-weight-bold">3. USER PERMISSION & POST REQUIREMENTS:</h3>
-        <hr>
+        <hr class="gradient-hr">
         {% csrf_token %}
          <label for="start_time"><strong><h5>1.Bidding Start Time:</h5></strong> </label>
        <input type="datetime-local" name="start_time" id="start_time" required>
@@ -635,6 +559,7 @@ input:checked + .slider:before {
     <div class="row">
           <div class="col-md-6   p-1">
             <h3 class="mb-4 text-primary font-weight-bold">4. BIDDING STATUS:</h3>
+
 <!--            <h4 style="color:blue;" id="start_status"></h4>-->
 <!--               <h3 id="auction_status" class="text-align:left;"></h3>-->
               <div style="display: flex; justify-content: left; width: 100%;">
@@ -666,88 +591,79 @@ input:checked + .slider:before {
    </div>
 
         <h3 class="mb-4 mt-4 text-primary font-weight-bold">5. UPLOADED REQUIREMENTS & USER BIDS:</h3>
-
-    <hr>
-
-    {% for requirement in requirements %}
-    <div class="row mb-3 align-items-stretch">
-
+<hr class="gradient-hr">
+    <div class="row mb-3 align-items-stretch" >
+         {% for requirement in requirements %}
         <!-- LEFT: Requirement -->
-        <div class="col-md-6">
+        <div class="col-md-6"  >
             <div class="requirement-card h-100"
-                 style="display: flex; background-color: #CED6D4; border-radius: 8px; overflow: hidden;">
-                <div class="vertical-label">
-                    <span>#REQUIREMENT {{ forloop.counter }}</span>
+                 style="display: flex; color:white; background-color: #28414D; border-radius: 8px; overflow: hidden;">
+                        <div class="vertical-label">
+                            <span>#REQUIREMENT {{ forloop.counter }}</span>
+                        </div>
+<!--                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; padding-bottom: 0; padding-top: 0;">-->
+                <div class="p-0 d-flex flex-column" style="padding: 0;">
 
-                </div>
-
-                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; padding-bottom: 0; padding-top: 0;">
-                <div style="background-color: #1d2443; color: white; border-radius: 1px; margin-top: 0; padding: 0.5rem;">
-                    <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> {{ requirement.id }}</h2>
-
-                </div>
-                    <div class="p-0">
+                        <div style="background-color: #1d2443; color: white; border-radius: 1px; margin-top: 0; padding: 0.5rem;">
+                            <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> {{ requirement.id }}</h2>
+                        </div>
+<!--                    <div class="p-0">-->
                                 <p style="background-color: {% if not requirement.loading_point %}#EFADF0{% else %}transparent{% endif %};">
                                     <strong>Loading:</strong> {{ requirement.loading_point }}
                                 </p>
-                                 <p><strong></strong> {{ requirement.loading_point_full_address }}</p>
-
                                 <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.loading_point_full_address|urlencode }}" target="_blank">
-                                    📍 View Loading Address on Map
+                                    📍 {{ requirement.loading_point_full_address }}
                                 </a>
                                 <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};
                                       padding-top: 10px;">
                                       <strong>Unloading:</strong> {{ requirement.unloading_point }}
                                 </p>
-
-
-
-            <p><strong></strong> {{ requirement.unloading_point_full_address }}</p>
-
-                <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.unloading_point_full_address|urlencode }}" target="_blank">
-                    📍 View Unloading Address on Map
-                </a>
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.unloading_point_full_address|urlencode }}" target="_blank">
+                            📍 {{ requirement.unloading_point_full_address }}
+                        </a>
 
                         <hr>
-<!--                        <h3> Requirements:</h3>-->
                         <div class="row">
-                            <div class="col md-8">
-                                <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
-                                    <strong>Truck:</strong> {{ requirement.truck_type }}
-                                </p>
-                            </div>
-
-                                <div class="col md-4">
-                                    <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
-                                        <strong>No of Truck:</strong> {{ requirement.no_of_trucks }}
+                                <div class="col md-8">
+                                    <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
+                                        <strong>Truck:</strong> {{ requirement.truck_type }}
                                     </p>
                                 </div>
+
+                                    <div class="col md-4">
+                                        <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
+                                            <strong>No of Truck:</strong> {{ requirement.no_of_trucks }}
+                                        </p>
+                                    </div>
                         </div>
 
                          <div style="display: flex; gap: 5px;">
-                         <p><strong>Product Type:</strong> {{ requirement.product }}</p>
-                            <p><strong>Types:</strong> {{ requirement.types }}</p>
-                             </div>
+                             <p><strong>Product Type:</strong> {{ requirement.product }}</p>
+                                <p><strong>Types:</strong> {{ requirement.types }}</p>
+                         </div>
 
              <p style="background-color: {% if not requirement.notes %}#EFADF0{% else %}transparent{% endif %};">
                 <strong>Notes:</strong> {{ requirement.notes }}
             </p>
-
             <p><strong>Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
             <p><strong>Weight Per Drum(kg):</strong> {{ requirement.weight_per_drum }}</p>
-            <p><strong>Approx Material Wait (Mt):</strong> {{ requirement.approx_mat_mt}}</p>
+            <p><strong>Approx Material Wait (Mt):</strong> {{ requirement.approx_mat_mt}}</p><hr>
 
-                      <hr>
-<!--            <h3> Bidding Strategy:</h3>-->
-            <p><strong>Ceiling Price:</strong> {{ requirement.cel_price }}</p>
-            <p><strong>Minimal Decremental value:</strong> {{ requirement.min_dec_val }}</p>
-                        </div>
+<!--            {% if requirement.cel_price %}<p style="margin-bottom:0;padding:bottom:0;"><strong>Ceiling Price:</strong> {{ requirement.cel_price }}</p>{% endif %}-->
+<!--            {% if requirement.min_dec_val %}<p style="margin-bottom:0;padding:bottom:0;"><strong>Minimal Decremental value:</strong> {{ requirement.min_dec_val }}</p>{% endif %}-->
 
+<div style="margin: 0;">{% if requirement.cel_price %}<strong>Ceiling Price:</strong> {{ requirement.cel_price }}{% endif %}</div>
+<div style="margin: 0;">{% if requirement.min_dec_val %}<strong>Minimal Decremental value:</strong> {{ requirement.min_dec_val }}{% endif %}</div>
 
-
-                    <button style="width: 100%; margin-top: auto; border-radius: 1px; margin-bottom: 0; padding-bottom: 0;"
+    <button style="width: 100%; margin-top: auto; padding: 0.25rem 0; border-radius: 1px; line-height: 1; display: block;"
         onclick="delReq({{ requirement.id }})"
-        class="btn btn-sm btn-danger">Delete</button>
+        class="btn btn-sm btn-danger">
+    Delete
+</button>
+
+
+
+<!--                    </div>-->
 
                     <!-- other fields here -->
                 </div>
@@ -761,10 +677,10 @@ input:checked + .slider:before {
 
 
         <!-- RIGHT: Empty bid card (hidden until JS fills it) -->
-        <div class="col-md-6">
+        <div class="col-md-6" >
             <div id="bid-card-{{ requirement.id }}"
                  class="bid-card h-100"
-                 style="background-color:#f1f1f1; border-radius:8px; padding:1rem; display:none;">
+                 style="background-color:#28414D; border-radius:8px; color:white; padding:1rem; display:none;">
                 <!-- JS will insert bids here -->
             </div>
         </div>
@@ -826,17 +742,7 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
     socket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-<!--          if (data.type === 'timer_update') {-->
-<!--        console.log("Update Timer:", data.minutes);-->
 
-<!--        // Loop over all requirements and update each timer-->
-<!--       Object.keys(bidGroups).forEach(reqId => {-->
-<!--        const timerEl = document.getElementById(`remaining-time-${reqId}`);-->
-<!--        if (timerEl) {-->
-<!--            timerEl.textContent = `Remaining Time: ${data.minutes}`;-->
-<!--        }-->
-<!--    });-->
-<!--    }-->
   if (data.type === 'timer_update') {
 <!--        console.log("Update Timer:", data.minutes);-->
 
@@ -869,24 +775,13 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
         progressEl.style.width = `${percent}%`;
                });
 
-<!--            const timerEl = document.getElementById(`remaining-time-${reqId}`);-->
-<!--            if (timerEl) {-->
-<!--                timerEl.textContent = `Remaining Time: ${data.minutes}`;-->
-<!--            }-->
 
-<!--            const progressEl = document.getElementById(`progress-bar-${reqId}`);-->
-<!--            if (progressEl) {-->
-<!--                progressEl.style.width = `${percent}%`;-->
-<!--            }-->
-<!--        });-->
     }
 
      if (data.type === 'timer_update' && data.auction_started === false) {
 <!--      console.log("Auction  not Started")-->
 
 
-<!--    let timer = document.getElementById("start_status");-->
-<!--    timer.innerText = `Auction will start in: ${data.minutes}`;-->
 
 let timer = document.getElementById("start_status");
 timer.innerHTML= data.minutes
@@ -924,8 +819,7 @@ let current_time_div = document.getElementById("current_time_div");
 <!--    console.log("Auction Started")-->
 
 
-<!--   let timer = document.getElementById("start_status");-->
-<!--  timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;-->
+
 let timer = document.getElementById("start_status");
 timer.innerHTML = data.minutes
     ? `  <span style="color:white; font-weight:400;">AUCTION STARTED TIME LEFT: ${data.minutes}</span><br>
@@ -969,7 +863,7 @@ timer.innerHTML= ` <span style="color:white; font-weight:400;">AUCTION ENDED</sp
 
 
 if (data.type === 'bids_per_requirement') {
-<!--console.log("Bid data:",data)-->
+console.log("Bid data:",data)
 <!--console.log("Bid Requirement:",data.bid_req)-->
 <!--console.log("Bid  Top Bidders :",data.top_bidders)-->
 
