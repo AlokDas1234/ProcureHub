@@ -225,7 +225,7 @@ button {
         <h3 id="end_time_div" style="text-align:left;"></h3>
         <h3 id="total_req_div" style="text-align:left;"></h3>
 
-            <div id="refresh-container" style="text-align:center;">
+            <div id="refresh-container" style="text-align:center;display:none;">
               <button id="refreshBtn" style="width:30%;">Refresh</button>
                 &nbsp &nbsp &nbsp
             </div>
@@ -386,6 +386,7 @@ let current_time_div = document.getElementById("current_time_div");
     <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>
     <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>
   `;
+    document.getElementById("refresh-container").style.display = "none";
 
 
     // Convert HH:MM:SS to seconds
@@ -465,6 +466,7 @@ let current_time_div = document.getElementById("current_time_div");
   `;
 
 
+document.getElementById("refresh-container").style.display = "block";
 
 
 }
@@ -634,7 +636,7 @@ function renderRequirements(requirements, auction_start_status) {
 
                              <p style="margin:0;">
                           <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
-                            Weight Per Drum:
+                            Weight Per Drum(Kg):
                           </strong>
                           ${req.weight_per_drum || ''}
                         </p>
