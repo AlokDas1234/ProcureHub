@@ -19,13 +19,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
     auction_end_status = False
     async def connect(self):
         # print("Connecting WebSocket...")
+
         if self.scope['user'].is_authenticated:
             self.room_name = self.scope['url_route']['kwargs']['room_name']
             self.room_group_name = f'chat_{self.room_name}'
 
             # await self.channel_layer.group_add(self.room_group_name, self.channel_name)
             # await self.accept()
-            username = self.scope['user'].username
+            # username = self.scope['user'].username
+            # session = self.scope['session']
+            # user_id = session["user"]=username
+            # await sync_to_async(self.scope["session"].save)()
+            # if user_id:
+            #     print(f"User {user_id} connected via WebSocket.")
+            # else:
+            #     print("Anonymous user connected via WebSocket.")
 
             """Timer canView  access"""
             user = self.scope['user']
@@ -41,9 +49,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # reject the connection or just don't add them to the group
                 await self.close()
             """Timer Access end"""
-
-            general_access, minutes, start_time,g_access,use_cel,dec_val_vi= await self.get_general_access()
-            clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+            general_access, minutes, start_time,g_access,use_cel,dec_val_vi,interval= await self.get_general_access()
+            clt, start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
 
             auction_start = True
             if clt <= start_time:
@@ -61,7 +68,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             """Auction Started"""
             if  auction_start  and auction_end_status == False and  not self.scope['user'].is_superuser :
                 '''Normal users is subscribed to this channel'''
-                bid_group_data = await self.get_all_bid_group(username)
+                bid_group_data = await self.get_all_bid_group(user.username)
                 # print("bid_group_data in connect:",bid_group_data)
 
                 await self.send(text_data=json.dumps({
@@ -102,9 +109,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 #         }
                 #     )
 
-
-
-
             if self.scope['user'].is_superuser:
                 '''This is used to get all users except superuser only admins subscribed to this '''
                 users = await self.get_bid_users()
@@ -141,7 +145,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             def get_all_requirements():
                 return list(Requirements.objects.all().values(
-                    'id', 'loading_point', 'unloading_point', 'loading_point_full_address',
+                    'id','unique_id', 'loading_point', 'unloading_point', 'loading_point_full_address',
                     'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
                     'drum_type_no_of_drums', 'weight_per_drum','approx_mat_mt', 'types','cel_price','min_dec_val'
                 ))
@@ -151,12 +155,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             from django.utils import timezone
             from datetime import datetime
             """If auction ends requirements will not be shows"""
-            general_access, minutes, start_time,g_access,use_cel,dec_val_vi = await self.get_general_access()
+            general_access, minutes, start_time,g_access,use_cel,dec_val_vi,interval= await self.get_general_access()
             # print("General Access from connect:", general_access)
             # print("General Access minutes from connect:", minutes)
             # print("General Access end_time from connect:", start_time)
             # print("Decremental Value:", dec_val_vi)
-            clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+            clt,start_time, end_times, remaining ,remaining_interval= await self.time_calculation(general_access, minutes, start_time,interval)
 
             auction_start = True
             if clt <= start_time:
@@ -189,8 +193,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         "auction_start_status": auction_start,
                     }
                 )
-            elif auction_end_status == False:
 
+            elif auction_end_status == False and auction_start==True:
                 # # print("auction_end_status False: executed")
                 if self.scope['user'].is_superuser:
                     self.timer_task = asyncio.create_task(self.send_remaining_time())
@@ -207,8 +211,83 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         for r in reqs:  # loop through all requirements
                             r['min_dec_val'] = 0
                         # print("Reqs2 inside if:", reqs)
-                    # print("Reqs2:",reqs)
-                    """After Ending the auction still sending requirements so bidder can view their req"""
+                    # print("Reqs2 executes when auction starts:",reqs)
+                    unique_id2=reqs[0].get("unique_id")
+                    # print("unique_id2:",unique_id2)
+                    # session["req_id_start"] = unique_id2
+                    # await sync_to_async(session.save)()
+                    ga,_=await sync_to_async(GeneralAccess.objects.get_or_create)(id=1)
+                    ga.new_req=unique_id2
+                    await  sync_to_async(ga.save)()
+                    # Start background async task (non-blocking)
+
+                    """Adding"""
+                    general_access, minutes, start_time, g_access, use_cel, dec_val_vi, interval = await self.get_general_access()
+
+                    clt, start_time, end_times, remaining, remaining_interval = await self.time_calculation(
+                        general_access, minutes, start_time, interval)
+                    """Ending"""
+
+                    print("remaining_interval:",remaining_interval)
+                    len_req = len(reqs)
+                    if remaining_interval.total_seconds() > 0:
+                        print("✅ Interval still active, continuing...",interval)
+                        base_interval=int(interval/int(len_req))
+
+                        # print("base_interval:",base_interval)
+                        self.send_reqs_task = asyncio.create_task(
+                            self.send_requirements_one_by_one(reqs,len_req, auction_start=True, delay=base_interval)
+                        )
+                    else:
+                        print("❌ Interval expired.")
+
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                'type': 'load_requirements',
+                                'requirements': reqs,
+                                'len_reqs': len_req,
+                                "auction_start_status": auction_start,
+                            }
+                        )
+
+                        """After Ending the auction still sending the following so bidder can view their bids"""
+
+                        bid_group_data = await self.get_all_bid_group(user.username)# print("bid_group_data in connect:",bid_group_data)
+
+                        await self.send(text_data=json.dumps({
+                            'type': 'grouped_bid',
+                            'bid_group_data': bid_group_data
+
+                        }))
+
+
+
+            else:
+                # print("Auction Ended")
+                # print("auction_end_status in else:",auction_end_status)
+                auction_start=False
+                # req_id_ = session.get("req_id")
+                # print("req_id_:",req_id_)
+                # req_id_start=session.get("req_id_start")
+                ga_=await sync_to_async (GeneralAccess.objects.get)(id=1)
+                new_req_from_backend=ga_.new_req
+
+                reqs = await sync_to_async(get_all_requirements)()
+                # print("reqs:",reqs)
+                req_id_= reqs[0].get("unique_id")
+
+
+                # user=session.get("user")
+                # if req_id_:
+                #     print("req_id_:",req_id_)
+                # if user:
+                #     print("user:",user)
+                # if new_req_from_backend:
+                #     print("new_req_from_backend:", new_req_from_backend)
+                """After Ending the auction still sending requirements so bidder can view their req"""
+                if str(req_id_)==str(new_req_from_backend):
+                    # print("matched")
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
@@ -216,12 +295,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'requirements': reqs,
                             'len_reqs': len(reqs),
                             "auction_start_status": auction_start,
-
                         }
                     )
-                    """After Ending the auction still sending the following so bidder can view their bids"""
-
-                    bid_group_data = await self.get_all_bid_group(username)
+                    bid_group_data = await self.get_all_bid_group(user.username)
                     # print("bid_group_data in connect:",bid_group_data)
 
                     await self.send(text_data=json.dumps({
@@ -229,29 +305,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'bid_group_data': bid_group_data
 
                     }))
-            else:
-
-                # print("Auction Ended")
-                auction_start=False
-                reqs = await sync_to_async(get_all_requirements)()
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        'type': 'load_requirements',
-                        'requirements': reqs,
-                        'len_reqs': len(reqs),
-                        "auction_start_status": auction_start,
-                    }
-                )
-
-                bid_group_data = await self.get_all_bid_group(username)
-                # print("bid_group_data in connect:",bid_group_data)
-
-                await self.send(text_data=json.dumps({
-                    'type': 'grouped_bid',
-                    'bid_group_data': bid_group_data
-
-                }))
                 if hasattr(self, "timer_task") and not self.timer_task.done():
                     self.timer_task.cancel()
                     try:
@@ -266,6 +319,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
+        # session = self.scope["session"]
         text_data_json = json.loads(text_data)
         user = self.scope['user']
         if text_data_json.get("type") == "submit_bid":
@@ -282,8 +336,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             requirement = await sync_to_async(Requirements.objects.get)(id=req_id)
 
-            general_access, minutes, start_time,g_access,use_cel,dec_val_vi = await self.get_general_access()
-            clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+            general_access, minutes, start_time,g_access,use_cel,dec_val_vi,interval = await self.get_general_access()
+            clt,start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
             # existing_bids = await sync_to_async(
             #     Bid.objects.filter(user=user, req=requirement).count
             # )()
@@ -319,9 +373,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     await sync_to_async(g_access.save)()
                     # GeneralAccess.save()
 
-                    general_access, minutes, start_time, g_access, use_cel, dec_val_vi = await self.get_general_access()
+                    general_access, minutes, start_time, g_access, use_cel, dec_val_vi,interval = await self.get_general_access()
 
-                    clt, start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+                    clt, start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
                     # print("end_times:", end_times)
             else:
                 await self.send(text_data=json.dumps({
@@ -537,29 +591,109 @@ class ChatConsumer(AsyncWebsocketConsumer):
             #     }
             # )
 
+    import pytz
+    from datetime import datetime, timedelta
 
+    async def time_calculation(self, general_access, minutes, start_time, interval):
+        """
+        Handles time calculations with proper IST localization and consistent datetime arithmetic.
+        Returns: clt (current IST), start_time (IST), end_times, remaining (auction time), remaining_interval (interval time)
+        """
+        if not general_access:
+            return None, None, None, timedelta(seconds=0), timedelta(seconds=0)
 
+        india_tz = pytz.timezone('Asia/Kolkata')
 
+        # ✅ Current time in IST
+        clt = datetime.now(india_tz)
 
-    async def time_calculation(self, general_access, minutes, start_time):
+        # ✅ Localize or convert start_time to IST
+        if start_time is None:
+            print("⚠️ start_time is None — returning zero durations")
+            return clt, None, None, timedelta(seconds=0), timedelta(seconds=0)
 
-        # return access, created
-        if general_access:
-            get_india = pytz.timezone('Asia/Kolkata')
-            clt = datetime.now(get_india)
+        if start_time.tzinfo is None:
+            start_time = india_tz.localize(start_time)
+        else:
+            start_time = start_time.astimezone(india_tz)
 
-            # Auction duration
-            minute = timedelta(minutes=minutes)
-            end_times = start_time + minute
+        # ✅ Handle interval (requirement reveal timing)
+        if interval:
+            interval = timedelta(seconds=int(interval))
+            end_interval_time = start_time + interval
+            remaining_interval = end_interval_time - clt
 
-            # Remaining time calculation
-            if clt <= start_time:
-                remaining = start_time - clt  # auction not started yet
-            elif clt <= end_times:
-                remaining = end_times - clt  # auction running
-            else:
-                remaining = timedelta(seconds=0)  # auction ended
-            return clt, start_time, end_times, remaining
+            # 🧩 Prevent negatives
+            if remaining_interval.total_seconds() < 0:
+                remaining_interval = timedelta(seconds=0)
+
+            # print(f"interval: {interval}")
+            # print(f"start_time (IST): {start_time}")
+            # print(f"clt (IST): {clt}")
+            # print(f"end_interval_time (IST): {end_interval_time}")
+            # print(f"remaining_interval: {remaining_interval}")
+        else:
+            remaining_interval = timedelta(seconds=0)
+
+        # ✅ Auction end time calculation
+        auction_duration = timedelta(minutes=minutes)
+        end_times = start_time + auction_duration
+
+        # ✅ Remaining auction time
+        if clt < start_time:
+            remaining = start_time - clt  # auction not started yet
+        elif clt < end_times:
+            remaining = end_times - clt  # auction running
+        else:
+            remaining = timedelta(seconds=0)  # auction ended
+
+        return clt, start_time, end_times, remaining, remaining_interval
+
+    #
+    #
+    # async def time_calculation(self, general_access, minutes, start_time,interval):
+    #     # return access, created
+    #     if general_access:
+    #         get_india = pytz.timezone('Asia/Kolkata')
+    #         clt = datetime.now(get_india)
+    #
+    #         # Always use India timezone consistently
+    #         india_tz = pytz.timezone('Asia/Kolkata')
+    #         clt_ = datetime.now(india_tz)  # Current IST time
+    #
+    #         # Ensure start_time is localized to IST
+    #         if start_time.tzinfo is None:
+    #             start_time_ = india_tz.localize(start_time)
+    #         else:
+    #             start_time_ = start_time.astimezone(india_tz)
+    #
+    #         # ✅ Handle interval logic (requirement reveal timing)
+    #         if interval:
+    #             interval = timedelta(seconds=int(interval))
+    #             print("interval:", interval)
+    #             print("start_time:", start_time_)
+    #             print("clt:", clt_)
+    #
+    #             end_interval_time = start_time_ + interval
+    #             print("end_interval_time:", end_interval_time)
+    #
+    #             remaining_interval = end_interval_time - clt_
+    #
+    #         else:
+    #             remaining_interval=0
+    #         # Auction duration
+    #         minute = timedelta(minutes=minutes)
+    #         end_times = start_time + minute
+    #
+    #         # Remaining time calculation
+    #         if clt <= start_time:
+    #             remaining = start_time - clt  # auction not started yet
+    #         elif clt <= end_times:
+    #             remaining = end_times - clt  # auction running
+    #
+    #         else:
+    #             remaining = timedelta(seconds=0)  # auction ended
+    #         return clt, start_time, end_times, remaining,remaining_interval
 
     async def load_requirements(self, event):
         await self.send(text_data=json.dumps({
@@ -569,14 +703,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'auction_start_status': event['auction_start_status']
         }))
 
-    # async def bids_per_requirement(self, event):
-    #     await self.send(text_data=json.dumps({
-    #         'type': 'bids_per_requirement',
-    #         'bid_id': event['bid_id'],
-    #         'bids_by': event['bids_by'],
-    #         'bid_req': event['bid_req'],
-    #         'bid_rate': event['bid_rate']
-    #     }))
+    async def send_requirements_one_by_one(self, reqs, len_req,auction_start,delay):
+        sent_reqs = []  # cumulative list
+        total = len_req
+        # print("total:",total)
+
+        for index, req in enumerate(reqs, start=1):
+            sent_reqs.append(req)  # add current requirement to the cumulative list
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "load_requirements",
+                    "requirements": sent_reqs,  # send all sent so far
+                    "len_reqs": total,
+                    "auction_start_status": auction_start,
+                }
+            )
+
+            print(f"✅ Sent cumulative {index}/{total} requirements")
+            await asyncio.sleep(int(delay))  # delay between sends
+
+        print("✅ Finished sending all requirements")
+
     async def bids_per_requirement(self, event):
         await self.send(text_data=json.dumps({
             "type": "bids_per_requirement",
@@ -733,7 +882,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def get_general_access(self):
         try:
             general_access = GeneralAccess.objects.get(pk=1)
-            return general_access.general_access, general_access.minutes, general_access.start_time,general_access,general_access.use_cel,general_access.dec_val_vi
+            return general_access.general_access, general_access.minutes, general_access.start_time,general_access,general_access.use_cel,general_access.dec_val_vi,general_access.interval
         except Exception as e:
             print("General Access Exception:", e)
 
@@ -979,11 +1128,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # print("Has_access:",has_access)
         if has_access:
             while True:
-                general_access, minutes, start_time,g_access,use_cel,dec_val_vi = await self.get_general_access()
+                general_access, minutes, start_time,g_access,use_cel,dec_val_vi,interval = await self.get_general_access()
                 """From get_general_access to time_calculation """
                 # print("start_time:",start_time)
 
-                clt,start_time, end_times, remaining = await self.time_calculation(general_access, minutes, start_time)
+                clt,start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
                 # print("Remaining:", remaining.seconds)
                 # print("Remaining type :", type(remaining.seconds))
                 # print("Remaining Seconds:",remaining.total_seconds())

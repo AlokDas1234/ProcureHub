@@ -10,8 +10,9 @@ from django.utils import timezone
 
     # def __str__(self):
     #     return f"{self.user.username} in {self.room_name}: {self.message[:30]}"
-
+import uuid
 class Requirements(models.Model):
+    unique_id = models.CharField(max_length=100,null=True,blank=True)
     loading_point=models.CharField(max_length=100,null=True,blank=True)
     unloading_point=models.CharField(max_length=100,null=True,blank=True)
 
@@ -29,9 +30,10 @@ class Requirements(models.Model):
     types=models.CharField(max_length=100,null=True,blank=True)
     cel_price = models.IntegerField(null=True, blank=True)
     min_dec_val = models.IntegerField(null=True, blank=True)
-
     def __str__(self):
         return f" From {self.loading_point}  to {self.unloading_point} Truck: {self.truck_type} {self.truck_type}  Material:{self.product}"
+
+
 from django.core.exceptions import ValidationError
 
 from django.core.exceptions import ValidationError
@@ -66,6 +68,8 @@ class GeneralAccess(models.Model):
     start_time = models.DateTimeField(null=True, blank=True)
     use_cel = models.BooleanField(default=True,null=True,blank=True)
     dec_val_vi = models.BooleanField(default=True,null=True,blank=True)
+    new_req = models.TextField(max_length=100,null=True,blank=True)
+    interval = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.general_access,self.minutes,self.start_time}"

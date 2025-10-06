@@ -468,6 +468,12 @@ input:checked + .slider:before {
 <h3 class="mb-4 text-primary font-weight-bold">2.BULK UPLOAD REQUIREMENTS:</h3>
 
 <hr class="gradient-hr">
+<!--     <h5 class="mb-3">New Requirement</h5>-->
+<!--            <div class="access-toggle mb-4">-->
+<!--                <button type="button" class="toggle-btn no" data-value="no">NO</button>-->
+<!--                <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>-->
+<!--            </div>-->
+<!--        <input type="hidden" name="access_new_req" id="accessNewReq" value="yes">-->
     <!-- Button to download template from the dynamic view -->
          <div class="col-2">
             <a href="{% url 'download_template' %}">
@@ -540,6 +546,8 @@ input:checked + .slider:before {
        <input type="datetime-local" name="start_time" id="start_time" required>
           <label for="minute"> <strong><h5> 2.Bidding Time in Minute:</h5></strong> </label>
        <input type="number" name="minute" id="minute" required>
+           <label for="interval"> <strong><h5>Post Interval:</h5></strong> </label>
+       <input type="number" name="interval" id="interval" required>
 
         &nbsp
 
@@ -1175,6 +1183,7 @@ document.getElementById("bulk-upload-btn").addEventListener("click", () => {
         })
         .then(response => response.json())
         .then(result => {
+        console.log("result:",result)
             const modal = document.getElementById("upload-modal");
             const output = document.getElementById("upload-result");
 
@@ -1230,6 +1239,7 @@ document.querySelectorAll(".toggle-btn").forEach(btn => {
         document.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("active"));
         this.classList.add("active");
         document.getElementById("accessInput").value = this.dataset.value;
+
     });
 });
 
@@ -1240,6 +1250,14 @@ document.querySelectorAll(".toggle-btn").forEach(btn => {
         document.getElementById("useCelPrice").value = this.dataset.value;
     });
 });
+
+<!-- document.querySelectorAll(".toggle-btn-cel").forEach(btn => {-->
+<!--    btn.addEventListener("click", function() {-->
+<!--        document.querySelectorAll(".toggle-btn-cel").forEach(b => b.classList.remove("active"));-->
+<!--        this.classList.add("active");-->
+<!--        document.getElementById("accessNewReq").value = this.dataset.value;-->
+<!--    });-->
+<!--});-->
 
     document.querySelectorAll(".toggle-btn-dec").forEach(btn => {
     btn.addEventListener("click", function() {

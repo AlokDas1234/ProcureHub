@@ -309,6 +309,8 @@ def delete_all_bids(request):
         messages.success(request, "All bids have been deleted successfully.")
     return redirect("requirements")  # redirect wherever you want
 
+
+import uuid
 @login_required(login_url='/login/')
 @csrf_exempt
 def bulk_upload_requirements(request):
@@ -316,10 +318,12 @@ def bulk_upload_requirements(request):
         data = json.loads(request.body).get("data", [])
         objs = []
         bulk_upload_exception = []
+        batch_unique_id = str(uuid.uuid4())
 
         for index, row in enumerate(data, start=1):
             try:
                 objs.append(Requirements(
+                    unique_id=batch_unique_id,
                     loading_point=row.get("loading_point", ""),
                     unloading_point=row.get("unloading_point", ""),
                     loading_point_full_address=row.get("loading_point_full_address", ""),
@@ -341,13 +345,12 @@ def bulk_upload_requirements(request):
                 continue
 
         Requirements.objects.bulk_create(objs)
-        new_requirements = [model_to_dict(obj) for obj in objs]
 
         return JsonResponse({
             "status": "success",
             "count": len(objs),
-            "bulk_upload_exception": bulk_upload_exception,
-            "new_requirements": new_requirements
+            "bulk_upload_exception": bulk_upload_exception
+            # "new_requirements": new_requirements
         })
     return JsonResponse({"error": "Invalid method"}, status=400)
 
@@ -388,7 +391,15 @@ def admin_dashboard(request):
     if request.method == "POST":
         start_time_str=request.POST.get("start_time")
         minute=request.POST.get("minute")
-        print("Auction duration in minutes:", minute)
+        interval=request.POST.get("interval")
+        # print("Auction duration in minutes:", minute)
+        if not  interval:
+            total_interval=0
+        else:
+            all_req=Requirements.objects.all()
+            len_all_req=len(all_req)
+            total_interval=int(len_all_req)*int(interval)
+            print("total_interval:",total_interval)
 
         if start_time_str:
             # Parse the datetime-local string into a datetime object
@@ -402,6 +413,7 @@ def admin_dashboard(request):
             access, _ = GeneralAccess.objects.get_or_create(id=1)
             access.minutes = minute
             access.start_time = start_time
+            access.interval = total_interval
             access.save()
 
             # print("Bidding End  Time:", end_time.strftime("%H:%M"))
