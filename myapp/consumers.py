@@ -230,7 +230,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                     print("remaining_interval:",remaining_interval)
                     len_req = len(reqs)
-                    if remaining_interval.total_seconds() > 0:
+                    if remaining_interval.total_seconds() >0:
                         print("✅ Interval still active, continuing...",interval)
                         base_interval=int(interval/int(len_req))
 
@@ -364,25 +364,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if clt_kolkata <= start_time_kolkata:
                 print("Auction Not Started")
                 auction_end_status = True
+            # '''Last minute increment'''
+            # if auction_end_status==False:
+            #     last_minute = timedelta(minutes=1)
+            #     if bid_amt and remaining <= last_minute:
+            #         # print("User submitted  the bid last minute")
+            #         g_access.minutes += 2
+            #         await sync_to_async(g_access.save)()
+            #         # GeneralAccess.save()
+            #
+            #         general_access, minutes, start_time, g_access, use_cel, dec_val_vi,interval = await self.get_general_access()
 
-            if auction_end_status==False:
-                last_minute = timedelta(minutes=1)
-                if bid_amt and remaining <= last_minute:
-                    # print("User submitted  the bid last minute")
-                    g_access.minutes += 2
-                    await sync_to_async(g_access.save)()
-                    # GeneralAccess.save()
-
-                    general_access, minutes, start_time, g_access, use_cel, dec_val_vi,interval = await self.get_general_access()
-
-                    clt, start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
+                    # clt, start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
                     # print("end_times:", end_times)
-            else:
-                await self.send(text_data=json.dumps({
-                    'type': 'valid_bid',
-                     'valid_bid': " Auction Ended.",
-                }))
-                return  #
+            # else:
+            #     await self.send(text_data=json.dumps({
+            #         'type': 'valid_bid',
+            #          'valid_bid': " Auction Ended.",
+            #     }))
+            #     return  #
 
 
             user_ = await sync_to_async(User.objects.get)(username=user.username)
@@ -619,13 +619,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # ✅ Handle interval (requirement reveal timing)
         if interval:
-            interval = timedelta(seconds=int(interval))
-            end_interval_time = start_time + interval
-            remaining_interval = end_interval_time - clt
+            if clt < start_time:
+                interval = timedelta(seconds=int(interval))
+                end_interval_time = clt + interval
+                remaining_interval = end_interval_time - start_time
 
-            # 🧩 Prevent negatives
-            if remaining_interval.total_seconds() < 0:
-                remaining_interval = timedelta(seconds=0)
+                # 🧩 Prevent negatives
+                if remaining_interval.total_seconds() < 0:
+                    remaining_interval = timedelta(seconds=0)
+
+            else:
+                interval = timedelta(seconds=int(interval))
+                end_interval_time = start_time + interval
+                remaining_interval = end_interval_time - clt
+
+                # 🧩 Prevent negatives
+                if remaining_interval.total_seconds() < 0:
+                    remaining_interval = timedelta(seconds=0)
 
             # print(f"interval: {interval}")
             # print(f"start_time (IST): {start_time}")

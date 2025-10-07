@@ -392,6 +392,7 @@ def admin_dashboard(request):
         start_time_str=request.POST.get("start_time")
         minute=request.POST.get("minute")
         interval=request.POST.get("interval")
+
         # print("Auction duration in minutes:", minute)
         if not  interval:
             total_interval=0
@@ -401,7 +402,7 @@ def admin_dashboard(request):
             total_interval=int(len_all_req)*int(interval)
             print("total_interval:",total_interval)
 
-        if start_time_str:
+        if start_time_str and minute:
             # Parse the datetime-local string into a datetime object
             start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M")
 
@@ -463,6 +464,7 @@ def admin_dashboard(request):
             print("No access option selected for ceiling price")
 
 
+
         # access, _ = GeneralAccess.objects.get_or_create(id=1)
         # access.minutes = minute
         # access.end_time = end_time
@@ -511,5 +513,11 @@ def stop_bid(request):
     access.save()
     return redirect("/")
 
-def extend_page():
-    return None
+def extend_page(request):
+    if request.method=="POST":
+        extend_=request.POST.get("extend_")
+        if extend_:
+            access, _ = GeneralAccess.objects.get_or_create(id=1)
+            access.minutes += int(extend_)
+            access.save()
+            return redirect("/")

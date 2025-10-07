@@ -129,12 +129,12 @@
 
 .toggle-btn {
     flex: 1;
-    padding: 10px 30px;
+    padding: 8px 20px;
     border: none;
     background: transparent;
     color: #555;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -157,12 +157,12 @@
 
 .toggle-btn-cel {
     flex: 1;
-    padding: 10px 30px;
+     padding: 8px 20px;
     border: none;
     background: transparent;
     color: #555;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -186,12 +186,12 @@
 
 .toggle-btn-dec {
     flex: 1;
-    padding: 10px 30px;
+    padding: 8px 20px;
     border: none;
     background: transparent;
     color: #555;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -544,32 +544,34 @@ input:checked + .slider:before {
         {% csrf_token %}
          <label for="start_time"><strong><h5>1.Bidding Start Time:</h5></strong> </label>
        <input type="datetime-local" name="start_time" id="start_time" required>
+
           <label for="minute"> <strong><h5> 2.Bidding Time in Minute:</h5></strong> </label>
        <input type="number" name="minute" id="minute" required>
-           <label for="interval"> <strong><h5>Post Interval:</h5></strong> </label>
-       <input type="number" name="interval" id="interval" required>
+           <label for="interval"> <strong><h5>3.Interval:</h5></strong> </label>
+       <input type="number" name="interval" id="interval">
 
         &nbsp
 
-       <h5 class="mb-3">3. Post Requirement</h5>
+
+       <h5 class="mb-3">4. Post Requirement</h5>
             <div class="access-toggle mb-4">
                 <button type="button" class="toggle-btn no" data-value="no">NO</button>
                 <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>
             </div>
         <input type="hidden" name="access" id="accessInput" value="yes">
-         <h5 class="mb-3">4.Use Ceiling Price</h5>
+         <h5 class="mb-3">5.Use Ceiling Price</h5>
             <div class="access-toggle mb-4">
                 <button type="button" class="toggle-btn-cel no active" data-value="no">NO</button>
                 <button type="button" class="toggle-btn-cel yes " data-value="yes">YES</button>
             </div>
         <input type="hidden" name="use_cel" id="useCelPrice" value="no">
-        <h5 class="mb-3">5.Decremental Value Visibility</h5>
+        <h5 class="mb-3">6.Decremental Value Visibility</h5>
             <div class="access-toggle mb-4">
                 <button type="button" class="toggle-btn-dec no active" data-value="no">NO</button>
                 <button type="button" class="toggle-btn-dec yes " data-value="yes">YES</button>
             </div>
         <input type="hidden" name="dec_val_vi" id="decValVisibility" value="no">
-        <h5 class="mb-3">6. Individual User Access</h5>
+        <h5 class="mb-3">7. Individual User Access</h5>
                 <div class="form-group">
                     <label for="user">Select Users:</label>
                     <select id="userDropdown" name="user" multiple class="selectpicker"
@@ -577,6 +579,7 @@ input:checked + .slider:before {
                         <!-- Options will be added by JavaScript -->
                     </select>
                 </div>
+
 <!--        <div class="container-fluid">-->
                 <div class="row">
                     <div  class="col-md-6 ">
@@ -585,6 +588,7 @@ input:checked + .slider:before {
                         </button>
                     </div>
                                       </form>
+
                      <div  class="col-md-6 mb-2 ">
                         <form  method="POST" action="{% url 'stop_bid' %}" >
                             {% csrf_token %}
@@ -592,18 +596,27 @@ input:checked + .slider:before {
                                 Stop
                             </button>
                         </form>
-                        <div>
+                         <div>
 
                 </div>
 
+
 <!--        </div>-->
                      </div>
-</div>
 
+</div>                      <form method="POST" action="{% url 'extend_page' %}">
+                              {% csrf_token %}
+                              <div class="row mb-5" >
+                                <div class="col-md-6">
+                                  <label for="extend_"><strong><h5>8.Extend time in minutes</h5></strong></label>
+                                  <input type="number" name="extend_" id="extend_" class="form-control" required>
+                                </div>
 
-
-
-
+                                <div class="col-md-6 d-flex align-items-end">
+                                  <button type="submit" class="btn btn-primary px-5" style="width:100%;" >Extend</button>
+                                </div>
+                              </div>
+                            </form>
  </div>
 
 
@@ -799,6 +812,15 @@ input:checked + .slider:before {
 
 
 <script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+  document.getElementById("start_time").value = local;
+});
+
     const req_len="{{requirements|length}}";
     if(req_len>0){
     let delAllReq=document.getElementById("delAllReq");
