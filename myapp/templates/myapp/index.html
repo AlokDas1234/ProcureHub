@@ -141,7 +141,7 @@ button {
 
     /* Progress bar smaller */
     .progress {
-        height: 12px;
+        height: 15px;
         margin-bottom: 2px;
     }
 
@@ -548,7 +548,7 @@ function renderRequirements(requirements, auction_start_status) {
                 </div>
                 <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding:0;">
                     <!-- ✅ your existing progress bar + requirement details -->
-                    <div class="progress" style="height: 20px; margin-bottom: 10px; position: relative; border-radius: 5px; overflow: hidden;">
+                    <div class="progress" style="height: 20px; margin-bottom: 10px;font-size:15px;position: relative; border-radius: 5px; overflow: hidden;">
                         <div id="progress-bar-${req.id}" class="progress-bar green" style="width: 100%; height: 100%;"></div>
                         <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
                                     display: flex; align-items: center; justify-content: center;
@@ -682,9 +682,9 @@ ${(req.cel_price || req.min_dec_val) ? `
                         </div>
 
                         <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
-                            <div style="display: flex; gap: 6px; align-items: center;">
+                            <div style="display: flex; gap: 2px; align-items: center;">
                                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
-                                       style="flex: 1; padding: 8px; font-size: 14px;">
+                                       style="flex: 1; padding: 2px; font-size: 12px;">
                                     <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
                                             style="flex: 2; padding: 8px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
                                         Submit Bid
