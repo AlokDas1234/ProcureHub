@@ -30,6 +30,7 @@ class Requirements(models.Model):
     types=models.CharField(max_length=100,null=True,blank=True)
     cel_price = models.IntegerField(null=True, blank=True)
     min_dec_val = models.IntegerField(null=True, blank=True)
+    req_date = models.CharField(null=True,blank=True)
     def __str__(self):
         return f" From {self.loading_point}  to {self.unloading_point} Truck: {self.truck_type} {self.truck_type}  Material:{self.product}"
 

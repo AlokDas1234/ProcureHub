@@ -126,8 +126,9 @@ def create_requirement(request):
         types = request.POST.get("types")
         cel_price= request.POST.get("cel_price")
         min_dec_val= request.POST.get("min_dec_val")
+        req_date= request.POST.get('req_date')
         Requirements.objects.create(loading_point=loading_point, unloading_point=unloading_point,loading_point_full_address=loading_point_full_address,unloading_point_full_address=unloading_point_full_address, truck_type=truck_type,no_of_trucks=no_of_trucks,
-                                     product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,approx_mat_mt=approx_mat_mt,types=types,cel_price=cel_price,min_dec_val=min_dec_val)
+                                     product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,approx_mat_mt=approx_mat_mt,types=types,cel_price=cel_price,min_dec_val=min_dec_val,req_date=req_date)
         return redirect('requirements')  # <-- Redirect to avoid re-submission on refresh
 
     requirements = Requirements.objects.all()
@@ -165,7 +166,7 @@ You're calling this from JavaScript fetch(), not through a form submission. So y
 @login_required(login_url='/login/')
 def download_template(request):
     # Get all field names from the Requirements model (excluding auto fields like id)
-    field_names = [field.name for field in Requirements._meta.fields if not field.auto_created]
+    field_names = [field.name for field in Requirements._meta.fields[1:] if not field.auto_created]
 
     # Create HTTP response with CSV content
     response = HttpResponse(content_type='text/csv')
@@ -173,7 +174,6 @@ def download_template(request):
 
     writer = csv.writer(response)
     writer.writerow(field_names)  # Write header only
-
     return response
 
 
@@ -203,7 +203,6 @@ from django.http import HttpResponse
 
 @login_required(login_url='/login/')
 def download_requirements(request):
-
     all_bids = Bid.objects.all().values(
         # "id", "user__username", "req__id",
         # "req__loading_point", "req__unloading_point",
@@ -213,7 +212,7 @@ def download_requirements(request):
         "req__loading_point", "req__unloading_point",
         "req__product", "req__truck_type", "req__no_of_trucks", "req__notes", "req__drum_type_no_of_drums",
         "req__approx_mat_mt", "req__weight_per_drum",
-        "rate", "created_at"
+        "rate", "created_at",'req_date'
     )
     rank_df = pd.DataFrame(list(all_bids))
 
@@ -338,7 +337,8 @@ def bulk_upload_requirements(request):
                     approx_mat_mt=float(row.get("approx_mat_mt") or 0),
                     types=row.get("types", ""),
                     cel_price=int(row.get("cel_price")or 0),
-                    min_dec_val=int(row.get("min_dec_val")or 0)
+                    min_dec_val=int(row.get("min_dec_val")or 0),
+                    req_date=row.get("req_date","")
                 ))
             except Exception as e:
                 bulk_upload_exception.append({"index": index, "Exception": str(e)})

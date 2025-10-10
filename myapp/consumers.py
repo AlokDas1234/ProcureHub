@@ -147,7 +147,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 return list(Requirements.objects.all().values(
                     'id','unique_id', 'loading_point', 'unloading_point', 'loading_point_full_address',
                     'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
-                    'drum_type_no_of_drums', 'weight_per_drum','approx_mat_mt', 'types','cel_price','min_dec_val'
+                    'drum_type_no_of_drums', 'weight_per_drum','approx_mat_mt', 'types','cel_price','min_dec_val','req_date'
                 ))
 
             access, created = await req_view_access(self.scope['user'])
@@ -226,18 +226,32 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                     clt, start_time, end_times, remaining, remaining_interval = await self.time_calculation(
                         general_access, minutes, start_time, interval)
+
                     """Ending"""
-
                     print("remaining_interval:",remaining_interval)
+                    print("remaining_interval_total_seconds:",remaining_interval.total_seconds())
                     len_req = len(reqs)
-                    if remaining_interval.total_seconds() >0:
-                        print("✅ Interval still active, continuing...",interval)
-                        base_interval=int(interval/int(len_req))
 
-                        # print("base_interval:",base_interval)
+                    if remaining_interval.total_seconds() > 1 :
+                        print("✅ Interval still active, continuing...", interval)
+                        len_req = len(reqs)
+
+                        base_interval = max(1, int(interval / max(1, len_req)))
+                        delay = max(1, base_interval - 1)
+                        print(f"Calculated delay between sends: {delay} seconds")
+
+                        # Cancel previous task if exists
+                        if hasattr(self, "send_reqs_task") and not self.send_reqs_task.done():
+                            self.send_reqs_task.cancel()
+                            try:
+                                await self.send_reqs_task
+                            except asyncio.CancelledError:
+                                print("Cancelled old send_reqs_task")
+
                         self.send_reqs_task = asyncio.create_task(
-                            self.send_requirements_one_by_one(reqs,len_req, auction_start=True, delay=base_interval)
+                            self.send_requirements_one_by_one(reqs, len_req, auction_start=True, delay=delay)
                         )
+
                     else:
                         print("❌ Interval expired.")
 
@@ -260,8 +274,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'bid_group_data': bid_group_data
 
                         }))
-
-
 
             else:
                 # print("Auction Ended")
@@ -311,9 +323,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         await self.timer_task
                     except asyncio.CancelledError:
                         print("Cancelled timer task")
-
         else:
             await self.send(text_data=json.dumps({"message": "Login"}))
+
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -620,6 +632,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # ✅ Handle interval (requirement reveal timing)
         if interval:
             if clt < start_time:
+                '''Auction will start'''
+                print("clt < start_time")
+                print("clt: {}".format(clt), )
+                print("start_time: {}".format(start_time), )
                 interval = timedelta(seconds=int(interval))
                 end_interval_time = clt + interval
                 remaining_interval = end_interval_time - start_time
@@ -629,6 +645,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     remaining_interval = timedelta(seconds=0)
 
             else:
+                '''Auction started'''
+                print("clt > start_time")
+                print("clt: {}".format(clt),)
+                print("start_time: {}".format(start_time),)
+
                 interval = timedelta(seconds=int(interval))
                 end_interval_time = start_time + interval
                 remaining_interval = end_interval_time - clt
@@ -713,28 +734,47 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'auction_start_status': event['auction_start_status']
         }))
 
-    async def send_requirements_one_by_one(self, reqs, len_req,auction_start,delay):
-        sent_reqs = []  # cumulative list
-        total = len_req
-        # print("total:",total)
-
-        for index, req in enumerate(reqs, start=1):
-            sent_reqs.append(req)  # add current requirement to the cumulative list
-
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "load_requirements",
-                    "requirements": sent_reqs,  # send all sent so far
-                    "len_reqs": total,
-                    "auction_start_status": auction_start,
-                }
-            )
-
-            print(f"✅ Sent cumulative {index}/{total} requirements")
-            await asyncio.sleep(int(delay))  # delay between sends
-
-        print("✅ Finished sending all requirements")
+    # async def send_requirements_one_by_one(self, reqs, len_req,auction_start,delay):
+    #     sent_reqs = []  # cumulative list
+    #     total = len_req
+    #     # print("total:",total)
+    #     for index, req in enumerate(reqs, start=1):
+    #         sent_reqs.append(req)  # add current requirement to the cumulative list
+    #         await self.channel_layer.group_send(
+    #             self.room_group_name,
+    #             {
+    #                 "type": "load_requirements",
+    #                 "requirements": sent_reqs,  # send all sent so far
+    #                 "len_reqs": len_req,
+    #                 "auction_start_status": auction_start,
+    #             }
+    #         )
+    #         print(f"✅ Sent cumulative {index}/{total} requirements")
+    #         await asyncio.sleep(int(delay))  # delay between sends
+    #     print("✅ Finished sending all requirements")
+    async def send_requirements_one_by_one(self, reqs, len_req, auction_start, delay):
+        try:
+            sent_reqs = []
+            for index, req in enumerate(reqs, start=1):
+                sent_reqs.append(req)
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "load_requirements",
+                        "requirements": sent_reqs,
+                        "len_reqs": len_req,
+                        "auction_start_status": auction_start,
+                    }
+                )
+                print(f"✅ Sent {index}/{len_req} (delay={delay}s)")
+                await asyncio.sleep(delay)
+            print("✅ Finished sending all requirements")
+        except asyncio.CancelledError:
+            print("🛑 send_requirements_one_by_one cancelled.")
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            print(f"❌ Error in send_requirements_one_by_one: {e}")
 
     async def bids_per_requirement(self, event):
         await self.send(text_data=json.dumps({
@@ -765,7 +805,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return list(Requirements.objects.all().values(
             'id', 'loading_point', 'unloading_point', 'loading_point_full_address',
             'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
-            'drum_type_no_of_drums', 'weight_per_drum','approx_mat_mt', 'types', 'cel_price','min_dec_val'
+            'drum_type_no_of_drums', 'weight_per_drum','approx_mat_mt', 'types', 'cel_price','min_dec_val','req_date'
         ))
 
     # @sync_to_async
@@ -808,7 +848,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         matplotlib.use("Agg")  # server-safe backend
         import matplotlib.pyplot as plt
         import io, base64
-
         # ---- Fetch bids ----
         all_bids = Bid.objects.all().values(
             "id", "user__username", "req__id",
@@ -921,6 +960,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'approx_mat_mt': bid.req.approx_mat_mt,
                         'types': bid.req.types,
                         'cel_price': bid.req.cel_price,
+                        'req_date': bid.req.req_date,
                     },
                     'bid_rate': bid.rate
                 })
