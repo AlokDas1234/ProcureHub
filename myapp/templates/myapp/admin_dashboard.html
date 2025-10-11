@@ -724,7 +724,8 @@ input:checked + .slider:before {
             <p><strong>Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
             <p><strong>Weight Per Drum(kg):</strong> {{ requirement.weight_per_drum }}</p>
             <p><strong>Approx Material Wait (Mt):</strong> {{ requirement.approx_mat_mt}}</p>
-            <p><strong>Requirement Date:</strong> {{ requirement.req_date}}</p><hr>
+<!--            <p><strong>Requirement Date:</strong> {{ requirement.req_date}}</p><hr>-->
+                          <p><strong>Requirement Date:</strong> {{ requirement.req_date|date:"d M Y" }}</p>
 
 <!--            {% if requirement.cel_price %}<p style="margin-bottom:0;padding:bottom:0;"><strong>Ceiling Price:</strong> {{ requirement.cel_price }}</p>{% endif %}-->
 <!--            {% if requirement.min_dec_val %}<p style="margin-bottom:0;padding:bottom:0;"><strong>Minimal Decremental value:</strong> {{ requirement.min_dec_val }}</p>{% endif %}-->

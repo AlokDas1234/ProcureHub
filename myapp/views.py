@@ -114,7 +114,6 @@ def create_requirement(request):
         unloading_point = request.POST.get("unloading_point")
         loading_point_full_address = request.POST.get("loading_point_full_address")
         unloading_point_full_address = request.POST.get("unloading_point_full_address")
-
         truck_type = request.POST.get("truck_type")
         no_of_trucks=request.POST.get("no_of_trucks")
         # qty = request.POST.get("qty")
@@ -127,8 +126,9 @@ def create_requirement(request):
         cel_price= request.POST.get("cel_price")
         min_dec_val= request.POST.get("min_dec_val")
         req_date= request.POST.get('req_date')
+        req_date=datetime.strptime(str(req_date), "%Y-%m-%d")
         Requirements.objects.create(loading_point=loading_point, unloading_point=unloading_point,loading_point_full_address=loading_point_full_address,unloading_point_full_address=unloading_point_full_address, truck_type=truck_type,no_of_trucks=no_of_trucks,
-                                     product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,approx_mat_mt=approx_mat_mt,types=types,cel_price=cel_price,min_dec_val=min_dec_val,req_date=req_date)
+                                     product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,approx_mat_mt=approx_mat_mt,types=types,cel_price=cel_price,min_dec_val=min_dec_val,req_date=str(req_date))
         return redirect('requirements')  # <-- Redirect to avoid re-submission on refresh
 
     requirements = Requirements.objects.all()
@@ -166,8 +166,7 @@ You're calling this from JavaScript fetch(), not through a form submission. So y
 @login_required(login_url='/login/')
 def download_template(request):
     # Get all field names from the Requirements model (excluding auto fields like id)
-    field_names = [field.name for field in Requirements._meta.fields[1:] if not field.auto_created]
-
+    field_names = [field.name for field in Requirements._meta.fields[2:] if not field.auto_created]
     # Create HTTP response with CSV content
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=requirements_template.csv'
@@ -307,9 +306,61 @@ def delete_all_bids(request):
         Bid.objects.all().delete()
         messages.success(request, "All bids have been deleted successfully.")
     return redirect("requirements")  # redirect wherever you want
+#
+#
+# import uuid
+# @login_required(login_url='/login/')
+# @csrf_exempt
+# def bulk_upload_requirements(request):
+#     if request.method == "POST":
+#         data = json.loads(request.body).get("data", [])
+#         objs = []
+#         bulk_upload_exception = []
+#         batch_unique_id = str(uuid.uuid4())
+#
+#         for index, row in enumerate(data, start=1):
+#             try:
+#                 objs.append(Requirements(
+#                     unique_id=batch_unique_id,
+#                     loading_point=row.get("loading_point", ""),
+#                     unloading_point=row.get("unloading_point", ""),
+#                     loading_point_full_address=row.get("loading_point_full_address", ""),
+#                     unloading_point_full_address=row.get("unloading_point_full_address", ""),
+#                     product=row.get("product", ""),
+#                     truck_type=row.get("truck_type", ""),
+#                     # qty=int(row.get("qty") or 0),
+#                     no_of_trucks=int(row.get("no_of_trucks") or 0),
+#                     notes=row.get("notes", ""),
+#                     drum_type_no_of_drums=row.get("drum_type_no_of_drums", ""),
+#                     weight_per_drum=float(row.get("weight_per_drum") or 0),
+#                     approx_mat_mt=float(row.get("approx_mat_mt") or 0),
+#                     types=row.get("types", ""),
+#                     cel_price=int(row.get("cel_price")or 0),
+#                     min_dec_val=int(row.get("min_dec_val")or 0),
+#                     req_date=str(datetime.strptime(row.get("req_date",""), "%Y-%m-%d")),
+#                 ))
+#             except Exception as e:
+#                 bulk_upload_exception.append({"index": index, "Exception": str(e)})
+#                 continue
+#
+#         Requirements.objects.bulk_create(objs)
+#
+#         return JsonResponse({
+#             "status": "success",
+#             "count": len(objs),
+#             "bulk_upload_exception": bulk_upload_exception
+#             # "new_requirements": new_requirements
+#         })
+#     return JsonResponse({"error": "Invalid method"}, status=400)
 
 
+from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+
 @login_required(login_url='/login/')
 @csrf_exempt
 def bulk_upload_requirements(request):
@@ -321,6 +372,27 @@ def bulk_upload_requirements(request):
 
         for index, row in enumerate(data, start=1):
             try:
+                raw_date = row.get("req_date", "")
+                parsed_date = None
+
+                # --- 🧠 Smart Date Handling ---
+                if raw_date:
+                    # Case 1: Excel float date (e.g. 45678.0)
+                    if isinstance(raw_date, (int, float)):
+                        # Excel's day 1 is 1899-12-30
+                        parsed_date = datetime(1899, 12, 30) + timedelta(days=float(raw_date))
+                        parsed_date = parsed_date.date()
+
+                    # Case 2: String date
+                    elif isinstance(raw_date, str):
+                        raw_date = raw_date.strip()
+                        for fmt in ("%Y-%m-%d", "%d-%b-%y", "%d/%m/%Y", "%Y/%m/%d"):
+                            try:
+                                parsed_date = datetime.strptime(raw_date, fmt).date()
+                                break
+                            except ValueError:
+                                continue
+
                 objs.append(Requirements(
                     unique_id=batch_unique_id,
                     loading_point=row.get("loading_point", ""),
@@ -329,29 +401,29 @@ def bulk_upload_requirements(request):
                     unloading_point_full_address=row.get("unloading_point_full_address", ""),
                     product=row.get("product", ""),
                     truck_type=row.get("truck_type", ""),
-                    # qty=int(row.get("qty") or 0),
                     no_of_trucks=int(row.get("no_of_trucks") or 0),
                     notes=row.get("notes", ""),
                     drum_type_no_of_drums=row.get("drum_type_no_of_drums", ""),
                     weight_per_drum=float(row.get("weight_per_drum") or 0),
                     approx_mat_mt=float(row.get("approx_mat_mt") or 0),
                     types=row.get("types", ""),
-                    cel_price=int(row.get("cel_price")or 0),
-                    min_dec_val=int(row.get("min_dec_val")or 0),
-                    req_date=row.get("req_date","")
+                    cel_price=int(row.get("cel_price") or 0),
+                    min_dec_val=int(row.get("min_dec_val") or 0),
+                    req_date=parsed_date,  # ✅ proper Python date
                 ))
             except Exception as e:
                 bulk_upload_exception.append({"index": index, "Exception": str(e)})
                 continue
 
-        Requirements.objects.bulk_create(objs)
+        if objs:
+            Requirements.objects.bulk_create(objs)
 
         return JsonResponse({
             "status": "success",
             "count": len(objs),
             "bulk_upload_exception": bulk_upload_exception
-            # "new_requirements": new_requirements
         })
+
     return JsonResponse({"error": "Invalid method"}, status=400)
 
 

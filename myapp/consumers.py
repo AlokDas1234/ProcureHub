@@ -480,8 +480,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # print("Valid Bid dec status:", valid_bid_dec_val)
                 # print("Last_Bid:", last_bid)
 
-
-
             else:
                 last_bid = 0
                 if req_.cel_price:
