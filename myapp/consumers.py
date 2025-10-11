@@ -255,6 +255,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     else:
                         print("❌ Interval expired.")
 
+
                         await self.channel_layer.group_send(
                             self.room_group_name,
                             {
@@ -264,6 +265,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 "auction_start_status": auction_start,
                             }
                         )
+                        print("sending Requirements:",reqs)
 
                         """After Ending the auction still sending the following so bidder can view their bids"""
 
@@ -309,6 +311,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             "auction_start_status": auction_start,
                         }
                     )
+                    print("sending Requirements auc end:",reqs)
                     bid_group_data = await self.get_all_bid_group(user.username)
                     # print("bid_group_data in connect:",bid_group_data)
 

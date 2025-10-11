@@ -167,6 +167,7 @@ You're calling this from JavaScript fetch(), not through a form submission. So y
 def download_template(request):
     # Get all field names from the Requirements model (excluding auto fields like id)
     field_names = [field.name for field in Requirements._meta.fields[2:] if not field.auto_created]
+
     # Create HTTP response with CSV content
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename=requirements_template.csv'
@@ -211,7 +212,7 @@ def download_requirements(request):
         "req__loading_point", "req__unloading_point",
         "req__product", "req__truck_type", "req__no_of_trucks", "req__notes", "req__drum_type_no_of_drums",
         "req__approx_mat_mt", "req__weight_per_drum",
-        "rate", "created_at",'req_date'
+        "rate", "created_at",'req__req_date'
     )
     rank_df = pd.DataFrame(list(all_bids))
 
@@ -409,7 +410,7 @@ def bulk_upload_requirements(request):
                     types=row.get("types", ""),
                     cel_price=int(row.get("cel_price") or 0),
                     min_dec_val=int(row.get("min_dec_val") or 0),
-                    req_date=parsed_date,  # ✅ proper Python date
+                    req_date=str(parsed_date),  # ✅ proper Python date
                 ))
             except Exception as e:
                 bulk_upload_exception.append({"index": index, "Exception": str(e)})
