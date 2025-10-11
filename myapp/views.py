@@ -272,7 +272,7 @@ def get_bid_report(request):
         "id", "user__username", "req__id",
         "req__loading_point", "req__unloading_point",
         "req__product", "req__truck_type","req__no_of_trucks","req__notes","req__drum_type_no_of_drums","req__approx_mat_mt","req__weight_per_drum",
-        "rate", "created_at"
+        "req__req_date","rate", "created_at"
     )
     rank_df = pd.DataFrame(list(all_bids))
 
