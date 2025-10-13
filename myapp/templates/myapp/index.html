@@ -479,6 +479,43 @@ else  {
 
 
 }
+let allRequirements = [];
+let visibleReqIds = [];
+let lastReqIdsJSON = "";
+
+// WebSocket message listener
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+
+    // Store all requirements once
+    if (data.type === "one_by_one_req") {
+        console.log("📦 All requirements received:", data.data);
+        allRequirements = data.data; // store globally, initially hidden
+    }
+
+    // Handle visible IDs
+    if (data.type === "load_req_ids") {
+        console.log("📤 req_ids:", data.req_ids);
+
+        const newJSON = JSON.stringify(data.req_ids);
+        if (newJSON === lastReqIdsJSON) {
+            console.log("⏩ No new IDs — skip rendering");
+            return;
+        }
+
+        lastReqIdsJSON = newJSON;
+        visibleReqIds = data.req_ids;
+
+        // Filter the global requirements to only show visible ones
+        const visibleRequirements = allRequirements.filter(req =>
+            visibleReqIds.includes(req.id)
+        );
+
+        // Render only visible ones
+        renderRequirements(visibleRequirements, data.auction_start_status);
+    }
+};
+
   let lastRequirementsJSON = ""; // define once at top of your script
         if (data.type === 'requirements') {
         console.log("requirements:",data.data)

@@ -88,3 +88,4 @@ class Profile(models.Model):
     pan_no = models.CharField(max_length=10)
     def __str__(self):
         return f"{self.user.username} Profile"
+
