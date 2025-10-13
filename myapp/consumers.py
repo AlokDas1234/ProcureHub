@@ -535,24 +535,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }
                     )
 
-                    reqs=await self. get_all_requirements()
-                    # print("dec_val_vi3:", dec_val_vi)
-                    if not dec_val_vi:
-                        # reqs[0].update({'min_dec_val': 0})
-                        for r in reqs:  # loop through all requirements
-                            r['min_dec_val'] = 0
-                    auction_start=True
-                    # print("reqs3:",reqs)
-
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            'type': 'load_requirements',
-                            'requirements': reqs,
-                            'len_reqs': len(reqs),
-                            "auction_start_status": auction_start,
-                        }
-                    )
+                    # reqs=await self. get_all_requirements()
+                    # # print("dec_val_vi3:", dec_val_vi)
+                    # if not dec_val_vi:
+                    #     # reqs[0].update({'min_dec_val': 0})
+                    #     for r in reqs:  # loop through all requirements
+                    #         r['min_dec_val'] = 0
+                    # auction_start=True
+                    # # print("reqs3:",reqs)
+                    #
+                    # await self.channel_layer.group_send(
+                    #     self.room_group_name,
+                    #     {
+                    #         'type': 'load_requirements',
+                    #         'requirements': reqs,
+                    #         'len_reqs': len(reqs),
+                    #         "auction_start_status": auction_start,
+                    #     }
+                    # )
 
                     ranked_bids = await self.get_ranked_bids()
                     for item in ranked_bids:
