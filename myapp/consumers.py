@@ -252,10 +252,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 await self.send_reqs_task
                             except asyncio.CancelledError:
                                 print("Cancelled old send_reqs_task")
-
-                        self.send_reqs_task = asyncio.create_task(
-                            self.send_req_id_one_by_one(all_ids, len_req, auction_start=True, delay=delay)
-                        )
+                        if self.scope['user'].is_superuser:
+                            self.send_reqs_task = asyncio.create_task(
+                                self.send_req_id_one_by_one(all_ids, len_req, auction_start=True, delay=delay)
+                            )
 
                         await self.channel_layer.group_send(
                             self.room_group_name,
@@ -791,6 +791,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             import traceback
             traceback.print_exc()
             print(f"❌ Error in send_requirements_one_by_one: {e}")
+
     async def send_req_id_one_by_one(self, req_ids, len_req, auction_start, delay):
         try:
             sent_reqs = []
@@ -805,9 +806,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         "auction_start_status": auction_start,
                     }
                 )
-                print(f"✅ Sent {index}/{len_req} (delay={delay}s)")
+                # print(f"✅ Sent {index}/{len_req} (delay={delay}s)")
                 await asyncio.sleep(delay)
-            print("✅ Finished sending all requirements")
+            # print("✅ Finished sending all requirements")
         except asyncio.CancelledError:
             print("🛑 send_requirements_one_by_one cancelled.")
         except Exception as e:
