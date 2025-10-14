@@ -343,221 +343,224 @@ function submitBid(reqId) {
 
 
 
-socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-<!--        console.log("From server:", data);-->
+<!--socket.onmessage = function(e) {-->
+<!--        const data = JSON.parse(e.data);-->
+<!--&lt;!&ndash;        console.log("From server:", data);&ndash;&gt;-->
 
-if(data.type==='valid_bid')
-{
-<!--console.log("valid_bid",data.valid_bid)-->
-alert(data.valid_bid);
+<!--if(data.type==='valid_bid')-->
+<!--{-->
+<!--&lt;!&ndash;console.log("valid_bid",data.valid_bid)&ndash;&gt;-->
+<!--alert(data.valid_bid);-->
 
-}
+<!--}-->
 
-if (data.type === 'timer_update' && data.auction_started===true) {
-
-
-  let timer = document.getElementById("start_status");
- timer.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">REMAINING TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.minutes}</span>
-  `;
-
-  let auction_status = document.getElementById("auction_status");
- auction_status.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Started</span>
-  `;
+<!--if (data.type === 'timer_update' && data.auction_started===true) {-->
 
 
-let current_time_div = document.getElementById("current_time_div");
-  current_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>
-  `;
+<!--  let timer = document.getElementById("start_status");-->
+<!-- timer.innerHTML = `-->
+<!--    <span style="color:#007BFF; font-weight:500;">REMAINING TIME:</span><br>-->
+<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.minutes}</span>-->
+<!--  `;-->
 
- let start_time_div = document.getElementById("start_time_div");
-  start_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>
-  `;
-
-
- let end_time_div = document.getElementById("end_time_div");
-  end_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>
-  `;
-    document.getElementById("refresh-container").style.display = "none";
+<!--  let auction_status = document.getElementById("auction_status");-->
+<!-- auction_status.innerHTML = `-->
+<!--    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>-->
+<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Started</span>-->
+<!--  `;-->
 
 
-    // Convert HH:MM:SS to seconds
-    function parseTimeToSeconds(timeStr) {
-        const parts = timeStr.split(':').map(Number);
-        if (parts.length === 3) { // HH:MM:SS
-            return parts[0] * 3600 + parts[1] * 60 + parts[2];
-        } else if (parts.length === 2) { // MM:SS
-            return parts[0] * 60 + parts[1];
-        }
-        return 0;
-    }
+<!--let current_time_div = document.getElementById("current_time_div");-->
+<!--  current_time_div.innerHTML = `-->
+<!--    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>-->
+<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>-->
+<!--  `;-->
+
+<!-- let start_time_div = document.getElementById("start_time_div");-->
+<!--  start_time_div.innerHTML = `-->
+<!--    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>-->
+<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>-->
+<!--  `;-->
+
+
+<!-- let end_time_div = document.getElementById("end_time_div");-->
+<!--  end_time_div.innerHTML = `-->
+<!--    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>-->
+<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>-->
+<!--  `;-->
+<!--    document.getElementById("refresh-container").style.display = "none";-->
+
+
+<!--    // Convert HH:MM:SS to seconds-->
+<!--    function parseTimeToSeconds(timeStr) {-->
+<!--        const parts = timeStr.split(':').map(Number);-->
+<!--        if (parts.length === 3) { // HH:MM:SS-->
+<!--            return parts[0] * 3600 + parts[1] * 60 + parts[2];-->
+<!--        } else if (parts.length === 2) { // MM:SS-->
+<!--            return parts[0] * 60 + parts[1];-->
+<!--        }-->
+<!--        return 0;-->
+<!--    }-->
 
 
 
-    const remainingSeconds = parseTimeToSeconds(data.minutes);
-    const totalSeconds = window.totalAuctionSeconds || 600; // default 10 min
-    const percent = Math.max(0, (remainingSeconds / totalSeconds) * 100);
+<!--    const remainingSeconds = parseTimeToSeconds(data.minutes);-->
+<!--    const totalSeconds = window.totalAuctionSeconds || 600; // default 10 min-->
+<!--    const percent = Math.max(0, (remainingSeconds / totalSeconds) * 100);-->
 
-    // Update all timers
-    document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {
-        timerEl.textContent = `Remaining Time: ${data.minutes}`;
-    });
+<!--    // Update all timers-->
+<!--    document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {-->
+<!--        timerEl.textContent = `Remaining Time: ${data.minutes}`;-->
+<!--    });-->
 
-    // Update all progress bars
-    document.querySelectorAll('[id^="progress-bar-"]').forEach(progressEl => {
-        progressEl.style.width = `${percent}%`;
+<!--    // Update all progress bars-->
+<!--    document.querySelectorAll('[id^="progress-bar-"]').forEach(progressEl => {-->
+<!--        progressEl.style.width = `${percent}%`;-->
 
-        // Remove old color classes
-        progressEl.classList.remove('green', 'orange', 'red');
+<!--        // Remove old color classes-->
+<!--        progressEl.classList.remove('green', 'orange', 'red');-->
 
-        // Add new color based on percentage
-        if (percent > 50) {
-            progressEl.classList.add('green');
-        } else if (percent > 20) {
-            progressEl.classList.add('orange');
-        } else {
-            progressEl.classList.add('red');
-        }
-    });
-}
-// Inside your onmessage
-else if (data.type === 'timer_update' && data.auction_started === false) {
-      let timer = document.getElementById("start_status");
-  timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;
+<!--        // Add new color based on percentage-->
+<!--        if (percent > 50) {-->
+<!--            progressEl.classList.add('green');-->
+<!--        } else if (percent > 20) {-->
+<!--            progressEl.classList.add('orange');-->
+<!--        } else {-->
+<!--            progressEl.classList.add('red');-->
+<!--        }-->
+<!--    });-->
+<!--}-->
+<!--// Inside your onmessage-->
+<!--else if (data.type === 'timer_update' && data.auction_started === false) {-->
+<!--      let timer = document.getElementById("start_status");-->
+<!--  timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;-->
 
-<!--    console.log("Auc not started will starts in:", data.minutes);-->
-     if(data.seconds===0){
-    window.location.reload();
-               }
-
-
-  let auction_status = document.getElementById("auction_status");
- auction_status.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Will Start Soon....!</span>
-  `;
+<!--&lt;!&ndash;    console.log("Auc not started will starts in:", data.minutes);&ndash;&gt;-->
+<!--     if(data.seconds===0){-->
+<!--    window.location.reload();-->
+<!--               }-->
 
 
-let current_time_div = document.getElementById("current_time_div");
-  current_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>
-  `;
-
- let start_time_div = document.getElementById("start_time_div");
-  start_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>
-  `;
+<!--  let auction_status = document.getElementById("auction_status");-->
+<!-- auction_status.innerHTML = `-->
+<!--    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>-->
+<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Will Start Soon....!</span>-->
+<!--  `;-->
 
 
- let end_time_div = document.getElementById("end_time_div");
-  end_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>
-  `;
+<!--let current_time_div = document.getElementById("current_time_div");-->
+<!--  current_time_div.innerHTML = `-->
+<!--    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>-->
+<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>-->
+<!--  `;-->
+
+<!-- let start_time_div = document.getElementById("start_time_div");-->
+<!--  start_time_div.innerHTML = `-->
+<!--    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>-->
+<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>-->
+<!--  `;-->
 
 
-document.getElementById("refresh-container").style.display = "block";
+<!-- let end_time_div = document.getElementById("end_time_div");-->
+<!--  end_time_div.innerHTML = `-->
+<!--    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>-->
+<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>-->
+<!--  `;-->
 
 
-}
-else  {
-<!--        console.log("Auction Ended");-->
-        let timer_ = document.getElementById("start_status");
-        timer_.innerHTML = `Auction Ended`;
+<!--document.getElementById("refresh-container").style.display = "block";-->
 
 
-}
+<!--}-->
+<!--else  {-->
+<!--&lt;!&ndash;        console.log("Auction Ended");&ndash;&gt;-->
+<!--        let timer_ = document.getElementById("start_status");-->
+<!--        timer_.innerHTML = `Auction Ended`;-->
+
+
+<!--}-->
 let allRequirements = [];
 let visibleReqIds = [];
 let lastReqIdsJSON = "";
-
-// WebSocket message listener
-socket.onmessage = function(event) {
+socket.addEventListener("message", function(event) {
     const data = JSON.parse(event.data);
 
-    // Store all requirements once
+    // 1️⃣ Valid bid alert
+    if (data.type === "valid_bid") {
+        alert(data.valid_bid);
+    }
+
+    // 2️⃣ Auction timer updates
+    if (data.type === "timer_update") {
+        const timer = document.getElementById("start_status");
+        const auction_status = document.getElementById("auction_status");
+        const current_time_div = document.getElementById("current_time_div");
+        const start_time_div = document.getElementById("start_time_div");
+        const end_time_div = document.getElementById("end_time_div");
+
+        current_time_div.innerHTML = `<span style="color:#007BFF;font-weight:500;">CURRENT TIME:</span><br>
+            <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.clt}</span>`;
+        start_time_div.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION START TIME:</span><br>
+            <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.start_time}</span>`;
+        end_time_div.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION END TIME:</span><br>
+            <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.end_time}</span>`;
+
+        if (data.auction_started) {
+            timer.innerHTML = `<span style="color:#007BFF;font-weight:500;">REMAINING TIME:</span><br>
+                <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.minutes}</span>`;
+            auction_status.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION STATUS:</span><br>
+                <span style="color:#FAFAFA;font-weight:600;">Started</span>`;
+            document.getElementById("refresh-container").style.display = "none";
+        } else {
+            timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;
+            auction_status.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION STATUS:</span><br>
+                <span style="color:#FAFAFA;font-weight:600;">Will Start Soon....!</span>`;
+            document.getElementById("refresh-container").style.display = "block";
+            if (data.seconds === 0) location.reload();
+        }
+    }
+
+    // 3️⃣ All requirements (once)
     if (data.type === "one_by_one_req") {
         console.log("📦 All requirements received:", data.data);
-        allRequirements = data.data; // store globally, initially hidden
+        window.allRequirements = data.data;
     }
 
-    // Handle visible IDs
+    // 4️⃣ Visible requirement IDs
     if (data.type === "load_req_ids") {
         console.log("📤 req_ids:", data.req_ids);
-
-        const newJSON = JSON.stringify(data.req_ids);
-        if (newJSON === lastReqIdsJSON) {
-            console.log("⏩ No new IDs — skip rendering");
-            return;
-        }
-
-        lastReqIdsJSON = newJSON;
-        visibleReqIds = data.req_ids;
-
-        // Filter the global requirements to only show visible ones
-        const visibleRequirements = allRequirements.filter(req =>
+        const visibleReqIds = data.req_ids;
+        const visibleRequirements = (window.allRequirements || []).filter(req =>
             visibleReqIds.includes(req.id)
         );
-
-        // Render only visible ones
         renderRequirements(visibleRequirements, data.auction_start_status);
     }
-};
 
-  let lastRequirementsJSON = ""; // define once at top of your script
-        if (data.type === 'requirements') {
-        console.log("requirements:",data.data)
+    // 5️⃣ Requirements refresh (interval broadcast)
+    if (data.type === "requirements") {
+        console.log("✅ Requirements received:", data.data);
 
         let total_req_div = document.getElementById("total_req_div");
-         total_req_div.innerHTML = `
-        <span style="color:#007BFF;font-size:1.3em; font-weight:500;">Total Requirements:</span><br>
-        <span style="color:#FAFAFA; font-size:1.3em; font-weight:600;">${data.len_reqs}</span>`;
+        total_req_div.innerHTML = `
+            <span style="color:#007BFF;font-size:1.3em;font-weight:500;">Total Requirements:</span><br>
+            <span style="color:#FAFAFA;font-size:1.3em;font-weight:600;">${data.len_reqs}</span>`;
 
-<!--        console.log("Auction Start Status:", data.auction_start_status);-->
+        renderRequirements(data.data, data.auction_start_status);
+    }
 
-<!--            renderRequirements(data.data,data.auction_start_status);-->
+    // 6️⃣ Grouped bids
+    if (data.type === "grouped_bid") {
+        latestUserRanks = data.bid_group_data.user_ranks;
+        userBids = data.bid_group_data.bids;
 
-          const newJSON = JSON.stringify(data.data);
-            if (newJSON !== lastRequirementsJSON) {
-                lastRequirementsJSON = newJSON;
-                renderRequirements(data.data, data.auction_start_status);
-            } else {
-                // console.log("No change → skip re-render → no flicker");
-            }
-
+        if (data.bid_group_data.len_bids > 0) {
+            document.getElementById("download_bids_div").style.display = "block";
         }
 
-           if (data.type === "grouped_bid") {
-<!--                    console.log("bid_group_data:",data.bid_group_data)-->
-                    latestUserRanks = data.bid_group_data.user_ranks; // user’s best ranks
-                    len_bids = data.bid_group_data.len_bids; // total no of bids
-<!--                    console.log("len_bids:",len_bids);-->
+        updateBids();
+    }
+});
 
-                    userBids = data.bid_group_data.bids; // only this user’s bids
-
-<!--                    console.log("latestUserRanks in group_bids :",latestUserRanks);-->
-<!--                      console.log("userBids in group_bids:",userBids);-->
-                    updateBids();
-
-                    if (len_bids>0){
-                    let download_bids_div=document.getElementById("download_bids_div");
-                    download_bids_div.style.display="block";
-
-                    }
-                }
-        };
 
 
 
@@ -611,8 +614,6 @@ function renderRequirements(requirements, auction_start_status) {
                             </a>
                         </p>
                                                 </div>
-
-
                         </div>
 
                          <div class="col-md-6">

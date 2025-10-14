@@ -187,7 +187,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
-                        'type': 'load_requirements',
+                        'type': 'requirements',
                         'requirements': reqs,
                         'len_reqs': len(reqs),
                         "auction_start_status": auction_start,
@@ -277,7 +277,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         await self.channel_layer.group_send(
                             self.room_group_name,
                             {
-                                'type': 'load_requirements',
+                                'type': 'requirements',
                                 'requirements': reqs,
                                 'len_reqs': len_req,
                                 "auction_start_status": auction_start,
@@ -323,7 +323,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
-                            'type': 'load_requirements',
+                            'type': 'requirements',
                             'requirements': reqs,
                             'len_reqs': len(reqs),
                             "auction_start_status": auction_start,
@@ -745,7 +745,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     #             remaining = timedelta(seconds=0)  # auction ended
     #         return clt, start_time, end_times, remaining,remaining_interval
 
-    async def load_requirements(self, event):
+    async def requirements(self, event):
         await self.send(text_data=json.dumps({
             'type': 'requirements',
             'data': event['requirements'],
@@ -776,7 +776,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_send(
                     self.room_group_name,
                     {
-                        "type": "load_requirements",
+                        "type": "requirements",
                         "requirements": sent_reqs,
                         "len_reqs": len_req,
                         "auction_start_status": auction_start,
