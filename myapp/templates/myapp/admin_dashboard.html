@@ -546,8 +546,8 @@ input:checked + .slider:before {
        <input type="datetime-local" name="start_time" id="start_time" required>
           <label for="minute"> <strong><h5>Bidding Time in Minute:</h5></strong> </label>
        <input type="number" name="minute" id="minute" required>
-           <label for="interval"> <strong><h5>Interval:</h5></strong> </label>
-       <input type="number" name="interval" id="interval">
+<!--           <label for="interval"> <strong><h5>Interval:</h5></strong> </label>-->
+<!--       <input type="number" name="interval" id="interval">-->
 
         &nbsp
 
@@ -821,7 +821,7 @@ input:checked + .slider:before {
     .slice(0, 16);
   document.getElementById("start_time").value = local;
   document.getElementById("minute").value = 60;
-  document.getElementById("interval").value = 10;
+  document.getElementById("interval").value = 0;
 });
 
     const req_len="{{requirements|length}}";

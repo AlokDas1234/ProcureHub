@@ -252,10 +252,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 await self.send_reqs_task
                             except asyncio.CancelledError:
                                 print("Cancelled old send_reqs_task")
-                        if self.scope['user'].is_superuser:
-                            self.send_reqs_task = asyncio.create_task(
-                                self.send_req_id_one_by_one(all_ids, len_req, auction_start=True, delay=delay)
-                            )
+                        # if self.scope['user'].is_superuser:
+                        self.send_reqs_task = asyncio.create_task(
+                            self.send_req_id_one_by_one(all_ids, len_req, auction_start=True, delay=delay)
+                        )
 
                         await self.channel_layer.group_send(
                             self.room_group_name,
