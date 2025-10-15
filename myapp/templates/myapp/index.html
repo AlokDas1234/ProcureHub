@@ -511,6 +511,42 @@ socket.addEventListener("message", function(event) {
             auction_status.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION STATUS:</span><br>
                 <span style="color:#FAFAFA;font-weight:600;">Started</span>`;
             document.getElementById("refresh-container").style.display = "none";
+
+                        // Convert HH:MM:SS to seconds
+            function parseTimeToSeconds(timeStr) {
+                const parts = timeStr.split(':').map(Number);
+                if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+                if (parts.length === 2) return parts[0] * 60 + parts[1];
+                return 0;
+            }
+
+            const remainingSeconds = parseTimeToSeconds(data.minutes);
+            const totalSeconds = window.totalAuctionSeconds || 600; // default 10 min
+            const percent = Math.max(0, (remainingSeconds / totalSeconds) * 100);
+
+            // ✅ Update all progress bars
+            document.querySelectorAll('[id^="progress-bar-"]').forEach(progressEl => {
+                progressEl.style.width = `${percent}%`;
+
+                // Remove old color classes
+                progressEl.classList.remove('green', 'orange', 'red');
+
+                // Add new color based on percentage
+                if (percent > 50) {
+                    progressEl.classList.add('green');
+                } else if (percent > 20) {
+                    progressEl.classList.add('orange');
+                } else {
+                    progressEl.classList.add('red');
+                }
+            });
+
+            // ✅ Update remaining-time text inside progress bar
+            document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {
+                timerEl.textContent = `${data.minutes}`;
+            });
+
+
         } else {
             timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;
             auction_status.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION STATUS:</span><br>
