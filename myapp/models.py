@@ -72,6 +72,7 @@ class GeneralAccess(models.Model):
     dec_val_vi = models.BooleanField(default=True,null=True,blank=True)
     new_req = models.TextField(max_length=100,null=True,blank=True)
     interval = models.IntegerField(default=0)
+    post_interval_lst = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
         return f"{self.general_access,self.minutes,self.start_time}"

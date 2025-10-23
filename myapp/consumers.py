@@ -1,5 +1,6 @@
 import asyncio
-
+import json
+from django.utils.dateformat import format as dj_format
 from django.http import HttpResponse
 from django.utils.timezone import localtime
 import json
@@ -16,6 +17,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    send_reqs_task_ref = None  # shared among all instances
     auction_end_status = False
     async def connect(self):
         # print("Connecting WebSocket...")
@@ -232,43 +234,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     # print("remaining_interval_total_seconds:",remaining_interval.total_seconds())
                     # len_req = len(reqs)
 
-                    if remaining_interval.total_seconds() > 1 :
+                    if remaining_interval.total_seconds() > 1:
                         print("✅ Interval still active, continuing...", interval)
+
                         len_req = len(reqs)
+                        ga_ = await sync_to_async(GeneralAccess.objects.get)(id=1)
 
-                        base_interval = max(1, int(interval / max(1, len_req)))
-                        delay = max(1, base_interval - 1)
-                        print(f"Calculated delay between sends: {delay} seconds")
-                        all_ids=[]
-                        for r in reqs:
-                            req_id=r["id"]
-                            all_ids.append(req_id)
-                        print("req_ids:",all_ids)
+                        # ✅ Ensure JSON is sent as proper dict
+                        # post_interval_lst = ga_.post_interval_lst
 
-                        # Cancel previous task if exists
-                        if hasattr(self, "send_reqs_task") and not self.send_reqs_task.done():
-                            self.send_reqs_task.cancel()
-                            try:
-                                await self.send_reqs_task
-                            except asyncio.CancelledError:
-                                print("Cancelled old send_reqs_task")
-                        # if self.scope['user'].is_superuser:
-                        self.send_reqs_task = asyncio.create_task(
-                            self.send_req_id_one_by_one(all_ids, len_req, auction_start=True, delay=delay)
-                        )
+
+
+                        post_interval_lst = json.loads(ga_.post_interval_lst)
+                        post_interval_serialized = {str(k): v for k, v in post_interval_lst.items()}
 
                         await self.channel_layer.group_send(
                             self.room_group_name,
                             {
-                                'type': 'one_by_one_req',
-                                'requirements': reqs,
-                                'len_reqs': len_req,
+                                "type": "one_by_one_req",
+                                "post_interval_lst": post_interval_serialized,
+                                "requirements": reqs,
+                                "len_reqs": len_req,
                                 "auction_start_status": auction_start,
+                                "current_local_time": clt.isoformat(),
                             }
                         )
-                        # self.send_reqs_task = asyncio.create_task(
-                        #     self.send_requirements_one_by_one(reqs, len_req, auction_start=True, delay=delay)
-                        # )
 
                     else:
                         print("❌ Interval expired.")
@@ -294,7 +284,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'bid_group_data': bid_group_data
 
                         }))
-
             else:
                 # print("Auction Ended")
                 # print("auction_end_status in else:",auction_end_status)
@@ -310,13 +299,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 req_id_= reqs[0].get("unique_id")
 
 
-                # user=session.get("user")
-                # if req_id_:
-                #     print("req_id_:",req_id_)
-                # if user:
-                #     print("user:",user)
-                # if new_req_from_backend:
-                #     print("new_req_from_backend:", new_req_from_backend)
                 """After Ending the auction still sending requirements so bidder can view their req"""
                 if str(req_id_)==str(new_req_from_backend):
                     # print("matched")
@@ -349,6 +331,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        if self.scope['user'].is_superuser:
+            if ChatConsumer.send_reqs_task_ref and not ChatConsumer.send_reqs_task_ref.done():
+                print("🛑 Cancelling send_req_id_one_by_one task due to disconnect")
+                ChatConsumer.send_reqs_task_ref.cancel()
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
@@ -752,13 +739,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'len_reqs': event['len_reqs'],
             'auction_start_status': event['auction_start_status']
         }))
+
     async def one_by_one_req(self, event):
         await self.send(text_data=json.dumps({
             'type': 'one_by_one_req',
+            'post_interval_lst': event['post_interval_lst'],
             'data': event['requirements'],
             'len_reqs': event['len_reqs'],
+            'current_local_time': event['current_local_time'],
             'auction_start_status': event['auction_start_status']
         }))
+
     async def load_req_ids(self, event):
         await self.send(text_data=json.dumps({
             'type': 'load_req_ids',

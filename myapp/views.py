@@ -454,9 +454,10 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .models import UserAccess
 from .models import GeneralAccess
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
 import pytz
+
 
 
 @login_required(login_url='/login/')
@@ -475,20 +476,39 @@ def admin_dashboard(request):
             total_interval=int(len_all_req)*int(interval)
             print("total_interval:",total_interval)
 
+            all_ids = []
+            for r in all_req:
+                req_id = r.id
+                all_ids.append(req_id)
+            start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M")
+            india_tz = pytz.timezone('Asia/Kolkata')
+            start_time = india_tz.localize(start_time)
+            int_dict={}
+            for index,id in enumerate(all_ids):
+                increamental_interval=int(index) * int(interval)
+                increamental_interval=timedelta(seconds=increamental_interval)
+                int_dict[id]=increamental_interval+start_time
+
+            # print("base_interval:",all_ids)
+
         if start_time_str and minute:
+            # print("int_dict:",int_dict )
             # Parse the datetime-local string into a datetime object
             start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M")
 
             # Make it timezone-aware in Asia/Kolkata
             india_tz = pytz.timezone('Asia/Kolkata')
             start_time = india_tz.localize(start_time)
-
             # Store only the time part in the DB
             access, _ = GeneralAccess.objects.get_or_create(id=1)
             access.minutes = minute
             access.start_time = start_time
             access.interval = total_interval
+            import json
+            access.post_interval_lst = json.dumps(int_dict, default=str)
             access.save()
+
+
 
             # print("Bidding End  Time:", end_time.strftime("%H:%M"))
         selected_usernames = request.POST.getlist("user")

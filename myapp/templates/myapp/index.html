@@ -179,10 +179,7 @@ button {
         gap: 2px;
     }
 }
-
-
-
-    </style>
+</style>
 </head>
 <body>
 
@@ -273,38 +270,6 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
 
 
-<!--function submitBid(reqId) {-->
-<!--    const button = document.querySelector(`#submitbid_${reqId}`);-->
-<!--    const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);-->
-
-<!--    if (bidAmtInput && bidAmtInput.value.trim()) {-->
-<!--        button.disabled = true;-->
-
-<!--        // ✅ Clear storage immediately (before re-render)-->
-<!--        try {-->
-<!--            localStorage.removeItem("bid_amt_" + reqId);-->
-<!--            localStorage.removeItem("last_focused_input");-->
-<!--            localStorage.removeItem("last_cursor_position");-->
-
-<!--        } catch (e) {-->
-<!--            console.error("Failed to clear localStorage:", e);-->
-<!--        }-->
-
-<!--        socket.send(JSON.stringify({-->
-<!--            type: 'submit_bid',-->
-<!--            req_id: reqId,-->
-<!--            bid_amt: bidAmtInput.value.trim()-->
-<!--        }));-->
-
-<!--        // ✅ Clear input field immediately, not delayed-->
-<!--        bidAmtInput.value = "";-->
-
-<!--        setTimeout(() => {-->
-<!--            button.disabled = false;-->
-<!--&lt;!&ndash;            socket.send(JSON.stringify({ type: 'grouped_bid' }));&ndash;&gt;-->
-<!--        }, 300);-->
-<!--    }-->
-<!--}-->
 
 function submitBid(reqId) {
     const button = document.querySelector(`#submitbid_${reqId}`);
@@ -343,142 +308,6 @@ function submitBid(reqId) {
 
 
 
-<!--socket.onmessage = function(e) {-->
-<!--        const data = JSON.parse(e.data);-->
-<!--&lt;!&ndash;        console.log("From server:", data);&ndash;&gt;-->
-
-<!--if(data.type==='valid_bid')-->
-<!--{-->
-<!--&lt;!&ndash;console.log("valid_bid",data.valid_bid)&ndash;&gt;-->
-<!--alert(data.valid_bid);-->
-
-<!--}-->
-
-<!--if (data.type === 'timer_update' && data.auction_started===true) {-->
-
-
-<!--  let timer = document.getElementById("start_status");-->
-<!-- timer.innerHTML = `-->
-<!--    <span style="color:#007BFF; font-weight:500;">REMAINING TIME:</span><br>-->
-<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.minutes}</span>-->
-<!--  `;-->
-
-<!--  let auction_status = document.getElementById("auction_status");-->
-<!-- auction_status.innerHTML = `-->
-<!--    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>-->
-<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Started</span>-->
-<!--  `;-->
-
-
-<!--let current_time_div = document.getElementById("current_time_div");-->
-<!--  current_time_div.innerHTML = `-->
-<!--    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>-->
-<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>-->
-<!--  `;-->
-
-<!-- let start_time_div = document.getElementById("start_time_div");-->
-<!--  start_time_div.innerHTML = `-->
-<!--    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>-->
-<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>-->
-<!--  `;-->
-
-
-<!-- let end_time_div = document.getElementById("end_time_div");-->
-<!--  end_time_div.innerHTML = `-->
-<!--    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>-->
-<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>-->
-<!--  `;-->
-<!--    document.getElementById("refresh-container").style.display = "none";-->
-
-
-<!--    // Convert HH:MM:SS to seconds-->
-<!--    function parseTimeToSeconds(timeStr) {-->
-<!--        const parts = timeStr.split(':').map(Number);-->
-<!--        if (parts.length === 3) { // HH:MM:SS-->
-<!--            return parts[0] * 3600 + parts[1] * 60 + parts[2];-->
-<!--        } else if (parts.length === 2) { // MM:SS-->
-<!--            return parts[0] * 60 + parts[1];-->
-<!--        }-->
-<!--        return 0;-->
-<!--    }-->
-
-
-
-<!--    const remainingSeconds = parseTimeToSeconds(data.minutes);-->
-<!--    const totalSeconds = window.totalAuctionSeconds || 600; // default 10 min-->
-<!--    const percent = Math.max(0, (remainingSeconds / totalSeconds) * 100);-->
-
-<!--    // Update all timers-->
-<!--    document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {-->
-<!--        timerEl.textContent = `Remaining Time: ${data.minutes}`;-->
-<!--    });-->
-
-<!--    // Update all progress bars-->
-<!--    document.querySelectorAll('[id^="progress-bar-"]').forEach(progressEl => {-->
-<!--        progressEl.style.width = `${percent}%`;-->
-
-<!--        // Remove old color classes-->
-<!--        progressEl.classList.remove('green', 'orange', 'red');-->
-
-<!--        // Add new color based on percentage-->
-<!--        if (percent > 50) {-->
-<!--            progressEl.classList.add('green');-->
-<!--        } else if (percent > 20) {-->
-<!--            progressEl.classList.add('orange');-->
-<!--        } else {-->
-<!--            progressEl.classList.add('red');-->
-<!--        }-->
-<!--    });-->
-<!--}-->
-<!--// Inside your onmessage-->
-<!--else if (data.type === 'timer_update' && data.auction_started === false) {-->
-<!--      let timer = document.getElementById("start_status");-->
-<!--  timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;-->
-
-<!--&lt;!&ndash;    console.log("Auc not started will starts in:", data.minutes);&ndash;&gt;-->
-<!--     if(data.seconds===0){-->
-<!--    window.location.reload();-->
-<!--               }-->
-
-
-<!--  let auction_status = document.getElementById("auction_status");-->
-<!-- auction_status.innerHTML = `-->
-<!--    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>-->
-<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Will Start Soon....!</span>-->
-<!--  `;-->
-
-
-<!--let current_time_div = document.getElementById("current_time_div");-->
-<!--  current_time_div.innerHTML = `-->
-<!--    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>-->
-<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>-->
-<!--  `;-->
-
-<!-- let start_time_div = document.getElementById("start_time_div");-->
-<!--  start_time_div.innerHTML = `-->
-<!--    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>-->
-<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>-->
-<!--  `;-->
-
-
-<!-- let end_time_div = document.getElementById("end_time_div");-->
-<!--  end_time_div.innerHTML = `-->
-<!--    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>-->
-<!--    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>-->
-<!--  `;-->
-
-
-<!--document.getElementById("refresh-container").style.display = "block";-->
-
-
-<!--}-->
-<!--else  {-->
-<!--&lt;!&ndash;        console.log("Auction Ended");&ndash;&gt;-->
-<!--        let timer_ = document.getElementById("start_status");-->
-<!--        timer_.innerHTML = `Auction Ended`;-->
-
-
-<!--}-->
 let allRequirements = [];
 let visibleReqIds = [];
 let lastReqIdsJSON = "";
@@ -557,20 +386,40 @@ socket.addEventListener("message", function(event) {
     }
 
     // 3️⃣ All requirements (once)
-    if (data.type === "one_by_one_req") {
-        console.log("📦 All requirements received:", data.data);
-        window.allRequirements = data.data;
-    }
+<!--    if (data.type === "one_by_one_req") {-->
+<!--        console.log("📦 All requirements received:", data.data);-->
+<!--        window.allRequirements = data.data;-->
+<!--    }-->
 
-    // 4️⃣ Visible requirement IDs
-    if (data.type === "load_req_ids") {
-        console.log("📤 req_ids:", data.req_ids);
-        const visibleReqIds = data.req_ids;
-        const visibleRequirements = (window.allRequirements || []).filter(req =>
-            visibleReqIds.includes(req.id)
-        );
-        renderRequirements(visibleRequirements, data.auction_start_status);
-    }
+
+// ✅ Auto-refresh visible requirements every second
+if (data.type === 'one_by_one_req') {
+    const reqs = data.data;
+    const postSchedule = data.post_interval_lst;
+    const auction_start_status = data.auction_start_status;
+
+    // show immediately visible ones
+    renderRequirements(reqs.filter(r =>
+        new Date(data.current_local_time) >= new Date(postSchedule[String(r.id)])
+    ), auction_start_status);
+
+    // schedule future ones individually
+    reqs.forEach(req => {
+        const showTime = new Date(postSchedule[String(req.id)]);
+        const delay = showTime - new Date(data.current_local_time);
+        if (delay > 0) {
+<!--            console.log(`⏱️ Scheduling Req ${req.id} to appear in ${delay / 1000}s`);-->
+            setTimeout(() => {
+                renderRequirements(
+                    reqs.filter(r =>
+                        new Date() >= new Date(postSchedule[String(r.id)])
+                    ),
+                    auction_start_status
+                );
+            }, delay);
+        }
+    });
+}
 
     // 5️⃣ Requirements refresh (interval broadcast)
     if (data.type === "requirements") {
@@ -598,18 +447,26 @@ socket.addEventListener("message", function(event) {
 });
 
 
+function getCurrentInputValues() {
+    const values = {};
+    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
+        values[input.id] = input.value;
+    });
+    return values;
+}
 
 
 function renderRequirements(requirements, auction_start_status) {
+    const savedInputs = getCurrentInputValues();
     const scrollY = window.scrollY;
     const container = document.getElementById('main-container');
-
     const activeElement = document.activeElement;
     const activeId = activeElement && activeElement.id;
-
     const fragment = document.createDocumentFragment();
 
     requirements.forEach((req, index) => {
+        const inputId = `bid_amt_${req.id}`;
+        const inputValue = savedInputs[inputId] || '';
         const row = document.createElement('div');
         row.className = 'row';
         row.id = `req_row_${req.id}`;
@@ -761,7 +618,7 @@ ${(req.cel_price || req.min_dec_val) ? `
                         <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
                             <div style="display: flex; gap: 2px; align-items: center;">
                                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
-                                       style="flex: 1; padding: 5px; font-size: 12px;">
+                                       style="flex: 1; padding: 5px; font-size: 12px;"   value="${inputValue}">
                                     <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
                                             style="flex: 2; padding: 5px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
                                         Submit Bid
@@ -777,24 +634,7 @@ ${(req.cel_price || req.min_dec_val) ? `
         fragment.appendChild(row);
     });
 
-<!--    // ✅ Replace DOM children at once → less flicker-->
-<!--    container.replaceChildren(fragment);-->
 
-<!--    // ✅ Restore input values from localStorage-->
-<!--    requirements.forEach(req => {-->
-<!--        const input = document.getElementById(`bid_amt_${req.id}`);-->
-<!--        if (input) input.value = localStorage.getItem(`bid_amt_${req.id}`) || "";-->
-<!--    });-->
-
-<!--    // ✅ Restore focus and cursor-->
-<!--    restoreInputs();-->
-
-<!--    // ✅ Restore scroll after browser paints new DOM-->
-<!--    requestAnimationFrame(() => {-->
-<!--        window.scrollTo(0, scrollY);-->
-<!--    });-->
-
-<!--    updateBids();-->
 
    // ✅ Instead of replaceChildren (kills focus), patch manually
     if (container.children.length !== requirements.length) {
@@ -871,24 +711,6 @@ ${(req.cel_price || req.min_dec_val) ? `
 }
 
 
-<!--function restoreInputs() {-->
-<!--    const lastFocusedId = localStorage.getItem("last_focused_input");-->
-<!--    const lastCursorPos = parseInt(localStorage.getItem("last_cursor_position"), 10);-->
-
-<!--    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {-->
-<!--        const savedVal = localStorage.getItem(input.id);-->
-<!--        if (savedVal !== null) input.value = savedVal;-->
-<!--    });-->
-
-<!--    if (lastFocusedId) {-->
-<!--        const focusedInput = document.getElementById(lastFocusedId);-->
-<!--        if (focusedInput) {-->
-<!--            focusedInput.focus();-->
-<!--            if (!isNaN(lastCursorPos) && focusedInput.type === "text") {-->
-<!--                focusedInput.setSelectionRange(lastCursorPos, lastCursorPos);-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
 
 
 
