@@ -248,12 +248,13 @@ button {
   location.reload();
 });
 
+window.visibleReqs = window.visibleReqs || [];
 
     let allGroupedBids = {};
     let latestUserRanks = [];
     let userBids = [];   // ✅ declare here
 <!--    console.log("allGroupedBids:",allGroupedBids);-->
-    console.log("latestUserRanks:",latestUserRanks);
+<!--    console.log("latestUserRanks:",latestUserRanks);-->
 <!--    console.log("userBids:",userBids);-->
 
 <!--    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/chat/room1/`);-->
@@ -391,31 +392,41 @@ socket.addEventListener("message", function(event) {
 <!--        window.allRequirements = data.data;-->
 <!--    }-->
 
-
 // ✅ Auto-refresh visible requirements every second
 if (data.type === 'one_by_one_req') {
     const reqs = data.data;
     const postSchedule = data.post_interval_lst;
     const auction_start_status = data.auction_start_status;
 
-    // show immediately visible ones
-    renderRequirements(reqs.filter(r =>
-        new Date(data.current_local_time) >= new Date(postSchedule[String(r.id)])
-    ), auction_start_status);
+    const now = new Date(data.current_local_time);
 
-    // schedule future ones individually
+    // Show immediately visible requirements
     reqs.forEach(req => {
         const showTime = new Date(postSchedule[String(req.id)]);
-        const delay = showTime - new Date(data.current_local_time);
+        if (showTime <= now) {
+            // Add to global visible list if not already present
+            if (!window.visibleReqs.find(r => r.id === req.id)) {
+                window.visibleReqs.push(req);
+            }
+        }
+    });
+
+    renderRequirements(window.visibleReqs, auction_start_status);
+
+    // Schedule future requirements individually
+    reqs.forEach(req => {
+        const showTime = new Date(postSchedule[String(req.id)]);
+        const delay = showTime - now;
+
         if (delay > 0) {
-<!--            console.log(`⏱️ Scheduling Req ${req.id} to appear in ${delay / 1000}s`);-->
             setTimeout(() => {
-                renderRequirements(
-                    reqs.filter(r =>
-                        new Date() >= new Date(postSchedule[String(r.id)])
-                    ),
-                    auction_start_status
-                );
+                // Add the new requirement to visibleReqs
+                if (!window.visibleReqs.find(r => r.id === req.id)) {
+                    window.visibleReqs.push(req);
+                }
+
+                // Re-render all visible requirements
+                renderRequirements(window.visibleReqs, auction_start_status);
             }, delay);
         }
     });
@@ -423,7 +434,7 @@ if (data.type === 'one_by_one_req') {
 
     // 5️⃣ Requirements refresh (interval broadcast)
     if (data.type === "requirements") {
-        console.log("✅ Requirements received:", data.data);
+<!--        console.log("✅ Requirements received:", data.data);-->
 
         let total_req_div = document.getElementById("total_req_div");
         total_req_div.innerHTML = `
