@@ -90,3 +90,9 @@ class Profile(models.Model):
     def __str__(self):
         return f"{self.user.username} Profile"
 
+
+class BidMsg(models.Model):
+    req=models.ForeignKey(Requirements, on_delete=models.CASCADE, related_name='req', null=True, blank=True)
+    sender=models.ForeignKey(User,on_delete=models.CASCADE,null=True, blank=True)
+    msg=models.CharField(max_length=100,null=True,blank=True)
+    status_msg=models.CharField(max_length=100,null=True,blank=True)

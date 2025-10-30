@@ -961,7 +961,7 @@ timer.innerHTML= ` <span style="color:white; font-weight:400;">AUCTION ENDED</sp
 
 if (data.type === 'bids_per_requirement') {
 console.log("Bid data:",data)
-<!--console.log("Bid Requirement:",data.bid_req)-->
+console.log("Bid Requirement:",data.bid_req)
 <!--console.log("Bid  Top Bidders :",data.top_bidders)-->
 
 renderBids(data);
@@ -1075,6 +1075,24 @@ data.top_bidders.forEach(top_bidder => {
         <strong>L${top_bidder.rank}</strong> - <strong>Bidder:</strong> ${top_bidder.username}
       </p>
       <p><strong>Rate:</strong> ₹${top_bidder.rate}</p>
+
+    <!-- Admin Feedback UI -->
+      <div style="background:#fff; padding:8px; border-radius:6px;">
+        <label>Status: </label>
+        <select id="status-${req.id}-${top_bidder.username}" class="form-control form-control-sm" style="display:inline-block; width:auto;">
+          <option value=" " selected>No MSG</option>
+          <option value="Approved">Approved</option>
+          <option value="Higher Price">Higher Price</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Pending">Pending</option>
+        </select>
+        <input id="message-${req.id}-${top_bidder.username}" class="form-control form-control-sm"
+               type="text" placeholder="Enter message..." style="display:inline-block; width:60%; margin-left:8px;">
+        <button class="btn btn-sm btn-primary"
+                onclick="sendBidderMessage('${top_bidder.username}', ${req.id})"
+                style="margin-left:6px;">Send</button>
+
+      </div>
     </div>
   `;
 });
@@ -1084,6 +1102,41 @@ data.top_bidders.forEach(top_bidder => {
         bidDiv.style.display = "block";
 <!--    });-->
 }
+
+
+function sendBidderMessage (top_bidder,req_id)
+{
+    let msg_id = `message-${req_id}-${top_bidder}`;
+
+
+    const status_msg_id = `status-${req_id}-${top_bidder}`;
+   const msg = document.getElementById(msg_id).value.trim();
+  const status_msg = document.getElementById(status_msg_id).value;
+
+         const newFormMsg = new FormData();
+                    newFormMsg.append("msg", msg);
+                    newFormMsg.append("status_msg", status_msg);
+                    newFormMsg.append("top_bidder", top_bidder);
+                    newFormMsg.append("req_id", req_id);
+
+                    fetch("{% url 'biddermsg' %}", {
+                        method: "POST",
+                        body: newFormMsg,
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        }
+                    })
+                    .then(res => res.text())
+                    .then(data => {
+<!--                        console.log("Deleted response:", data);-->
+                        // Optionally remove the DOM element or reload
+                        location.reload(); // or dynamically remove the element
+
+                    })
+                    .catch(error => {
+                        console.error("Error deleting:", error);
+                    });
+              }
 
 
 
