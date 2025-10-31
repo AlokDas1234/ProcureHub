@@ -346,7 +346,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             start_time_kolkata = start_time.astimezone(kolkata_tz)
             end_times_kolkata = end_times.astimezone(kolkata_tz)
 
-
+            user = self.scope['user']
             auction_end_status = False
             if clt_kolkata >= end_times_kolkata:
                 # print("Auction Ended")
@@ -372,6 +372,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             user_ = await sync_to_async(User.objects.get)(username=user.username)
             '''All the user previous bids in user_bid'''
+
             user_bid = await sync_to_async(list)(Bid.objects.filter(user=user_, req=requirement.id))
             req_ = await sync_to_async(Requirements.objects.get)(id=requirement.id)
             # print("User Bid :",user_bid)
@@ -516,16 +517,48 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             }
                         )
                 else:
-
-
                     # ❌ Send error if auction closed or too many bids
                     await self.send(text_data=json.dumps({
                         'type': 'error',
                         'message': 'Auction ended.'
                     }))
 
+        if text_data_json.get("type") == "submit_msg":
+            msg = text_data_json.get("msg")
+            status_msg = text_data_json.get("status_msg")
+            top_bidder = text_data_json.get("top_bidder")
+            req_id = text_data_json.get("req_id")  # ⚠️ You missed this earlier
 
+            print("Msg:", msg)
+            print("Status Msg:", status_msg)
+            print("Top Bidder:", top_bidder)
 
+            # ✅ Get the user and requirement
+            user = await sync_to_async(User.objects.get)(username=top_bidder)
+            req = await sync_to_async(Requirements.objects.get)(id=req_id)
+
+            # ✅ Create a new BidMsg
+            bid_msg = await sync_to_async(BidMsg.objects.create)(
+                sender=user,
+                msg=msg,
+                status_msg=status_msg,
+                req=req
+            )
+
+            # ✅ Broadcast to all connected WebSocket clients
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "send_bid_msg",
+                    "bid_msg": [{
+                        "id": bid_msg.id,
+                        "sender": user.username,
+                        "msg": bid_msg.msg,
+                        "status_msg": bid_msg.status_msg,
+                    }],
+                    "auction_start_status": True,
+                },
+            )
 
     async def time_calculation(self, general_access, minutes, start_time, interval):
         """
@@ -587,10 +620,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         return clt, start_time, end_times, remaining, remaining_interval
 
-
-
-
     async def send_bid_msg(self, event):
+        """
+        Handles messages sent to the WebSocket group via group_send().
+        """
         await self.send(text_data=json.dumps({
             'type': 'send_bid_msg',
             'bid_msg': event['bid_msg'],
@@ -606,7 +639,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
 
-
     async def one_by_one_req(self, event):
         await self.send(text_data=json.dumps({
             'type': 'one_by_one_req',
@@ -615,8 +647,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'len_reqs': event['len_reqs'],
             'current_local_time': event['current_local_time'],
             'auction_start_status': event['auction_start_status']
-
         }))
+
 
     async def load_req_ids(self, event):
         await self.send(text_data=json.dumps({

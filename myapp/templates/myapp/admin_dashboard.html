@@ -1106,36 +1106,45 @@ data.top_bidders.forEach(top_bidder => {
 
 function sendBidderMessage (top_bidder,req_id)
 {
+    console.log("top_bidder",top_bidder);
     let msg_id = `message-${req_id}-${top_bidder}`;
+       const status_msg_id = `status-${req_id}-${top_bidder}`;
+       const msg = document.getElementById(msg_id).value.trim();
+       const status_msg = document.getElementById(status_msg_id).value;
 
 
-    const status_msg_id = `status-${req_id}-${top_bidder}`;
-   const msg = document.getElementById(msg_id).value.trim();
-  const status_msg = document.getElementById(status_msg_id).value;
+        socket.send(JSON.stringify({
+            type: 'submit_msg',
+            top_bidder: top_bidder,
+            msg: msg,
+            req_id: req_id,
+            status_msg: status_msg
+        }));
 
-         const newFormMsg = new FormData();
-                    newFormMsg.append("msg", msg);
-                    newFormMsg.append("status_msg", status_msg);
-                    newFormMsg.append("top_bidder", top_bidder);
-                    newFormMsg.append("req_id", req_id);
 
-                    fetch("{% url 'biddermsg' %}", {
-                        method: "POST",
-                        body: newFormMsg,
-                        headers: {
-                            "X-CSRFToken": "{{ csrf_token }}"
-                        }
-                    })
-                    .then(res => res.text())
-                    .then(data => {
-<!--                        console.log("Deleted response:", data);-->
-                        // Optionally remove the DOM element or reload
-                        location.reload(); // or dynamically remove the element
 
-                    })
-                    .catch(error => {
-                        console.error("Error deleting:", error);
-                    });
+<!--         const newFormMsg = new FormData();-->
+<!--                    newFormMsg.append("msg", msg);-->
+<!--                    newFormMsg.append("status_msg", status_msg);-->
+<!--                    newFormMsg.append("top_bidder", top_bidder);-->
+<!--                    newFormMsg.append("req_id", req_id);-->
+<!--                    fetch("{% url 'biddermsg' %}", {-->
+<!--                        method: "POST",-->
+<!--                        body: newFormMsg,-->
+<!--                        headers: {-->
+<!--                            "X-CSRFToken": "{{ csrf_token }}"-->
+<!--                        }-->
+<!--                    })-->
+<!--                    .then(res => res.text())-->
+<!--                    .then(data => {-->
+<!--&lt;!&ndash;                        console.log("Deleted response:", data);&ndash;&gt;-->
+<!--                        // Optionally remove the DOM element or reload-->
+<!--                        location.reload(); // or dynamically remove the element-->
+
+<!--                    })-->
+<!--                    .catch(error => {-->
+<!--                        console.error("Error deleting:", error);-->
+<!--                    });-->
               }
 
 

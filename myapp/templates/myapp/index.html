@@ -394,11 +394,12 @@ socket.addEventListener("message", function(event) {
 
 
 if(data.type ==='send_bid_msg')
-{
-const bid_msg=data.bid_msg;
-console.log("Bid message:",bid_msg);
+    {
+    const bid_msg=data.bid_msg;
+    console.log("Bid message:",bid_msg);
+     }
 
- }
+
 // ✅ Auto-refresh visible requirements every second
 if (data.type === 'one_by_one_req') {
     const reqs = data.data;
@@ -631,7 +632,7 @@ ${(req.cel_price || req.min_dec_val) ? `
                        <div style="margin:0; padding:0;">
                             <p id="previous_bids_${req.id}" style="margin:0; font-weight:bold;"></p>
                             <p id="user_rank_${req.id}" style="margin:0; color: lightgreen;"></p>
-                        </div>
+                       </div>
 
                         <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
                             <div style="display: flex; gap: 2px; align-items: center;">
