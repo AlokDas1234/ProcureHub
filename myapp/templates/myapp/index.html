@@ -269,9 +269,6 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
     };
 
 
-
-
-
 function submitBid(reqId) {
     const button = document.querySelector(`#submitbid_${reqId}`);
     const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);
@@ -392,14 +389,18 @@ socket.addEventListener("message", function(event) {
 <!--        window.allRequirements = data.data;-->
 <!--    }-->
 
+if (data.type === 'send_bid_msg') {
+        const bid_msg = data.bid_msg;
+        console.log("Bid message received:", bid_msg);
 
-if(data.type ==='send_bid_msg')
-    {
-    const bid_msg=data.bid_msg;
-    console.log("Bid message:",bid_msg);
-     }
+        // ✅ Extract data
+        const reqId = bid_msg.req_id;
+        const msgText = bid_msg.msg || '';
+        const statusText = bid_msg.status_msg || '';
 
-
+        // ✅ Call display function
+        displayBidMessage(reqId, msgText, statusText);
+    }
 // ✅ Auto-refresh visible requirements every second
 if (data.type === 'one_by_one_req') {
     const reqs = data.data;
@@ -466,13 +467,31 @@ if (data.type === 'one_by_one_req') {
 });
 
 
+function displayBidMessage(reqId, msg, status) {
+    console.log("Bid req_id: " + reqId);
+    const msgElement = document.getElementById(`msg_${reqId}`);
+    const statusElement = document.getElementById(`status_msg_${reqId}`);
+    console.log("msgElement:", msgElement);
+    console.log("statusElement:", statusElement);
+
+    if (msgElement ) {
+    console.log("Bid message element receive");
+        msgElement.textContent = `Message: ${msg}`;
+    }
+    if ( statusElement){
+     console.log("Bid message statusElement element receive");
+     statusElement.textContent = `Status: ${status}`;
+    }
+}
+
+
 function getCurrentInputValues() {
     const values = {};
     document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
         values[input.id] = input.value;
     });
     return values;
-}
+    }
 
 
 function renderRequirements(requirements, auction_start_status) {
@@ -632,6 +651,13 @@ ${(req.cel_price || req.min_dec_val) ? `
                        <div style="margin:0; padding:0;">
                             <p id="previous_bids_${req.id}" style="margin:0; font-weight:bold;"></p>
                             <p id="user_rank_${req.id}" style="margin:0; color: lightgreen;"></p>
+
+
+                        <div id="bid_info_${req.id }" style="display: flex; gap: 10px;">
+                              <p id="msg_${req.id }" style="font-weight: bold; margin: 0;"></p>
+                              <p id="status_msg_${req.id}" style="color: lightgreen; margin: 0;"></p>
+                        </div>
+
                        </div>
 
                         <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
@@ -791,7 +817,6 @@ function updateBids() {
     Object.keys(bidsByReq).forEach(reqId => {
         const field = document.getElementById(`previous_bids_${reqId}`);
         if (!field) return;
-
         const allRates = bidsByReq[reqId];
         const showLimit = 5;
 

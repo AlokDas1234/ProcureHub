@@ -42,6 +42,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
             """Timer Access end"""
             general_access, minutes, start_time,g_access,use_cel,dec_val_vi,interval= await self.get_general_access()
             clt, start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
+            print("user connect:",user)
+            # ✅ Always send last known bid message on connect
+
+            latest_bid_msg = await sync_to_async(
+                lambda: BidMsg.objects.filter(sender=user)
+                .order_by('-id')
+                .values("id", "req_id", "sender__username", "msg", "status_msg")
+                .first()
+            )()
+            print("Latest_bid_msg:",latest_bid_msg)
+
+            if latest_bid_msg:
+                print("Sending latest bid message on connect:", latest_bid_msg)
+                await self.send(text_data=json.dumps({
+                    "type": "send_bid_msg",
+                    "bid_msg": latest_bid_msg,
+                    "auction_start_status": True
+                }))
 
             auction_start = True
             if clt <= start_time:
@@ -180,6 +198,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     # print("remaining_interval:",remaining_interval)
                     # print("remaining_interval_total_seconds:",remaining_interval.total_seconds())
                     # len_req = len(reqs)
+                    # user = self.scope["user"]
+
+
 
                     if remaining_interval.total_seconds() > 1:
                         # print("✅ Interval still active, continuing...", interval)
@@ -189,8 +210,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                         # ✅ Ensure JSON is sent as proper dict
                         # post_interval_lst = ga_.post_interval_lst
-
-
 
                         post_interval_lst = json.loads(ga_.post_interval_lst)
                         post_interval_serialized = {str(k): v for k, v in post_interval_lst.items()}
@@ -210,18 +229,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     else:
                         print("❌ Interval expired.")
 
-                        bid_qs = await sync_to_async(list)(
-                            BidMsg.objects.filter(sender=user).values()
-                        )
-                        # print("bid_qs:", bid_qs)
-                        await self.channel_layer.group_send(
-                            self.room_group_name,
-                            {
-                                'type': 'send_bid_msg',
-                                'bid_msg': bid_qs,
-                                "auction_start_status": True,
-                            }
-                        )
+                        # bid_qs = await sync_to_async(list)(
+                        #     BidMsg.objects.filter(sender=user).values()
+                        # )
+                        # # print("bid_qs:", bid_qs)
+                        # await self.channel_layer.group_send(
+                        #     self.room_group_name,
+                        #     {
+                        #         'type': 'send_bid_msg',
+                        #         'bid_msg': bid_qs,
+                        #         "auction_start_status": True,
+                        #     }
+                        # )
 
                         len_req = len(reqs)
                         await self.channel_layer.group_send(
@@ -245,19 +264,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
                         }))
             else:
-                user = self.scope['user']
-                bid_qs = await sync_to_async(list)(
-                    BidMsg.objects.filter(sender=user).values()
-                )
-                # print("bid_qs:", bid_qs)
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        'type': 'send_bid_msg',
-                        'bid_msg': bid_qs,
-                        "auction_start_status": True,
-                    }
-                )
+                # user = self.scope['user']
+                # bid_qs = await sync_to_async(list)(
+                #     BidMsg.objects.filter(sender=user).values()
+                # )
+                # # print("bid_qs:", bid_qs)
+                # await self.channel_layer.group_send(
+                #     self.room_group_name,
+                #     {
+                #         'type': 'send_bid_msg',
+                #         'bid_msg': bid_qs,
+                #         "auction_start_status": True,
+                #     }
+                # )
 
                 # print("Auction Ended")
                 # print("auction_end_status in else:",auction_end_status)
@@ -355,19 +374,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # print("Auction Not Started")
                 auction_end_status = True
 
-            bid_qs = await sync_to_async(list)(
-                BidMsg.objects.filter(sender=user).values()
-            )
-            print("bid_qs in receive:", bid_qs)
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'send_bid_msg',
-                    'bid_msg': bid_qs,
-                    "auction_start_status": True,
-                }
-            )
-
+            # bid_qs = await sync_to_async(list)(
+            #     BidMsg.objects.filter(sender=user).values()
+            # )
+            # print("bid_qs in receive:", bid_qs)
+            # await self.channel_layer.group_send(
+            #     self.room_group_name,
+            #     {
+            #         'type': 'send_bid_msg',
+            #         'bid_msg': bid_qs,
+            #         "auction_start_status": True,
+            #     }
+            # )
+            #
 
 
             user_ = await sync_to_async(User.objects.get)(username=user.username)
@@ -529,9 +548,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             top_bidder = text_data_json.get("top_bidder")
             req_id = text_data_json.get("req_id")  # ⚠️ You missed this earlier
 
-            print("Msg:", msg)
-            print("Status Msg:", status_msg)
-            print("Top Bidder:", top_bidder)
+            # print("Msg:", msg)
+            # print("Status Msg:", status_msg)
+            # print("Top Bidder:", top_bidder)
 
             # ✅ Get the user and requirement
             user = await sync_to_async(User.objects.get)(username=top_bidder)
@@ -545,17 +564,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 req=req
             )
 
-            # ✅ Broadcast to all connected WebSocket clients
+            # ✅ Broadcast new bid to all connected users
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     "type": "send_bid_msg",
-                    "bid_msg": [{
+                    "bid_msg": {
                         "id": bid_msg.id,
+                        "req_id": bid_msg.req.id,
                         "sender": user.username,
                         "msg": bid_msg.msg,
                         "status_msg": bid_msg.status_msg,
-                    }],
+                    },
                     "auction_start_status": True,
                 },
             )
