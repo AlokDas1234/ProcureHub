@@ -248,6 +248,9 @@ button {
   location.reload();
 });
 
+const username = "{{ request.user.username }}";
+console.log("Logged-in user:", username);
+
 window.visibleReqs = window.visibleReqs || [];
 
     let allGroupedBids = {};
@@ -316,6 +319,7 @@ socket.addEventListener("message", function(event) {
     if (data.type === "valid_bid") {
         alert(data.valid_bid);
     }
+
 
     // 2️⃣ Auction timer updates
     if (data.type === "timer_update") {
@@ -390,17 +394,20 @@ socket.addEventListener("message", function(event) {
 <!--    }-->
 
 if (data.type === 'send_bid_msg') {
-        const bid_msg = data.bid_msg;
+            const bid_msg = data.bid_msg;
         console.log("Bid message received:", bid_msg);
 
-        // ✅ Extract data
+        // ✅ Extract data.
         const reqId = bid_msg.req_id;
-        const msgText = bid_msg.msg || '';
-        const statusText = bid_msg.status_msg || '';
-
-        // ✅ Call display function
+        const msgText = bid_msg.msg;
+        const statusText = bid_msg.status_msg;
+        // ✅ Call display function.
+          console.log("Bid Req Id:", reqId);
+          console.log("Bid  Message Text:", msgText);
+          console.log("Bid   Status Text:", statusText);
         displayBidMessage(reqId, msgText, statusText);
     }
+
 // ✅ Auto-refresh visible requirements every second
 if (data.type === 'one_by_one_req') {
     const reqs = data.data;
@@ -467,22 +474,45 @@ if (data.type === 'one_by_one_req') {
 });
 
 
+<!--function displayBidMessage(reqId, msg, status, retries = 10) {-->
+<!--  const msgElement = document.getElementById(`msg_${reqId}`);-->
+<!--  const statusElement = document.getElementById(`status_msg_${reqId}`);-->
+
+<!--  if (!msgElement || !statusElement) {-->
+<!--    if (retries > 0) {-->
+<!--      console.warn(`⏳ Waiting for elements of req_id=${reqId}...`);-->
+<!--      setTimeout(() => displayBidMessage(reqId, msg, status, retries - 1), 500);-->
+<!--    } else {-->
+<!--      console.error(`❌ Elements for req_id=${reqId} not found after waiting.`);-->
+<!--    }-->
+<!--    return;-->
+<!--  }-->
+
+<!--  // ✅ Once found, update content-->
+<!--  msgElement.textContent = `Message: ${msg}`;-->
+<!--  statusElement.textContent = `Status: ${status}`;-->
+<!--}-->
+
 function displayBidMessage(reqId, msg, status) {
-    console.log("Bid req_id: " + reqId);
+  function tryDisplay(attempts = 0) {
     const msgElement = document.getElementById(`msg_${reqId}`);
     const statusElement = document.getElementById(`status_msg_${reqId}`);
-    console.log("msgElement:", msgElement);
-    console.log("statusElement:", statusElement);
 
-    if (msgElement ) {
-    console.log("Bid message element receive");
-        msgElement.textContent = `Message: ${msg}`;
+    if (msgElement && statusElement) {
+      msgElement.textContent = `Message: ${msg}`;
+      statusElement.textContent = `Status: ${status}`;
+      console.log(`✅ Displayed message for req_id=${reqId}`);
+    } else if (attempts < 20) {  // retry up to ~2 seconds
+      console.log(`⏳ Waiting for elements of req_id=${reqId}...`);
+      setTimeout(() => tryDisplay(attempts + 1), 100);
+    } else {
+      console.warn(`⚠️ Elements for req_id=${reqId} not found after waiting.`);
     }
-    if ( statusElement){
-     console.log("Bid message statusElement element receive");
-     statusElement.textContent = `Status: ${status}`;
-    }
+  }
+
+  tryDisplay();
 }
+
 
 
 function getCurrentInputValues() {

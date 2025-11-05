@@ -43,23 +43,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             general_access, minutes, start_time,g_access,use_cel,dec_val_vi,interval= await self.get_general_access()
             clt, start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
             print("user connect:",user)
-            # ✅ Always send last known bid message on connect
 
-            latest_bid_msg = await sync_to_async(
-                lambda: BidMsg.objects.filter(sender=user)
-                .order_by('-id')
-                .values("id", "req_id", "sender__username", "msg", "status_msg")
-                .first()
-            )()
-            print("Latest_bid_msg:",latest_bid_msg)
 
-            if latest_bid_msg:
-                print("Sending latest bid message on connect:", latest_bid_msg)
-                await self.send(text_data=json.dumps({
-                    "type": "send_bid_msg",
-                    "bid_msg": latest_bid_msg,
-                    "auction_start_status": True
-                }))
 
             auction_start = True
             if clt <= start_time:
@@ -73,6 +58,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # print("Auction Ended")
                 auction_end_status = True
 
+            if not user.is_superuser:
+                print("user in latest bid message:",user)
+                latest_bid_msg = await sync_to_async(
+                    lambda: BidMsg.objects.filter(sender=user)
+                    .order_by('-id')
+                    .values("id", "req_id", "sender__username", "msg", "status_msg")
+                    .first()
+                )()
+                print("Latest_bid_msg in connect:", latest_bid_msg)
+                if latest_bid_msg:
+                    print("Sending latest bid message on connect:", latest_bid_msg)
+                    await self.send(text_data=json.dumps({
+                        "type": "send_bid_msg",
+                        "bid_msg": latest_bid_msg,
+                    }))
+
 
             """Auction Started"""
             if  auction_start  and auction_end_status == False and  not self.scope['user'].is_superuser :
@@ -83,7 +84,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=json.dumps({
                     'type': 'grouped_bid',
                     'bid_group_data': bid_group_data
-
                 }))
 
             if  self.scope['user'].is_superuser:
@@ -114,6 +114,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "type": "normal_user",
                     "users": [user["username"] for user in users]
                 }))
+
 
 
 
@@ -261,8 +262,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         await self.send(text_data=json.dumps({
                             'type': 'grouped_bid',
                             'bid_group_data': bid_group_data
-
                         }))
+
+
+
             else:
                 # user = self.scope['user']
                 # bid_qs = await sync_to_async(list)(
@@ -576,7 +579,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         "msg": bid_msg.msg,
                         "status_msg": bid_msg.status_msg,
                     },
-                    "auction_start_status": True,
+
                 },
             )
 
@@ -647,7 +650,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'send_bid_msg',
             'bid_msg': event['bid_msg'],
-            'auction_start_status': event['auction_start_status']
+
         }))
 
     async def requirements(self, event):
