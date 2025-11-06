@@ -150,21 +150,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     .first()
                 )()
                 print("latest bid message:", latest_bid_msg)
-                # ✅ Broadcast new bid to all connected users
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "send_bid_msg",
-                        "bid_msg": {
-                            "id": latest_bid_msg["id"],
-                            "req_id": latest_bid_msg["req_id"],
-                            "sender": latest_bid_msg["sender__username"],
-                            "msg": latest_bid_msg["msg"],
-                            "status_msg": latest_bid_msg["status_msg"],
-                        },
+                if latest_bid_msg:
+                    # ✅ Broadcast new bid to all connected users
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_bid_msg",
+                            "bid_msg": {
+                                "id": latest_bid_msg["id"],
+                                "req_id": latest_bid_msg["req_id"],
+                                "sender": latest_bid_msg["sender__username"],
+                                "msg": latest_bid_msg["msg"],
+                                "status_msg": latest_bid_msg["status_msg"],
+                            },
 
-                    },
-                )
+                        },
+                    )
 
             elif auction_end_status == False and auction_start==True:
                 # # print("auction_end_status False: executed")
@@ -261,54 +262,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             .first()
                         )()
                         print("latest bid message:", latest_bid_msg)
-                        # ✅ Broadcast new bid to all connected users
-                        await self.channel_layer.group_send(
-                            self.room_group_name,
-                            {
-                                "type": "send_bid_msg",
-                                "bid_msg": {
-                                    "id": latest_bid_msg["id"],
-                                    "req_id": latest_bid_msg["req_id"],
-                                    "sender": latest_bid_msg["sender__username"],
-                                    "msg": latest_bid_msg["msg"],
-                                    "status_msg": latest_bid_msg["status_msg"],
+                        if latest_bid_msg:
+                            # ✅ Broadcast new bid to all connected users
+                            await self.channel_layer.group_send(
+                                self.room_group_name,
+                                {
+                                    "type": "send_bid_msg",
+                                    "bid_msg": {
+                                        "id": latest_bid_msg["id"],
+                                        "req_id": latest_bid_msg["req_id"],
+                                        "sender": latest_bid_msg["sender__username"],
+                                        "msg": latest_bid_msg["msg"],
+                                        "status_msg": latest_bid_msg["status_msg"],
+                                    },
+
                                 },
-
-                            },
-                        )
-
-
-
-
+                            )
             else:
-                # user = self.scope['user']
-                # bid_qs = await sync_to_async(list)(
-                #     BidMsg.objects.filter(sender=user).values()
-                # )
-                # # print("bid_qs:", bid_qs)
-                # await self.channel_layer.group_send(
-                #     self.room_group_name,
-                #     {
-                #         'type': 'send_bid_msg',
-                #         'bid_msg': bid_qs,
-                #         "auction_start_status": True,
-                #     }
-                # )
-
-                # print("Auction Ended")
-                # print("auction_end_status in else:",auction_end_status)
                 auction_start=False
-                # req_id_ = session.get("req_id")
-                # print("req_id_:",req_id_)
-                # req_id_start=session.get("req_id_start")
                 ga_=await sync_to_async (GeneralAccess.objects.get)(id=1)
                 new_req_from_backend=ga_.new_req
-
                 reqs = await sync_to_async(get_all_requirements)()
-                # print("reqs:",reqs)
                 req_id_= reqs[0].get("unique_id")
-
-
                 """After Ending the auction still sending requirements so bidder can view their req"""
                 if str(req_id_)==str(new_req_from_backend):
                     # print("matched")
@@ -337,21 +312,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         .first()
                     )()
                     print("latest bid message:", latest_bid_msg)
-                    # ✅ Broadcast new bid to all connected users
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            "type": "send_bid_msg",
-                            "bid_msg": {
-                                "id": latest_bid_msg["id"],
-                                "req_id": latest_bid_msg["req_id"],
-                                "sender": latest_bid_msg["sender__username"],
-                                "msg": latest_bid_msg["msg"],
-                                "status_msg": latest_bid_msg["status_msg"],
-                            },
+                    if latest_bid_msg:
+                        # ✅ Broadcast new bid to all connected users
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                "type": "send_bid_msg",
+                                "bid_msg": {
+                                    "id": latest_bid_msg["id"],
+                                    "req_id": latest_bid_msg["req_id"],
+                                    "sender": latest_bid_msg["sender__username"],
+                                    "msg": latest_bid_msg["msg"],
+                                    "status_msg": latest_bid_msg["status_msg"],
+                                },
 
-                        },
-                    )
+                            },
+                        )
 
                 if hasattr(self, "timer_task") and not self.timer_task.done():
                     self.timer_task.cancel()
