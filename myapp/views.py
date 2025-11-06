@@ -204,41 +204,104 @@ def download_requirements(request):
     rank_df.to_csv(path_or_buf=response, index=False)
     return response
 
+#
+# @login_required(login_url='/login/')
+# def get_bid_report(request):
+#     user = request.user.username
+#
+#     user_=User.objects.get(username=user)
+#     bid_msg=BidMsg.objects.get(sender=user_)
+#     print("Bid Message  in views:",bid_msg)
+#
+#     all_bids = Bid.objects.all().values(
+#         "id", "user__username", "req__id",
+#         "req__loading_point", "req__unloading_point",
+#         "req__product", "req__truck_type","req__no_of_trucks","req__notes","req__drum_type_no_of_drums","req__approx_mat_mt","req__weight_per_drum",
+#         "req__req_date","rate", "created_at"
+#     )
+#     rank_df = pd.DataFrame(list(all_bids))
+#
+#     # make sure created_at is datetime
+#     rank_df["created_at"] = pd.to_datetime(rank_df["created_at"])
+#
+#     # Pick the lowest rate per user per requirement, tie-break by earliest created_at
+#     lowest_bids = rank_df.sort_values(["req__id", "rate", "created_at"]).groupby(
+#         ["req__id", "user__username"], as_index=False
+#     ).first()
+#
+#     # Rank them within each requirement (rate first, created_at as tiebreaker)
+#     lowest_bids = lowest_bids.sort_values(["req__id", "rate", "created_at"])
+#     lowest_bids["Rank"] = lowest_bids.groupby("req__id").cumcount() + 1
+#
+#     # Keep only ranks 1 to 4
+#     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
+#     # Filter for this user only
+#     rank_df = rank_df[rank_df["user__username"] == user]
+#     # Generate CSV response
+#     response = HttpResponse(content_type='text/csv')
+#     response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
+#     rank_df.to_csv(path_or_buf=response, index=False)
+#     return response
+
 
 @login_required(login_url='/login/')
 def get_bid_report(request):
-    user = request.user.username
+    user = request.user
+    print("Current user:", user.username)
 
+    # ✅ Fetch latest BidMsg for this user (if any)
+    bid_msg = (
+        BidMsg.objects.filter(sender=user)
+        .order_by('-id')
+        .values('msg', 'status_msg')
+        .first()
+    )
+
+    # ✅ Fetch bids
     all_bids = Bid.objects.all().values(
         "id", "user__username", "req__id",
         "req__loading_point", "req__unloading_point",
-        "req__product", "req__truck_type","req__no_of_trucks","req__notes","req__drum_type_no_of_drums","req__approx_mat_mt","req__weight_per_drum",
-        "req__req_date","rate", "created_at"
+        "req__product", "req__truck_type", "req__no_of_trucks",
+        "req__notes", "req__drum_type_no_of_drums",
+        "req__approx_mat_mt", "req__weight_per_drum",
+        "req__req_date", "rate", "created_at"
     )
-    rank_df = pd.DataFrame(list(all_bids))
 
-    # make sure created_at is datetime
+    # Create DataFrame
+    rank_df = pd.DataFrame(list(all_bids))
+    if rank_df.empty:
+        return HttpResponse("No bids available.", content_type='text/plain')
+
     rank_df["created_at"] = pd.to_datetime(rank_df["created_at"])
 
-    # Pick the lowest rate per user per requirement, tie-break by earliest created_at
+    # ✅ Pick lowest bid per user per requirement
     lowest_bids = rank_df.sort_values(["req__id", "rate", "created_at"]).groupby(
         ["req__id", "user__username"], as_index=False
     ).first()
 
-    # Rank them within each requirement (rate first, created_at as tiebreaker)
+    # ✅ Rank within each requirement
     lowest_bids = lowest_bids.sort_values(["req__id", "rate", "created_at"])
     lowest_bids["Rank"] = lowest_bids.groupby("req__id").cumcount() + 1
 
-    # Keep only ranks 1 to 4
+    # ✅ Keep only top 4
     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
 
-    # Filter for this user only
-    rank_df = rank_df[rank_df["user__username"] == user]
+    # ✅ Filter for logged-in user
+    rank_df = rank_df[rank_df["user__username"] == user.username]
 
-    # Generate CSV response
+    # ✅ Add message info (same for all rows)
+    if bid_msg:
+        rank_df["Message"] = bid_msg["msg"]
+        rank_df["Status_Message"] = bid_msg["status_msg"]
+    else:
+        rank_df["Message"] = "N/A"
+        rank_df["Status_Message"] = "N/A"
+
+    # ✅ Generate CSV response
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
+    response['Content-Disposition'] = f'attachment; filename="{user.username}_Bid_Report.csv"'
     rank_df.to_csv(path_or_buf=response, index=False)
+
     return response
 
 

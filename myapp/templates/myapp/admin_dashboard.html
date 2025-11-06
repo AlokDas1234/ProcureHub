@@ -1103,49 +1103,54 @@ data.top_bidders.forEach(top_bidder => {
 <!--    });-->
 }
 
+function sendBidderMessage(top_bidder, req_id) {
+  console.log("top_bidder:", top_bidder);
 
-function sendBidderMessage (top_bidder,req_id)
-{
-    console.log("top_bidder",top_bidder);
-    let msg_id = `message-${req_id}-${top_bidder}`;
-       const status_msg_id = `status-${req_id}-${top_bidder}`;
-       const msg = document.getElementById(msg_id).value.trim();
-       const status_msg = document.getElementById(status_msg_id).value;
+  // Define element IDs
+  const msg_id = `message-${req_id}-${top_bidder}`;
+  const status_msg_id = `status-${req_id}-${top_bidder}`;
+
+  // Get input values
+  const msgElement = document.getElementById(msg_id);
+  const statusElement = document.getElementById(status_msg_id);
+
+  const msg = msgElement?.value.trim() || "";
+  const status_msg = statusElement?.value || "";
+
+  // Construct message payload
+  const payload = {
+    type: 'submit_msg',
+    top_bidder: top_bidder,
+    msg: msg,
+    req_id: req_id,
+    status_msg: status_msg
+  };
+
+  // Send through WebSocket
+  socket.send(JSON.stringify(payload));
+  console.log("📤 Sent message:", payload);
 
 
-        socket.send(JSON.stringify({
-            type: 'submit_msg',
-            top_bidder: top_bidder,
-            msg: msg,
-            req_id: req_id,
-            status_msg: status_msg
-        }));
+  msgElement.value = "";
+  statusElement.value = "";
 
+  const toast = document.createElement("div");
+  toast.textContent = "✅ Message sent successfully!";
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.right = "20px";
+  toast.style.background = "#4caf50";
+  toast.style.color = "white";
+  toast.style.padding = "10px 15px";
+  toast.style.borderRadius = "8px";
+  toast.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  toast.style.zIndex = "9999";
+  document.body.appendChild(toast);
 
+  // Remove the toast after 2 seconds
+  setTimeout(() => toast.remove(), 2000);
+}
 
-<!--         const newFormMsg = new FormData();-->
-<!--                    newFormMsg.append("msg", msg);-->
-<!--                    newFormMsg.append("status_msg", status_msg);-->
-<!--                    newFormMsg.append("top_bidder", top_bidder);-->
-<!--                    newFormMsg.append("req_id", req_id);-->
-<!--                    fetch("{% url 'biddermsg' %}", {-->
-<!--                        method: "POST",-->
-<!--                        body: newFormMsg,-->
-<!--                        headers: {-->
-<!--                            "X-CSRFToken": "{{ csrf_token }}"-->
-<!--                        }-->
-<!--                    })-->
-<!--                    .then(res => res.text())-->
-<!--                    .then(data => {-->
-<!--&lt;!&ndash;                        console.log("Deleted response:", data);&ndash;&gt;-->
-<!--                        // Optionally remove the DOM element or reload-->
-<!--                        location.reload(); // or dynamically remove the element-->
-
-<!--                    })-->
-<!--                    .catch(error => {-->
-<!--                        console.error("Error deleting:", error);-->
-<!--                    });-->
-              }
 
 
 

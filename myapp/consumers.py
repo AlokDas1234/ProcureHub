@@ -44,8 +44,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             clt, start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
             print("user connect:",user)
 
-
-
             auction_start = True
             if clt <= start_time:
                 '''Auction not started'''
@@ -58,21 +56,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # print("Auction Ended")
                 auction_end_status = True
 
-            if not user.is_superuser:
-                print("user in latest bid message:",user)
-                latest_bid_msg = await sync_to_async(
-                    lambda: BidMsg.objects.filter(sender=user)
-                    .order_by('-id')
-                    .values("id", "req_id", "sender__username", "msg", "status_msg")
-                    .first()
-                )()
-                print("Latest_bid_msg in connect:", latest_bid_msg)
-                if latest_bid_msg:
-                    print("Sending latest bid message on connect:", latest_bid_msg)
-                    await self.send(text_data=json.dumps({
-                        "type": "send_bid_msg",
-                        "bid_msg": latest_bid_msg,
-                    }))
 
 
             """Auction Started"""
@@ -106,6 +89,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }
                     )
 
+
             if self.scope['user'].is_superuser:
                 '''This is used to get all users except superuser only admins subscribed to this '''
                 users = await self.get_bid_users()
@@ -114,8 +98,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "type": "normal_user",
                     "users": [user["username"] for user in users]
                 }))
-
-
 
 
             @sync_to_async
@@ -160,6 +142,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'len_reqs': len(reqs),
                         "auction_start_status": auction_start,
                     }
+                )
+                latest_bid_msg = await sync_to_async(
+                    lambda: BidMsg.objects.all()
+                    .order_by('-id')
+                    .values("id", "req_id", "sender__username", "msg", "status_msg")
+                    .first()
+                )()
+                print("latest bid message:", latest_bid_msg)
+                # ✅ Broadcast new bid to all connected users
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "send_bid_msg",
+                        "bid_msg": {
+                            "id": latest_bid_msg["id"],
+                            "req_id": latest_bid_msg["req_id"],
+                            "sender": latest_bid_msg["sender__username"],
+                            "msg": latest_bid_msg["msg"],
+                            "status_msg": latest_bid_msg["status_msg"],
+                        },
+
+                    },
                 )
 
             elif auction_end_status == False and auction_start==True:
@@ -230,19 +234,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     else:
                         print("❌ Interval expired.")
 
-                        # bid_qs = await sync_to_async(list)(
-                        #     BidMsg.objects.filter(sender=user).values()
-                        # )
-                        # # print("bid_qs:", bid_qs)
-                        # await self.channel_layer.group_send(
-                        #     self.room_group_name,
-                        #     {
-                        #         'type': 'send_bid_msg',
-                        #         'bid_msg': bid_qs,
-                        #         "auction_start_status": True,
-                        #     }
-                        # )
-
                         len_req = len(reqs)
                         await self.channel_layer.group_send(
                             self.room_group_name,
@@ -254,7 +245,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             }
                         )
                         # print("sending Requirements:",reqs)
-
                         """After Ending the auction still sending the following so bidder can view their bids"""
 
                         bid_group_data = await self.get_all_bid_group(user.username)# print("bid_group_data in connect:",bid_group_data)
@@ -263,6 +253,30 @@ class ChatConsumer(AsyncWebsocketConsumer):
                             'type': 'grouped_bid',
                             'bid_group_data': bid_group_data
                         }))
+
+                        latest_bid_msg = await sync_to_async(
+                            lambda: BidMsg.objects.all()
+                            .order_by('-id')
+                            .values("id", "req_id", "sender__username", "msg", "status_msg")
+                            .first()
+                        )()
+                        print("latest bid message:", latest_bid_msg)
+                        # ✅ Broadcast new bid to all connected users
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                "type": "send_bid_msg",
+                                "bid_msg": {
+                                    "id": latest_bid_msg["id"],
+                                    "req_id": latest_bid_msg["req_id"],
+                                    "sender": latest_bid_msg["sender__username"],
+                                    "msg": latest_bid_msg["msg"],
+                                    "status_msg": latest_bid_msg["status_msg"],
+                                },
+
+                            },
+                        )
+
 
 
 
@@ -315,12 +329,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'type': 'grouped_bid',
                         'bid_group_data': bid_group_data
                     }))
+
+                    latest_bid_msg = await sync_to_async(
+                        lambda: BidMsg.objects.all()
+                        .order_by('-id')
+                        .values("id", "req_id", "sender__username", "msg", "status_msg")
+                        .first()
+                    )()
+                    print("latest bid message:", latest_bid_msg)
+                    # ✅ Broadcast new bid to all connected users
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_bid_msg",
+                            "bid_msg": {
+                                "id": latest_bid_msg["id"],
+                                "req_id": latest_bid_msg["req_id"],
+                                "sender": latest_bid_msg["sender__username"],
+                                "msg": latest_bid_msg["msg"],
+                                "status_msg": latest_bid_msg["status_msg"],
+                            },
+
+                        },
+                    )
+
                 if hasattr(self, "timer_task") and not self.timer_task.done():
                     self.timer_task.cancel()
                     try:
                         await self.timer_task
                     except asyncio.CancelledError:
                         print("Cancelled timer task")
+
+
         else:
             await self.send(text_data=json.dumps({"message": "Login"}))
 
@@ -532,7 +572,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                         "username": bidder["username"],
                                         "rate": bidder["rate"],
                                         "rank": bidder["rank"],
-
                                     }
                                     for bidder in item["top_bidders"]
                                 ]

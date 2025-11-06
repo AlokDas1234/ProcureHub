@@ -312,6 +312,9 @@ function submitBid(reqId) {
 let allRequirements = [];
 let visibleReqIds = [];
 let lastReqIdsJSON = "";
+<!--  const lastMessageIds = {};-->
+
+
 socket.addEventListener("message", function(event) {
     const data = JSON.parse(event.data);
 
@@ -392,21 +395,52 @@ socket.addEventListener("message", function(event) {
 <!--        console.log("📦 All requirements received:", data.data);-->
 <!--        window.allRequirements = data.data;-->
 <!--    }-->
+ // Get current logged-in username from Django
+  const currentUser = "{{ request.user.username }}";
+  console.log("Current User:", currentUser);
 
-if (data.type === 'send_bid_msg') {
-            const bid_msg = data.bid_msg;
-        console.log("Bid message received:", bid_msg);
+  socket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
 
-        // ✅ Extract data.
-        const reqId = bid_msg.req_id;
-        const msgText = bid_msg.msg;
-        const statusText = bid_msg.status_msg;
-        // ✅ Call display function.
-          console.log("Bid Req Id:", reqId);
-          console.log("Bid  Message Text:", msgText);
-          console.log("Bid   Status Text:", statusText);
+    if (data.type === "send_bid_msg") {
+      const bid_msg = data.bid_msg;
+      console.log("Received bid message:", bid_msg);
+
+      const reqId = bid_msg.req_id;
+      const msgText = bid_msg.msg;
+      const statusText = bid_msg.status_msg;
+      const sender = bid_msg.sender;
+
+      // ✅ Show message only if current user is the sender
+      if (sender === currentUser) {
+        console.log(`✅ Message belongs to current user (${currentUser})`);
         displayBidMessage(reqId, msgText, statusText);
+      } else {
+        console.log(`🚫 Ignored message from ${sender}`);
+      }
     }
+  };
+
+  // Function to display bid message
+  function displayBidMessage(reqId, msg, status) {
+    function tryDisplay(attempts = 0) {
+      const msgElement = document.getElementById(`msg_${reqId}`);
+      const statusElement = document.getElementById(`status_msg_${reqId}`);
+
+      if (msgElement && statusElement) {
+        msgElement.textContent = `Message: ${msg}`;
+        statusElement.textContent = `Status: ${status}`;
+        console.log(`✅ Displayed message for req_id=${reqId}`);
+      } else if (attempts < 20) {  // retry for ~2 seconds
+        console.log(`⏳ Waiting for elements of req_id=${reqId}...`);
+        setTimeout(() => tryDisplay(attempts + 1), 100);
+      } else {
+        console.warn(`⚠️ Elements for req_id=${reqId} not found after waiting.`);
+      }
+    }
+
+    tryDisplay();
+  }
 
 // ✅ Auto-refresh visible requirements every second
 if (data.type === 'one_by_one_req') {
@@ -473,45 +507,6 @@ if (data.type === 'one_by_one_req') {
     }
 });
 
-
-<!--function displayBidMessage(reqId, msg, status, retries = 10) {-->
-<!--  const msgElement = document.getElementById(`msg_${reqId}`);-->
-<!--  const statusElement = document.getElementById(`status_msg_${reqId}`);-->
-
-<!--  if (!msgElement || !statusElement) {-->
-<!--    if (retries > 0) {-->
-<!--      console.warn(`⏳ Waiting for elements of req_id=${reqId}...`);-->
-<!--      setTimeout(() => displayBidMessage(reqId, msg, status, retries - 1), 500);-->
-<!--    } else {-->
-<!--      console.error(`❌ Elements for req_id=${reqId} not found after waiting.`);-->
-<!--    }-->
-<!--    return;-->
-<!--  }-->
-
-<!--  // ✅ Once found, update content-->
-<!--  msgElement.textContent = `Message: ${msg}`;-->
-<!--  statusElement.textContent = `Status: ${status}`;-->
-<!--}-->
-
-function displayBidMessage(reqId, msg, status) {
-  function tryDisplay(attempts = 0) {
-    const msgElement = document.getElementById(`msg_${reqId}`);
-    const statusElement = document.getElementById(`status_msg_${reqId}`);
-
-    if (msgElement && statusElement) {
-      msgElement.textContent = `Message: ${msg}`;
-      statusElement.textContent = `Status: ${status}`;
-      console.log(`✅ Displayed message for req_id=${reqId}`);
-    } else if (attempts < 20) {  // retry up to ~2 seconds
-      console.log(`⏳ Waiting for elements of req_id=${reqId}...`);
-      setTimeout(() => tryDisplay(attempts + 1), 100);
-    } else {
-      console.warn(`⚠️ Elements for req_id=${reqId} not found after waiting.`);
-    }
-  }
-
-  tryDisplay();
-}
 
 
 
