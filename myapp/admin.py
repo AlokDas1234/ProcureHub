@@ -1,12 +1,11 @@
 from django.contrib import admin
-from .models import Requirements, Bid,GeneralAccess,Profile
+from .models import Requirements, Bid,GeneralAccess,Profile,BidMsg
 
 class BidInline(admin.TabularInline):
     model = Bid
     extra = 0
     ordering = ('-id',)
     max_num = 5  # Limit to 5 latest shown
-
     fields = ('user', 'rate')
     readonly_fields = ('user', 'rate')
 
@@ -23,6 +22,9 @@ class RequirementsAdmin(admin.ModelAdmin):
     list_display = ('id', 'loading_point', 'unloading_point', 'truck_type',  'product')
     inlines = [BidInline]
 
+@admin.register(BidMsg)
+class BidMsgAdmin(admin.ModelAdmin):
+    list_display = ('id', 'req', 'sender', 'msg','status_msg')
 
 
 @admin.register(Bid)

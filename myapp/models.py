@@ -91,6 +91,7 @@ class Profile(models.Model):
         return f"{self.user.username} Profile"
 
 
+
 class BidMsg(models.Model):
     req=models.ForeignKey(Requirements, on_delete=models.CASCADE, related_name='req', null=True, blank=True)
     sender=models.ForeignKey(User,on_delete=models.CASCADE,null=True, blank=True)

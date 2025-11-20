@@ -167,7 +167,6 @@ def download_template(request):
 import pandas as pd
 from django.http import HttpResponse
 
-
 @login_required(login_url='/login/')
 def download_requirements(request):
     all_bids = Bid.objects.all().values(
@@ -203,45 +202,6 @@ def download_requirements(request):
     response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
     rank_df.to_csv(path_or_buf=response, index=False)
     return response
-
-#
-# @login_required(login_url='/login/')
-# def get_bid_report(request):
-#     user = request.user.username
-#
-#     user_=User.objects.get(username=user)
-#     bid_msg=BidMsg.objects.get(sender=user_)
-#     print("Bid Message  in views:",bid_msg)
-#
-#     all_bids = Bid.objects.all().values(
-#         "id", "user__username", "req__id",
-#         "req__loading_point", "req__unloading_point",
-#         "req__product", "req__truck_type","req__no_of_trucks","req__notes","req__drum_type_no_of_drums","req__approx_mat_mt","req__weight_per_drum",
-#         "req__req_date","rate", "created_at"
-#     )
-#     rank_df = pd.DataFrame(list(all_bids))
-#
-#     # make sure created_at is datetime
-#     rank_df["created_at"] = pd.to_datetime(rank_df["created_at"])
-#
-#     # Pick the lowest rate per user per requirement, tie-break by earliest created_at
-#     lowest_bids = rank_df.sort_values(["req__id", "rate", "created_at"]).groupby(
-#         ["req__id", "user__username"], as_index=False
-#     ).first()
-#
-#     # Rank them within each requirement (rate first, created_at as tiebreaker)
-#     lowest_bids = lowest_bids.sort_values(["req__id", "rate", "created_at"])
-#     lowest_bids["Rank"] = lowest_bids.groupby("req__id").cumcount() + 1
-#
-#     # Keep only ranks 1 to 4
-#     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
-#     # Filter for this user only
-#     rank_df = rank_df[rank_df["user__username"] == user]
-#     # Generate CSV response
-#     response = HttpResponse(content_type='text/csv')
-#     response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
-#     rank_df.to_csv(path_or_buf=response, index=False)
-#     return response
 
 
 @login_required(login_url='/login/')
@@ -418,15 +378,15 @@ def admin_dashboard(request):
         start_time_str=request.POST.get("start_time")
         minute=request.POST.get("minute")
         interval=request.POST.get("interval")
-
         # print("Auction duration in minutes:", minute)
+        int_dict = {}
         if not  interval:
             total_interval=0
         else:
             all_req=Requirements.objects.all()
             len_all_req=len(all_req)
             total_interval=int(len_all_req)*int(interval)
-            print("total_interval:",total_interval)
+            # print("total_interval:",total_interval)
 
             all_ids = []
             for r in all_req:
@@ -435,7 +395,7 @@ def admin_dashboard(request):
             start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M")
             india_tz = pytz.timezone('Asia/Kolkata')
             start_time = india_tz.localize(start_time)
-            int_dict={}
+
             for index,id in enumerate(all_ids):
                 increamental_interval=int(index) * int(interval)
                 increamental_interval=timedelta(seconds=increamental_interval)
@@ -459,8 +419,7 @@ def admin_dashboard(request):
             import json
             access.post_interval_lst = json.dumps(int_dict, default=str)
             access.save()
-
-
+            # print("Int Dict:",int_dict)
 
             # print("Bidding End  Time:", end_time.strftime("%H:%M"))
         selected_usernames = request.POST.getlist("user")
@@ -557,6 +516,7 @@ def stop_bid(request):
     access.minutes = 0
     access.save()
     return redirect("/")
+
 
 def extend_page(request):
     if request.method=="POST":

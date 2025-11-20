@@ -249,9 +249,10 @@ button {
 });
 
 const username = "{{ request.user.username }}";
-console.log("Logged-in user:", username);
 
-window.visibleReqs = window.visibleReqs || [];
+<!--console.log("Logged-in user:", username);-->
+
+<!--window.visibleReqs = window.visibleReqs || [];-->
 
     let allGroupedBids = {};
     let latestUserRanks = [];
@@ -264,12 +265,12 @@ window.visibleReqs = window.visibleReqs || [];
 let wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
 const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room1/`);
 
-    socket.onopen = () => {
-<!--        console.log("WebSocket connected");-->
-        socket.send(JSON.stringify({ action: "load_requirements" }));
-        socket.send(JSON.stringify({ type: "grouped_bid" }));
+<!--    socket.onopen = () => {-->
+<!--&lt;!&ndash;        console.log("WebSocket connected");&ndash;&gt;-->
+<!--        socket.send(JSON.stringify({ action: "load_requirements" }));-->
+<!--        socket.send(JSON.stringify({ type: "grouped_bid" }));-->
 
-    };
+<!--    };-->
 
 
 function submitBid(reqId) {
@@ -278,7 +279,6 @@ function submitBid(reqId) {
 
     if (bidAmtInput && bidAmtInput.value.trim()) {
         button.disabled = true;
-
         try {
             localStorage.removeItem("bid_amt_" + reqId);
             localStorage.removeItem("last_focused_input");
@@ -306,7 +306,8 @@ function submitBid(reqId) {
     }
 }
 
-
+  const currentUser = "{{ request.user.username }}";
+<!--  console.log("Current User:", currentUser);-->
 
 
 let allRequirements = [];
@@ -322,6 +323,21 @@ socket.addEventListener("message", function(event) {
     if (data.type === "valid_bid") {
         alert(data.valid_bid);
     }
+
+
+if (data.type === "send_bid_msg") {
+    const bid_msg = data.bid_msg;
+    const reqId = bid_msg.req_id;
+    const msgText = bid_msg.msg;
+    const statusText = bid_msg.status_msg;
+    const sender = bid_msg.sender;
+
+    if (sender === currentUser) {
+        displayBidMessage(reqId, msgText, statusText);
+    }
+}
+
+
 
 
     // 2️⃣ Auction timer updates
@@ -383,7 +399,7 @@ socket.addEventListener("message", function(event) {
 
         } else {
             timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;
-            auction_status.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION STATUS:</span><br>
+            auction_status.innerHTML =`<span style="color:#007BFF;font-weight:500;">AUCTION STATUS:</span><br>
                 <span style="color:#FAFAFA;font-weight:600;">Will Start Soon....!</span>`;
             document.getElementById("refresh-container").style.display = "block";
             if (data.seconds === 0) location.reload();
@@ -396,41 +412,44 @@ socket.addEventListener("message", function(event) {
 <!--        window.allRequirements = data.data;-->
 <!--    }-->
  // Get current logged-in username from Django
-  const currentUser = "{{ request.user.username }}";
-  console.log("Current User:", currentUser);
 
-  socket.onmessage = function (e) {
-    const data = JSON.parse(e.data);
 
-    if (data.type === "send_bid_msg") {
-      const bid_msg = data.bid_msg;
-      console.log("Received bid message:", bid_msg);
+<!--  socket.onmessage = function (e) {-->
+<!--    const data = JSON.parse(e.data);-->
 
-      const reqId = bid_msg.req_id;
-      const msgText = bid_msg.msg;
-      const statusText = bid_msg.status_msg;
-      const sender = bid_msg.sender;
+<!--    if (data.type === "send_bid_msg") {-->
+<!--      const bid_msg = data.bid_msg;-->
+<!--      console.log("Received bid message:", bid_msg);-->
 
-      // ✅ Show message only if current user is the sender
-      if (sender === currentUser) {
-        console.log(`✅ Message belongs to current user (${currentUser})`);
-        displayBidMessage(reqId, msgText, statusText);
-      } else {
-        console.log(`🚫 Ignored message from ${sender}`);
-      }
-    }
-  };
+<!--      const reqId = bid_msg.req_id;-->
+<!--      const msgText = bid_msg.msg;-->
+<!--      const statusText = bid_msg.status_msg;-->
+<!--      const sender = bid_msg.sender;-->
+
+<!--      // ✅ Show message only if current user is the sender-->
+<!--      if (sender === currentUser) {-->
+<!--        console.log(`✅ Message belongs to current user (${currentUser})`);-->
+<!--        displayBidMessage(reqId, msgText, statusText);-->
+<!--      } else {-->
+<!--        console.log(`🚫 Ignored message from ${sender}`);-->
+<!--      }-->
+<!--    }-->
+<!--  };-->
 
   // Function to display bid message
   function displayBidMessage(reqId, msg, status) {
     function tryDisplay(attempts = 0) {
       const msgElement = document.getElementById(`msg_${reqId}`);
       const statusElement = document.getElementById(`status_msg_${reqId}`);
+<!--      console.log("msgElement:",msgElement);-->
+<!--      console.log("statusElement:",statusElement);-->
+<!--      console.log("Message:",msg);-->
+<!--      console.log("Status:",status);-->
 
       if (msgElement && statusElement) {
         msgElement.textContent = `Message: ${msg}`;
         statusElement.textContent = `Status: ${status}`;
-        console.log(`✅ Displayed message for req_id=${reqId}`);
+<!--        console.log(`✅ Displayed message for req_id=${reqId}`);-->
       } else if (attempts < 20) {  // retry for ~2 seconds
         console.log(`⏳ Waiting for elements of req_id=${reqId}...`);
         setTimeout(() => tryDisplay(attempts + 1), 100);
@@ -441,45 +460,50 @@ socket.addEventListener("message", function(event) {
 
     tryDisplay();
   }
+// Store requirements that should be visible
+window.visibleReqs = window.visibleReqs || {};
 
-// ✅ Auto-refresh visible requirements every second
-if (data.type === 'one_by_one_req') {
+// Store active timers to avoid duplicates
+window.reqTimers = window.reqTimers || {};
+
+
+if (data.type === "one_by_one_req") {
     const reqs = data.data;
     const postSchedule = data.post_interval_lst;
     const auction_start_status = data.auction_start_status;
+    const now = new Date(data.current_local_time).getTime();
 
-    const now = new Date(data.current_local_time);
-
-    // Show immediately visible requirements
     reqs.forEach(req => {
-        const showTime = new Date(postSchedule[String(req.id)]);
+        const reqId = String(req.id);
+        const showTime = new Date(postSchedule[reqId]).getTime();
+
+        if (!showTime) return;  // skip if missing
+
+        // Already visible → do nothing
+        if (window.visibleReqs[reqId]) return;
+
+        // Requirement should show immediately
         if (showTime <= now) {
-            // Add to global visible list if not already present
-            if (!window.visibleReqs.find(r => r.id === req.id)) {
-                window.visibleReqs.push(req);
+            window.visibleReqs[reqId] = req;
+        }
+        else {
+            // Future requirement: schedule ONLY ONCE
+            if (!window.reqTimers[reqId]) {
+
+                const delay = showTime - now;
+
+                window.reqTimers[reqId] = setTimeout(() => {
+
+                    window.visibleReqs[reqId] = req;
+
+                    renderRequirements(Object.values(window.visibleReqs), auction_start_status);
+
+                }, delay);
             }
         }
     });
-
-    renderRequirements(window.visibleReqs, auction_start_status);
-
-    // Schedule future requirements individually
-    reqs.forEach(req => {
-        const showTime = new Date(postSchedule[String(req.id)]);
-        const delay = showTime - now;
-
-        if (delay > 0) {
-            setTimeout(() => {
-                // Add the new requirement to visibleReqs
-                if (!window.visibleReqs.find(r => r.id === req.id)) {
-                    window.visibleReqs.push(req);
-                }
-
-                // Re-render all visible requirements
-                renderRequirements(window.visibleReqs, auction_start_status);
-            }, delay);
-        }
-    });
+    // Render visible ones immediately
+    renderRequirements(Object.values(window.visibleReqs), auction_start_status);
 }
 
     // 5️⃣ Requirements refresh (interval broadcast)
@@ -502,7 +526,6 @@ if (data.type === 'one_by_one_req') {
         if (data.bid_group_data.len_bids > 0) {
             document.getElementById("download_bids_div").style.display = "block";
         }
-
         updateBids();
     }
 });
@@ -520,7 +543,9 @@ function getCurrentInputValues() {
 
 
 function renderRequirements(requirements, auction_start_status) {
+    console.log("Requirements:",requirements);
     const savedInputs = getCurrentInputValues();
+<!--    console.log("SavedInputs:",savedInputs);-->
     const scrollY = window.scrollY;
     const container = document.getElementById('main-container');
     const activeElement = document.activeElement;
@@ -649,10 +674,7 @@ function renderRequirements(requirements, auction_start_status) {
                     </p>
                         </div>
 
-
  <hr>
-
-
 ${(req.cel_price || req.min_dec_val) ? `
   <div style="display: flex; gap: 4px;">
 
@@ -684,7 +706,6 @@ ${(req.cel_price || req.min_dec_val) ? `
                         </div>
 
                        </div>
-
                         <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
                             <div style="display: flex; gap: 2px; align-items: center;">
                                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
@@ -692,7 +713,7 @@ ${(req.cel_price || req.min_dec_val) ? `
                                     <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
                                             style="flex: 2; padding: 5px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
                                         Submit Bid
-                                    </button>
+                                  </button>
                             </div>
                         </div>
                     </div>
@@ -753,9 +774,6 @@ ${(req.cel_price || req.min_dec_val) ? `
 
         // (you can add more patching here as needed)
     }
-
-
-
         });
     }
 
