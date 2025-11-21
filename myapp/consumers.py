@@ -587,6 +587,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         },
                     },
                 )
+
     async def time_calculation(self, general_access, minutes, start_time, interval):
         """
         Handles time calculations with proper IST localization and consistent datetime arithmetic.
