@@ -527,27 +527,27 @@ def extend_page(request):
             access.save()
             return redirect("/")
 
-
-from django.contrib import messages
-def biddermsg(request):
-    if request.method == "POST":
-        msg = request.POST.get("msg")
-        status_msg = request.POST.get("status_msg")
-        req_id = request.POST.get("req_id")
-        top_bidder = request.POST.get("top_bidder")
-        # print("msg:",msg)
-        # print("status_msg:",status_msg)
-        # print("req_id:",req_id)
-        # print("top_bidder:",top_bidder)
-        user=User.objects.get(username=top_bidder)
-        req = Requirements.objects.get(id=req_id)
-        # ✅ create a new BidMsg instead of overwriting id=1
-        BidMsg.objects.create(
-            sender=user,
-            msg=msg,
-            status_msg=status_msg,
-            req=req
-        )
-        messages.success(request, "Bid message saved successfully!")
-
-    return render(request, "myapp/admin_dashboard.html")
+#
+# from django.contrib import messages
+# def biddermsg(request):
+#     if request.method == "POST":
+#         msg = request.POST.get("msg")
+#         status_msg = request.POST.get("status_msg")
+#         req_id = request.POST.get("req_id")
+#         top_bidder = request.POST.get("top_bidder")
+#         # print("msg:",msg)
+#         # print("status_msg:",status_msg)
+#         # print("req_id:",req_id)
+#         # print("top_bidder:",top_bidder)
+#         user=User.objects.get(username=top_bidder)
+#         req = Requirements.objects.get(id=req_id)
+#         # ✅ create a new BidMsg instead of overwriting id=1
+#         BidMsg.objects.create(
+#             sender=user,
+#             msg=msg,
+#             status_msg=status_msg,
+#             req=req
+#         )
+#         messages.success(request, "Bid message saved successfully!")
+#
+#     return render(request, "myapp/admin_dashboard.html")

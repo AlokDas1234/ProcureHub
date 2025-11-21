@@ -56,7 +56,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 # print("Auction Ended")
                 auction_end_status = True
 
-
+            def get_all_requirements():
+                return list(Requirements.objects.all().values(
+                    'id', 'unique_id', 'loading_point', 'unloading_point', 'loading_point_full_address',
+                    'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
+                    'drum_type_no_of_drums', 'weight_per_drum', 'approx_mat_mt', 'types', 'cel_price', 'min_dec_val',
+                    'req_date'
+                ))
 
             """Auction Started"""
             if  auction_start  and auction_end_status == False and  not self.scope['user'].is_superuser :
@@ -68,6 +74,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type': 'grouped_bid',
                     'bid_group_data': bid_group_data
                 }))
+
+
 
             if  self.scope['user'].is_superuser:
                 '''Only admin is subscribed to this channel'''
@@ -107,12 +115,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 access, created = UserAccess.objects.get_or_create(user=user)
                 return access, created
 
-            def get_all_requirements():
-                return list(Requirements.objects.all().values(
-                    'id','unique_id', 'loading_point', 'unloading_point', 'loading_point_full_address',
-                    'unloading_point_full_address', 'truck_type', 'product', 'no_of_trucks', 'notes',
-                    'drum_type_no_of_drums', 'weight_per_drum','approx_mat_mt', 'types','cel_price','min_dec_val','req_date'
-                ))
+
 
             access, created = await req_view_access(self.scope['user'])
 
@@ -202,10 +205,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         general_access, minutes, start_time, interval)
 
                     """Ending"""
-                    # print("remaining_interval:",remaining_interval)
-                    # print("remaining_interval_total_seconds:",remaining_interval.total_seconds())
-                    # len_req = len(reqs)
-                    # user = self.scope["user"]
 
 
 
@@ -217,33 +216,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 
-                        # post_interval_lst = json.loads(ga_.post_interval_lst)
-                        # post_interval_serialized = {str(k): v for k, v in post_interval_lst.items()}
-                        # print("Post_interval_serialized:",post_interval_serialized)
-                        # await self.channel_layer.group_send(
-                        #     self.room_group_name,
-                        #     {
-                        #         "type": "one_by_one_req",
-                        #         "post_interval_lst": post_interval_serialized,
-                        #         "requirements": reqs,
-                        #         "len_reqs": len_req,
-                        #         "auction_start_status": auction_start,
-                        #         "current_local_time": clt.isoformat(),
-                        #     }
-                        # )
-                        # await self.send(text_data=json.dumps({
-                        #     "type": "one_by_one_req",
-                        #     "post_interval_lst": post_interval_serialized,
-                        #     "requirements": reqs,
-                        #     "len_reqs": len_req,
-                        #     "auction_start_status": auction_start,
-                        #     "current_local_time": clt.isoformat(),
-                        # }))
-
-
                     else:
                         print("❌ Interval expired.")
-
 
                         await self.send(text_data=json.dumps({
                             "type": "requirements",
@@ -287,29 +261,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                                 },
                             )
 
-                        # latest_bid_msg = await sync_to_async(
-                        #     lambda: BidMsg.objects.all()
-                        #     .order_by('-id')
-                        #     .values("id", "req_id", "sender__username", "msg", "status_msg")
-                        #
-                        # )()
-                        # print("latest bid message:", latest_bid_msg)
-                        # if latest_bid_msg:
-                        #     # ✅ Broadcast new bid to all connected users
-                        #     await self.channel_layer.group_send(
-                        #         self.room_group_name,
-                        #         {
-                        #             "type": "send_bid_msg",
-                        #             "bid_msg": {
-                        #                 "id": latest_bid_msg["id"],
-                        #                 "req_id": latest_bid_msg["req_id"],
-                        #                 "sender": latest_bid_msg["sender__username"],
-                        #                 "msg": latest_bid_msg["msg"],
-                        #                 "status_msg": latest_bid_msg["status_msg"],
-                        #             },
-                        #
-                        #         },
-                        #     )
             else:
                 auction_start=False
                 ga_=await sync_to_async (GeneralAccess.objects.get)(id=1)
@@ -319,15 +270,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 """After Ending the auction still sending requirements so bidder can view their req"""
                 if str(req_id_)==str(new_req_from_backend):
                     # print("matched")
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            'type': 'requirements',
-                            'requirements': reqs,
-                            'len_reqs': len(reqs),
-                            "auction_start_status": auction_start,
-                        }
-                    )
+                    # await self.channel_layer.group_send(
+                    #     self.room_group_name,
+                    #     {
+                    #         'type': 'requirements',
+                    #         'requirements': reqs,
+                    #         'len_reqs': len(reqs),
+                    #         "auction_start_status": auction_start,
+                    #     }
+                    # )
+
+                    await self.send(text_data=json.dumps({
+                        "type": "requirements",
+                        "data": reqs,
+                        "len_reqs": len(reqs),
+                        "auction_start_status": auction_start
+                    }))
+
                     # print("sending Requirements auc end:",reqs)
                     bid_group_data = await self.get_all_bid_group(user.username)
                     # print("bid_group_data in connect:",bid_group_data)
@@ -368,8 +327,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         await self.timer_task
                     except asyncio.CancelledError:
                         print("Cancelled timer task")
-
-
         else:
             await self.send(text_data=json.dumps({"message": "Login"}))
 
@@ -426,20 +383,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if clt_kolkata <= start_time_kolkata:
                 # print("Auction Not Started")
                 auction_end_status = True
-
-            # bid_qs = await sync_to_async(list)(
-            #     BidMsg.objects.filter(sender=user).values()
-            # )
-            # print("bid_qs in receive:", bid_qs)
-            # await self.channel_layer.group_send(
-            #     self.room_group_name,
-            #     {
-            #         'type': 'send_bid_msg',
-            #         'bid_msg': bid_qs,
-            #         "auction_start_status": True,
-            #     }
-            # )
-            #
 
 
             user_ = await sync_to_async(User.objects.get)(username=user.username)
@@ -592,16 +535,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'type': 'error',
                         'message': 'Auction ended.'
                     }))
+            else:
 
+                await self.send(text_data=json.dumps({
+                    'type': 'valid_bid',
+                    'valid_bid': "Auction Ended."
+                }))
+                return  # VERY IMPORTANT — stop executing the rest of the function
         if text_data_json.get("type") == "submit_msg":
             msg = text_data_json.get("msg")
             status_msg = text_data_json.get("status_msg")
             top_bidder = text_data_json.get("top_bidder")
             req_id = text_data_json.get("req_id")  # ⚠️ You missed this earlier
 
-            print("Msg:", msg)
-            print("Status Msg:", status_msg)
-            print("Top Bidder:", top_bidder)
+            # print("Msg:", msg)
+            # print("Status Msg:", status_msg)
+            # print("Top Bidder:", top_bidder)
 
             # ✅ Get the user and requirement
             user = await sync_to_async(User.objects.get)(username=top_bidder)
@@ -611,7 +560,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 req=req,
                 sender=user,
                 msg=msg,
-                status_msg=msg,
+                status_msg=status_msg,
             )
 
             latest_bid_msg = await sync_to_async(lambda: list(

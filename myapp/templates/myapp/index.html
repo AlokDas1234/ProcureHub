@@ -314,7 +314,7 @@ let allRequirements = [];
 let visibleReqIds = [];
 let lastReqIdsJSON = "";
 <!--  const lastMessageIds = {};-->
-
+auction_start_status=true;
 
 socket.addEventListener("message", function(event) {
     const data = JSON.parse(event.data);
@@ -332,6 +332,11 @@ if (data.type === "send_bid_msg") {
     const statusText = bid_msg.status_msg;
     const sender = bid_msg.sender;
 
+     console.log("sender:",sender);
+      console.log("reqId:",reqId);
+      console.log("msgText:",msgText);
+      console.log("statusText:",statusText);
+
     if (sender === currentUser) {
         displayBidMessage(reqId, msgText, statusText);
     }
@@ -342,6 +347,8 @@ if (data.type === "send_bid_msg") {
 
     // 2️⃣ Auction timer updates
     if (data.type === "timer_update") {
+
+
         const timer = document.getElementById("start_status");
         const auction_status = document.getElementById("auction_status");
         const current_time_div = document.getElementById("current_time_div");
@@ -356,6 +363,10 @@ if (data.type === "send_bid_msg") {
             <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.end_time}</span>`;
 
         if (data.auction_started) {
+<!--        To show input field after auction start-->
+            document.querySelectorAll(".submit-bid-section")
+             .forEach(el => el.style.display = "block");
+
             timer.innerHTML = `<span style="color:#007BFF;font-weight:500;">REMAINING TIME:</span><br>
                 <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.minutes}</span>`;
             auction_status.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION STATUS:</span><br>
@@ -706,7 +717,7 @@ ${(req.cel_price || req.min_dec_val) ? `
                         </div>
 
                        </div>
-                        <div id="submit_bid_amt_${req.id}" style="${auction_start_status ? '' : 'display:none;'}">
+                        <div class="submit-bid-section" id="submit_bid_amt_${req.id}" style="${auction_start_status ? 'display:block' : 'display:none;'}">
                             <div style="display: flex; gap: 2px; align-items: center;">
                                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
                                        style="flex: 1; padding: 5px; font-size: 12px;"   value="${inputValue}">

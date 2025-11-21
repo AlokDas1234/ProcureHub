@@ -73,6 +73,7 @@ class GeneralAccess(models.Model):
     interval = models.IntegerField(default=0)
     post_interval_lst = models.JSONField(default=dict, null=True, blank=True)
 
+
     def __str__(self):
         return f"{self.general_access,self.minutes,self.start_time}"
 
@@ -89,7 +90,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} Profile"
-
 
 
 class BidMsg(models.Model):
