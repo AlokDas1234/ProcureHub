@@ -16,6 +16,7 @@ matplotlib.use("Agg")   # important if server has no GUI (prevents Tkinter error
 import matplotlib.pyplot as plt
 import pandas as pd
 from .models import Bid
+
 class ChatConsumer(AsyncWebsocketConsumer):
     send_reqs_task_ref = None  # shared among all instances
     auction_end_status = False
@@ -413,7 +414,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 
-            '''This is for getting  the lowest bid price than the previous one'''
+            '''The following  is to  get  the lowest bid price than the previous one'''
             for rate in user_bid:
                 # print("Submitted Rate", rate.rate)
                 # print("Submitted Rate Type", type(rate.rate))
@@ -541,7 +542,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type': 'valid_bid',
                     'valid_bid': "Auction Ended."
                 }))
-                return  # VERY IMPORTANT — stop executing the rest of the function
+                return
+
         if text_data_json.get("type") == "submit_msg":
             msg = text_data_json.get("msg")
             status_msg = text_data_json.get("status_msg")
