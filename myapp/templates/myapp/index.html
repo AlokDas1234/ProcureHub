@@ -332,10 +332,10 @@ if (data.type === "send_bid_msg") {
     const statusText = bid_msg.status_msg;
     const sender = bid_msg.sender;
 
-     console.log("sender:",sender);
-      console.log("reqId:",reqId);
-      console.log("msgText:",msgText);
-      console.log("statusText:",statusText);
+<!--     console.log("sender:",sender);-->
+<!--      console.log("reqId:",reqId);-->
+<!--      console.log("msgText:",msgText);-->
+<!--      console.log("statusText:",statusText);-->
 
     if (sender === currentUser) {
         displayBidMessage(reqId, msgText, statusText);
@@ -347,8 +347,7 @@ if (data.type === "send_bid_msg") {
 
     // 2️⃣ Auction timer updates
     if (data.type === "timer_update") {
-
-
+        console.log("Auction End Status:",data.auction_end_status);
         const timer = document.getElementById("start_status");
         const auction_status = document.getElementById("auction_status");
         const current_time_div = document.getElementById("current_time_div");
@@ -554,7 +553,7 @@ function getCurrentInputValues() {
 
 
 function renderRequirements(requirements, auction_start_status) {
-    console.log("Requirements:",requirements);
+<!--    console.log("Requirements:",requirements);-->
     const savedInputs = getCurrentInputValues();
 <!--    console.log("SavedInputs:",savedInputs);-->
     const scrollY = window.scrollY;

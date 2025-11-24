@@ -511,8 +511,12 @@ def admin_dashboard(request):
     # users = User.objects.filter(is_superuser=False,is_staff=False)
     return render(request, "myapp/admin_dashboard.html")
 
+from datetime import datetime, timedelta
+india_tz = pytz.timezone('Asia/Kolkata')
+clt = datetime.now(india_tz)
 def stop_bid(request):
     access, _ = GeneralAccess.objects.get_or_create(id=1)
+    access.start_time=clt
     access.minutes = 0
     access.save()
     return redirect("/")
@@ -527,7 +531,7 @@ def extend_page(request):
             access.save()
             return redirect("/")
 
-#
+
 # from django.contrib import messages
 # def biddermsg(request):
 #     if request.method == "POST":
