@@ -10,8 +10,9 @@ from django.utils import timezone
 
     # def __str__(self):
     #     return f"{self.user.username} in {self.room_name}: {self.message[:30]}"
-
+import uuid
 class Requirements(models.Model):
+    unique_id = models.CharField(max_length=100,null=True,blank=True)
     loading_point=models.CharField(max_length=100,null=True,blank=True)
     unloading_point=models.CharField(max_length=100,null=True,blank=True)
 
@@ -29,16 +30,18 @@ class Requirements(models.Model):
     types=models.CharField(max_length=100,null=True,blank=True)
     cel_price = models.IntegerField(null=True, blank=True)
     min_dec_val = models.IntegerField(null=True, blank=True)
+    # req_date = models.DateField(null=True,blank=True)
+    req_date = models.CharField(max_length=100,null=True,blank=True)
 
     def __str__(self):
         return f" From {self.loading_point}  to {self.unloading_point} Truck: {self.truck_type} {self.truck_type}  Material:{self.product}"
-from django.core.exceptions import ValidationError
+
 
 from django.core.exceptions import ValidationError
 
 class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bid_user', null=True, blank=True)
-    req = models.ForeignKey('Requirements', on_delete=models.DO_NOTHING, related_name='bid_req', null=True, blank=True)
+    req  = models.ForeignKey('Requirements', on_delete=models.DO_NOTHING, related_name='bid_req', null=True, blank=True)
     rate = models.FloatField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -66,6 +69,9 @@ class GeneralAccess(models.Model):
     start_time = models.DateTimeField(null=True, blank=True)
     use_cel = models.BooleanField(default=True,null=True,blank=True)
     dec_val_vi = models.BooleanField(default=True,null=True,blank=True)
+    new_req = models.TextField(max_length=100,null=True,blank=True)
+    interval = models.IntegerField(default=0)
+    post_interval_lst = models.JSONField(default=dict, null=True, blank=True)
 
     def __str__(self):
         return f"{self.general_access,self.minutes,self.start_time}"
@@ -73,12 +79,25 @@ class GeneralAccess(models.Model):
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile_no = models.CharField(max_length=15)
     company_name = models.CharField(max_length=200)
     address = models.TextField()
     gst_no = models.CharField(max_length=15)
+    email = models.CharField(max_length=50,null=True,blank=True)
     pan_no = models.CharField(max_length=10)
     def __str__(self):
         return f"{self.user.username} Profile"
+
+class RecoverAccount(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+
+
+class BidMsg(models.Model):
+    req=models.ForeignKey(Requirements, on_delete=models.CASCADE, related_name='req', null=True, blank=True)
+    sender=models.ForeignKey(User,on_delete=models.CASCADE,null=True, blank=True)
+    msg=models.CharField(max_length=100,null=True,blank=True)
+    status_msg=models.CharField(max_length=100,null=True,blank=True)

@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,14 +22,17 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+
+
         }
         .container {
             display: flex;
             justify-content: space-between;
             padding: 5px;
+
         }
         .left,.middle, .right {
-            width: 70%;
+            width: 100%;
             padding: 2px;
             border: 1px solid #ccc;
             border-radius: 8px;
@@ -37,16 +41,63 @@
             text-align: center;
         }
         p {
-            margin: 5px 0;
+            margin: 0px 0;
         }
+        .progress-bar {
+  transition: width 0.5s ease;
+}
 
+<!--.requirement-card {-->
+<!--    display: flex;-->
+<!--    align-items: stretch; /* Ensure children take full height */-->
+<!--    border-radius: 8px;-->
+<!--    overflow: hidden;-->
+<!--&lt;!&ndash;    margin-bottom: 1rem;&ndash;&gt;-->
+<!--}-->
 .requirement-card {
     display: flex;
-    align-items: stretch; /* Ensure children take full height */
+    flex-direction: row;  /* <-- ensure children are side by side */
+    align-items: stretch; /* children take full height */
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
+
+
+<!--.vertical-label {-->
+<!--    writing-mode: vertical-rl;-->
+<!--    transform: rotate(180deg);-->
+<!--    background-color: #1f4061;-->
+<!--    color: white;-->
+<!--    font-weight: bold;-->
+<!--    text-align: center;-->
+<!--    display: flex;-->
+<!--    align-items: center;   /* Center text vertically in strip */-->
+<!--    justify-content: center; /* Center text horizontally in strip */-->
+<!--    padding: 0 10px;-->
+<!--    height: 100%;           /* Take full height of parent */-->
+<!--    min-width: 50px;        /* Consistent strip width */-->
+<!--    font-size: 30px;-->
+<!--}-->
+
+<!--.vertical-label {-->
+<!--    writing-mode: vertical-rl;-->
+<!--    transform: rotate(180deg);-->
+<!--    background-color: #1f4061;-->
+<!--    color: white;-->
+<!--    font-weight: bold;-->
+<!--    text-align: center;-->
+<!--    display: flex;-->
+<!--    align-items: center;   /* Center text vertically */-->
+<!--    justify-content: center;-->
+<!--    padding: 10px 5px;-->
+<!--    min-width: 40px;       /* fixed side strip width */-->
+<!--    font-size: 16px;       /* reduce so it doesn’t stretch too much */-->
+<!--    flex-shrink: 0;        /* prevents shrinking, keeps fixed width */-->
+<!--    height: auto;          /* let it grow with text, not force 100% */-->
+<!--}-->
+
+
 
 .vertical-label {
     writing-mode: vertical-rl;
@@ -56,13 +107,15 @@
     font-weight: bold;
     text-align: center;
     display: flex;
-    align-items: center;   /* Center text vertically in strip */
-    justify-content: center; /* Center text horizontally in strip */
-    padding: 0 10px;
-    height: 100%;           /* Take full height of parent */
-    min-width: 50px;        /* Consistent strip width */
-    font-size: 30px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 5px;
+    min-width: 40px;
+    font-size: 16px;
+    flex-shrink: 0;
+    height: auto; /* change to 100% if you want full height of card */
 }
+
 
 
 .access-toggle {
@@ -76,12 +129,12 @@
 
 .toggle-btn {
     flex: 1;
-    padding: 10px 30px;
+    padding: 8px 20px;
     border: none;
     background: transparent;
     color: #555;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -104,12 +157,12 @@
 
 .toggle-btn-cel {
     flex: 1;
-    padding: 10px 30px;
+     padding: 8px 20px;
     border: none;
     background: transparent;
     color: #555;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -133,12 +186,12 @@
 
 .toggle-btn-dec {
     flex: 1;
-    padding: 10px 30px;
+    padding: 8px 20px;
     border: none;
     background: transparent;
     color: #555;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -158,8 +211,49 @@
 .toggle-btn-dec:not(.active) {
     opacity: 0.6;
 }
+@media (max-width: 576px) {
+  /* Tighter vertical spacing */
+  .form-group,
+  .mb-3 {
+    margin-bottom: 0.5rem !important;
+  }
 
+  /* Labels smaller but still readable */
+  .form-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem; /* tighten gap */
+    display: block;
+  }
 
+  /* Inputs: shorter height + smaller text */
+  .form-control {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+    border-radius: 4px;
+  }
+
+  /* Headings inside forms */
+  h5 {
+    font-size: 1rem;
+<!--    margin-bottom: 0.5rem;-->
+  }
+
+  strong {
+    font-weight: 600; /* softer bold */
+  }
+
+  /* Buttons: compact but clickable */
+  .btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+
+  /* Reduce card padding */
+  .card.p-4 {
+    padding: 1rem !important;
+  }
+}
 
 
 </style>
@@ -223,12 +317,30 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+<!--#start_status {-->
+<!--  display: block;             /* block-level element */-->
+<!--  min-height: 1.8em;          /* fixes vertical flicker */-->
+<!--  min-width: 280px;           /* reserve width for longest string */-->
+<!--  white-space: nowrap;        /* keep text on one line */-->
+<!--  text-align: left;           /* or center, as you need */-->
+<!--}-->
+
+#start_status {
+  display: block;
+  min-height: 1.8em;           /* reserve height for flicker-free updates */
+  min-width: 60%;              /* relative to parent container */
+  white-space: nowrap;         /* prevent line breaks */
+  text-align: center;          /* looks good on both mobile & desktop */
+  overflow: hidden;            /* prevent overflow issues */
+}
+
 </style>
 
 
 </head>
-<body>
-<h1 style="text-align:center;">PROCURE HUB</h1>
+<body >
+<h1 style="text-align:center;"><span style="background-color:#1a1714;color:#1bd4fb">PROCURE </span> <span style="background-color:#1bd4fb;">HUB</span></h1>
    <style>
 .gradient-hr {
     height: 4px;
@@ -260,111 +372,108 @@ input:checked + .slider:before {
 
 
 
-<form  class="col-10 mx-auto card p-3 shadow-sm" id="requisition-update" method="POST" action="{% url 'requirements' %}">
-    {% csrf_token %}
+<!--<form style="background-color:#28414D; border: 2px solid #888;  color:white;  border-radius: 5px;" class="col-12 mx-auto  card p-3 shadow-sm" id="requisition-update" method="POST" action="{% url 'requirements' %}">-->
+<!--    {% csrf_token %}-->
 
-    <div class="container-fluid mt-4">
+<!--    <div class="container-fluid mt-4" >-->
 
-         <h3 class="mb-4 text-primary font-weight-bold">1.SINGLE REQUIREMENT ENTRY:</h3>
-                <hr>
-        <div class="row">
+<!--         <h3 class="mb-4 text-primary font-weight-bold">1.SINGLE REQUIREMENT ENTRY:</h3>-->
+<!--              <hr class="gradient-hr">-->
 
-            <!-- Left Column -->
-
-
-                <div  class="form-group">
-                    <div class="form-group">
-                    <label for="loading_point">1. Loading Point</label>
-                    <input type="text" class="form-control" name="loading_point" id="loading_point" required>
-                         <label for="loading_point_full_address">2. Loading Point Full Address</label>
-                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>
-                </div>
-
-                            <div class="form-group">
-                                <label for="unloading_point">3. Unloading Point</label>
-                                <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>
-                            </div>
-
-
-
-                <div class="form-group">
-                    <label for="unloading_point_full_address">4. Unloading Point Full Address</label>
-                    <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>
-                </div>
-            </div>
-
-            <!-- Middle Column -->
-            <div class="col-md-4 mb-4">
-
-                <div class="form-group">
-                    <label for="truck_type">5. Truck Type</label>
-                    <input type="text" class="form-control" name="truck_type" required>
-                </div>
-                <div class="form-group">
-                    <label for="no_of_trucks">6. No of Trucks</label>
-                    <input type="number" class="form-control" name="no_of_trucks" required>
-                </div>
+<!--        <div class="row" >-->
+<!--    &lt;!&ndash; Left Column &ndash;&gt;-->
+<!--           <div class="col-sm-3">-->
 <!--                <div class="form-group">-->
-<!--                    <label for="qty">7. Quantity</label>-->
-<!--                    <input type="number" class="form-control" name="qty" required>-->
+<!--                    <label for="loading_point">1. Loading Point</label>-->
+<!--                    <input type="text" class="form-control" name="loading_point" id="loading_point" required>-->
 <!--                </div>-->
-                <div class="form-group">
-                    <label for="product">7. Product Type</label>
-                    <input type="text" class="form-control" name="product" required>
-                </div>
-                 <div class="form-group">
-                    <label for="notes">8. Notes</label>
-                    <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>
-                </div>
-            </div>
+<!--                <div class="form-group">-->
+<!--                    <label for="loading_point_full_address">2. Loading Point Full Address</label>-->
+<!--                    <textarea class="form-control" name="loading_point_full_address" id="loading_point_full_address" rows="4" placeholder="Enter full loading address" required></textarea>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <label for="unloading_point">3.Unloading Point</label>-->
+<!--                    <input type="text" class="form-control" name="unloading_point" id="unloading_point" required>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <label for="unloading_point_full_address">4. Unloading Point Full Address</label>-->
+<!--                    <textarea class="form-control" name="unloading_point_full_address" id="unloading_point_full_address" rows="3.5" placeholder="Enter full unloading address" required></textarea>-->
+<!--                </div>-->
+<!--           </div>-->
 
-            <!-- Right Column -->
-            <div class="col-md-4 mb-4">
+<!--    &lt;!&ndash; Middle Column &ndash;&gt;-->
+<!--            <div class="col-sm-3">-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="truck_type">5. Truck Type</label>-->
+<!--                        <input type="text" class="form-control" name="truck_type" required>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="no_of_trucks">6. No of Trucks</label>-->
+<!--                        <input type="number" class="form-control" name="no_of_trucks" required>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="product">7. Product Type</label>-->
+<!--                        <input type="text" class="form-control" name="product" required>-->
+<!--                    </div>-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="notes">8. Notes</label>-->
+<!--                        <textarea class="form-control" name="notes" id="notes" rows="2" placeholder="Enter notes here"></textarea>-->
+<!--                    </div>-->
+<!--            </div>-->
 
-                <div class="form-group">
-                    <label for="drum_type_no_of_drums">9. Drum Type & No of Drums</label>
-                    <input type="text" class="form-control" name="drum_type_no_of_drums" required>
-                </div>
-                <div class="form-group">
-                    <label for="weight_per_drum">10. Weight per Drum</label>
-                    <input type="text" class="form-control" name="weight_per_drum" required>
-                </div>
-                <div class="form-group">
-                    <label for="approx_mat_mt">11. Approx Material Wait(MT)</label>
-                    <input type="text" class="form-control" name="approx_mat_mt" required>
-                </div>
-                <div class="form-group">
-                    <label for="types">12. Types</label>
-                    <input type="text" class="form-control" name="types" required>
-                </div>
-                <div class="form-group mb-0">
-                    <label for="cel_price">13. Ceiling Price</label>
-                    <input type="number" class="form-control" name="cel_price" required>
-                </div>
-                 <div class="form-group mb-0">
-                    <label for="min_dec_val">14. Minimal Decremental value </label>
-                    <input type="number" class="form-control" name="min_dec_val" required>
-                </div>
-            </div>
-        </div>
+<!--    &lt;!&ndash; Right Column &ndash;&gt;-->
+<!--            <div class="col-sm-3">-->
+<!--                <div class="form-group">-->
+<!--                    <label for="drum_type_no_of_drums">9. Drum Type & No of Drums</label>-->
+<!--                    <input type="text" class="form-control" name="drum_type_no_of_drums" required>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <label for="weight_per_drum">10. Weight per Drum</label>-->
+<!--                    <input type="text" class="form-control" name="weight_per_drum" required>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <label for="approx_mat_mt">11. Approx Material Wait(MT)</label>-->
+<!--                    <input type="text" class="form-control" name="approx_mat_mt" required>-->
+<!--                </div>-->
+<!--                <div class="form-group">-->
+<!--                    <label for="types">12. Types</label>-->
+<!--                    <input type="text" class="form-control" name="types" required>-->
+<!--                </div>-->
+<!--                <div class="form-group mb-0">-->
+<!--                    <label for="cel_price">13. Ceiling Price</label>-->
+<!--                    <input type="number" class="form-control" name="cel_price" required>-->
+<!--                </div>-->
+<!--                <div class="form-group mb-0">-->
+<!--                    <label for="min_dec_val">14. Minimal Decremental value</label>-->
+<!--                    <input type="number" class="form-control" name="min_dec_val" required>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
 
-    </div>
-     <div class="d-flex justify-content-center">
-    <button style="width: 50%;" id="requisition-btn" type="submit" class="btn btn-primary px-5">Submit</button>
-</div>
 
-</form>
+<!--    </div>-->
+<!--     <div class="d-flex justify-content-center">-->
+<!--    <button style="width: 50%;" id="requisition-btn" type="submit" class="btn btn-primary px-5">Submit</button>-->
+<!--</div>-->
+
+<!--</form>-->
 
 <!-- Bulk Upload Section -->
-<hr>
+<!--<hr class="gradient-hr">-->
 
 
 
-<div class=" card p-4 mt-2 mx-auto border-1">
-<h3 class="mb-4 text-primary font-weight-bold">2.BULK UPLOAD REQUIREMENTS:</h3>
+<div class=" card p-4 mt-2 mx-auto border-1" style="background-color:#28414D; border: 2px solid #888;  color:white;  border-radius: 5px;">
+<h3 class="mb-4 text-primary font-weight-bold">1.BULK UPLOAD REQUIREMENTS:</h3>
 
-    <hr>
+<hr class="gradient-hr">
+<!--     <h5 class="mb-3">New Requirement</h5>-->
+<!--            <div class="access-toggle mb-4">-->
+<!--                <button type="button" class="toggle-btn no" data-value="no">NO</button>-->
+<!--                <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>-->
+<!--            </div>-->
+<!--        <input type="hidden" name="access_new_req" id="accessNewReq" value="yes">-->
     <!-- Button to download template from the dynamic view -->
          <div class="col-2">
             <a href="{% url 'download_template' %}">
@@ -379,13 +488,9 @@ input:checked + .slider:before {
     &nbsp
     &nbsp
     &nbsp
-
-
-
-
-
-<button id="bulk-upload-btn" class="btn btn-primary w-100 mb-2">Bulk Upload</button>
-
+    <div style="text-align:center">
+<button id="bulk-upload-btn" class="btn btn-primary w-50 mb-2">Bulk Upload</button>
+</div>
 </div>
 
 
@@ -430,83 +535,102 @@ input:checked + .slider:before {
 
 
 
-<div class="container-fluid mt-4 mb-4">
-    <form class=" col-8 card p-4 mx-auto border-2  .bg-primary.bg-gradient" method="POST" action="{% url 'admin_dashboard' %}">
-        <h3 class="mb-4 text-primary font-weight-bold">3. USER PERMISSION & POST REQUIREMENTS:</h3>
-        <hr>
+<div class="card mt-5 mb-5 mx-auto border-2 ">
+
+      <div  style="background-color:#28414D; border: 2px solid #888;  color:white;  border-radius: 5px;">
+    <form  method="POST" action="{% url 'admin_dashboard' %}">
+        <h3 class="mb-4 text-primary font-weight-bold">2. USER PERMISSION & POST REQUIREMENTS:</h3>
+        <hr class="gradient-hr">
         {% csrf_token %}
-        <div class="container mt-4">
-         <label for="start_time"><strong><h5>1.Bidding Start Time:</h5></strong> </label>
+         <label for="start_time"><strong><h5>Bidding Start Time:</h5></strong> </label>
        <input type="datetime-local" name="start_time" id="start_time" required>
-          <label for="minute"> <strong><h5> 2.Bidding Time in Minute:</h5></strong> </label>
+          <label for="minute"> <strong><h5>Bidding Time in Minute:</h5></strong> </label>
        <input type="number" name="minute" id="minute" required>
-        </div>
+<!--           <label for="interval"> <strong><h5>Interval:</h5></strong> </label>-->
+<!--       <input type="number" name="interval" id="interval">-->
         &nbsp
 
-       <h5 class="mb-3">3. Post Requirement</h5>
-        <div class="access-toggle mb-4">
-            <button type="button" class="toggle-btn no" data-value="no">NO</button>
-            <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>
 
-        </div>
+<!--       <h5 class="mb-3">4. Post Requirement</h5>-->
+<!--            <div class="access-toggle mb-4">-->
+<!--                <button type="button" class="toggle-btn no" data-value="no">NO</button>-->
+<!--                <button type="button" class="toggle-btn yes active" data-value="yes">YES</button>-->
+<!--            </div>-->
         <input type="hidden" name="access" id="accessInput" value="yes">
-
-         <h5 class="mb-3">4.Use Ceiling Price</h5>
-        <div class="access-toggle mb-4">
-            <button type="button" class="toggle-btn-cel no active" data-value="no">NO</button>
-            <button type="button" class="toggle-btn-cel yes " data-value="yes">YES</button>
-        </div>
+         <h5 class="mb-3">Ceiling Price</h5>
+            <div class="access-toggle mb-4">
+                <button type="button" class="toggle-btn-cel no active" data-value="no">NO</button>
+                <button type="button" class="toggle-btn-cel yes " data-value="yes">YES</button>
+            </div>
         <input type="hidden" name="use_cel" id="useCelPrice" value="no">
-
-        <h5 class="mb-3">5.Decremental Value Visibility</h5>
-        <div class="access-toggle mb-4">
-            <button type="button" class="toggle-btn-dec no active" data-value="no">NO</button>
-            <button type="button" class="toggle-btn-dec yes " data-value="yes">YES</button>
-        </div>
+        <h5 class="mb-3">Decremental Value Visibility</h5>
+            <div class="access-toggle mb-4">
+                <button type="button" class="toggle-btn-dec no active" data-value="no">NO</button>
+                <button type="button" class="toggle-btn-dec yes " data-value="yes">YES</button>
+            </div>
         <input type="hidden" name="dec_val_vi" id="decValVisibility" value="no">
+        <h5 class="mb-3">Individual User Access</h5>
+                <div class="form-group">
+                    <label for="user">Select Users:</label>
+                    <select id="userDropdown" name="user" multiple class="selectpicker"
+                            data-live-search="true" data-actions-box="true">
+                        <!-- Options will be added by JavaScript -->
+                    </select>
+                </div>
 
+<!--        <div class="container-fluid">-->
+                <div class="row">
+                    <div  class="col-md-6 ">
+                        <button class="btn btn-primary px-5" type="submit" style="border-radius: 8px;width:100%;">
+                                       Start
+                        </button>
+                    </div>
+                                      </form>
 
-
-        <h5 class="mb-3">6. Individual User Access</h5>
-        <div class="form-group">
-            <label for="user">Select Users:</label>
-            <select id="userDropdown" name="user" multiple class="selectpicker"
-                    data-live-search="true" data-actions-box="true">
-                <!-- Options will be added by JavaScript -->
-            </select>
-        </div>
-
-        <div class="container-fluid mt-4">
-            <button class="btn btn-primary px-5" type="submit" style="border-radius: 15px;width:100%;">
-                Grant Access/Post
-            </button>
-        </div>
-
-
-    </form>
-    <form method="POST" action="{% url 'extend_page' %}">
-         <label for="name">Extend</label>
-        <input type="number" name="extend" id="extendInput" >
-    </form>
+                     <div  class="col-md-6 mb-2 ">
+                        <form  method="POST" action="{% url 'stop_bid' %}" >
+                            {% csrf_token %}
+                            <button class="btn btn-danger px-5"  type="submit" style="border-radius: 8px;width:100%;">
+                                Stop
+                            </button>
+                        </form>
+                         <div>
 
                 </div>
-</div>
 
 
+<!--        </div>-->
+                     </div>
 
+</div>                      <form method="POST" action="{% url 'extend_page' %}">
+                              {% csrf_token %}
+                              <div class="row mb-5" >
+                                <div class="col-md-6">
+                                  <label for="extend_"><strong><h5>Extend time in minutes</h5></strong></label>
+                                  <input type="number" name="extend_" id="extend_" class="form-control" required>
+                                </div>
 
-
-
+                                <div class="col-md-6 d-flex align-items-end">
+                                  <button type="submit" class="btn btn-primary px-5" style="width:100%;" >Extend</button>
+                                </div>
+                              </div>
+                            </form>
+ </div>
 
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<div class="container-fluid" style="background-color:#41938a29">
+<div class="container-fluid mt-3"  style="background-color:#28414D;  border-radius: 5px;">
     <div class="row">
           <div class="col-md-6   p-1">
-            <h3 class="mb-4 text-primary font-weight-bold">4. BIDDING STATUS:</h3>
-            <h4 style="color:blue;" id="start_status"></h4>
-               <h3 id="auction_status" class="text-align:left;"></h3>
+            <h3 class="mb-4 text-primary font-weight-bold">3. BIDDING STATUS:</h3>
+
+<!--            <h4 style="color:blue;" id="start_status"></h4>-->
+<!--               <h3 id="auction_status" class="text-align:left;"></h3>-->
+              <div style="display: flex; justify-content: left; width: 100%;">
+  <h4 id="start_status"></h4>
+   </div>
+
               &nbsp
         <h3 id="current_time_div" style="text-align:left;"></h3>
               &nbsp
@@ -514,7 +638,7 @@ input:checked + .slider:before {
               &nbsp
         <h3 id="end_time_div" style="text-align:left;"></h3>
               &nbsp
-              <h3 style="color:blue;">Total requirements: {{requirements|length}}</h3>
+              <h3 style="color:white;">Total requirements: {{requirements|length}}</h3>
           </div>
             <div class="col-md-6   p-1">
 <!--              <img id="bidGraph" src="" style="max-width:100%; border:1px solid #ddd;" />-->
@@ -523,7 +647,7 @@ input:checked + .slider:before {
 
         <div id="refresh-container" style="text-align:center;">
 
-             <div class="d-flex justify-content-left mt-4 ">
+             <div class="d-flex justify-content-left mt-4 mb-2 ">
                     <button onclick="window.location.reload();" class="btn btn-primary px-5"  style="border-radius: 10px;width:100%;">
                        Refresh
                     </button>
@@ -531,110 +655,102 @@ input:checked + .slider:before {
         </div>
    </div>
 
-        <h3 class="mb-4 mt-4 text-primary font-weight-bold">5. UPLOADED REQUIREMENTS & USER BIDS:</h3>
-
-    <hr>
-
+        <h3 class="mb-4 mt-4 text-primary font-weight-bold">4. UPLOADED REQUIREMENTS & USER BIDS:</h3>
+<hr class="gradient-hr">
     {% for requirement in requirements %}
-    <div class="row mb-3 align-items-stretch">
+<!--    <div class="row mb-3 align-items-stretch" >-->
+       <div class="row mb-3 d-flex align-items-stretch">
 
         <!-- LEFT: Requirement -->
-        <div class="col-md-6">
-            <div class="requirement-card h-100"
-                 style="display: flex; background-color: #CED6D4; border-radius: 8px; overflow: hidden;">
-                <div class="vertical-label">
-                    <span>#REQUIREMENT {{ forloop.counter }}</span>
+<!--        <div class="col-md-6"  >-->
+            <div class="col-md-6 d-flex">
+<!--            <div class="requirement-card "-->
+<!--                 style="display: flex; color:white; background-color: #28414D; border-radius: 8px; overflow: hidden;">-->
+<!--                 <div class="requirement-card flex-grow-1"-->
+<!--             style="display: flex; flex-direction: column; background-color:#28414D; border-radius:8px; color:white;">-->
+                <div class="requirement-card flex-grow-1"
+     style="display: flex; flex-direction: row; background-color:#28414D; border-radius:8px; color:white;">
 
-                </div>
+                        <div class="vertical-label">
+                            <span>#REQUIREMENT {{ forloop.counter }}</span>
+                        </div>
+<!--                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; padding-bottom: 0; padding-top: 0;">-->
+<!--                <div class="p-0 d-flex flex-column" style="padding: 0;">-->
+                      <div class="p-0 d-flex flex-column flex-grow-1">
 
-                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; padding-bottom: 0; padding-top: 0;">
-                <div style="background-color: #1d2443; color: white; border-radius: 1px; margin-top: 0; padding: 0.5rem;">
-                    <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> {{ requirement.id }}</h2>
-
-                </div>
-                    <div class="p-2">
+                        <div style="background-color: #1d2443; color: white; border-radius: 1px; margin-top: 0; padding: 0.5rem;">
+                            <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> {{ requirement.id }}</h2>
+                        </div>
+<!--                    <div class="p-0">-->
                                 <p style="background-color: {% if not requirement.loading_point %}#EFADF0{% else %}transparent{% endif %};">
                                     <strong>Loading:</strong> {{ requirement.loading_point }}
                                 </p>
-                                 <p><strong></strong> {{ requirement.loading_point_full_address }}</p>
-
                                 <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.loading_point_full_address|urlencode }}" target="_blank">
-                                    📍 View Loading Address on Map
+                                    📍 {{ requirement.loading_point_full_address }}
                                 </a>
                                 <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};
                                       padding-top: 10px;">
                                       <strong>Unloading:</strong> {{ requirement.unloading_point }}
                                 </p>
-
-
-
-
-<!--                                <p style="background-color: {% if not requirement.unloading_point %}#EFADF0{% else %}transparent{% endif %};">-->
-<!--                                    <strong>Unloading:</strong> {{ requirement.unloading_point }}-->
-<!--                                </p>-->
-
-
-<!--                    <label  for="loading_point_full">3. Loading Point Full Address</label>-->
-<!--                    <textarea class="form-control" name="loading_point_full"  rows="4" placeholder="Enter full loading address" required>"{{ requirement.loading_point_full_address }}"</textarea>-->
-
-
-            <p><strong></strong> {{ requirement.unloading_point_full_address }}</p>
-
-                <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.unloading_point_full_address|urlencode }}" target="_blank">
-                    📍 View Unloading Address on Map
-                </a>
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ requirement.unloading_point_full_address|urlencode }}" target="_blank">
+                            📍 {{ requirement.unloading_point_full_address }}
+                        </a>
 
                         <hr>
-                        <h3> Requirements:</h3>
                         <div class="row">
-                            <div class="col md-8">
-                                <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
-                                    <strong>Truck:</strong> {{ requirement.truck_type }}
-                                </p>
-                            </div>
-
-                                <div class="col md-4">
-                                    <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
-                                        <strong>No of Truck:</strong> {{ requirement.no_of_trucks }}
+                                <div class="col md-8">
+                                    <p style="background-color: {% if not requirement.truck_type %}#EFADF0{% else %}transparent{% endif %};">
+                                        <strong>Truck:</strong> {{ requirement.truck_type }}
                                     </p>
                                 </div>
+
+                                    <div class="col md-4">
+                                        <p style="background-color: {% if not requirement.no_of_trucks %}#EFADF0{% else %}transparent{% endif %};">
+                                            <strong>No of Truck:</strong> {{ requirement.no_of_trucks }}
+                                        </p>
+                                    </div>
                         </div>
-<!--           <p style="background-color: {% if not requirement.qty %}#EFADF0{% else %}transparent{% endif %};">-->
-<!--                <strong>7. Qty:</strong> {{ requirement.qty }}-->
-<!--            </p>-->
-            <p><strong>Product Type:</strong> {{ requirement.product }}</p>
+
+                         <div style="display: flex; gap: 5px;">
+                             <p><strong>Product Type:</strong> {{ requirement.product }}</p>
+                                <p><strong>Types:</strong> {{ requirement.types }}</p>
+                         </div>
 
              <p style="background-color: {% if not requirement.notes %}#EFADF0{% else %}transparent{% endif %};">
                 <strong>Notes:</strong> {{ requirement.notes }}
             </p>
-
             <p><strong>Drum Type & No of Drums:</strong> {{ requirement.drum_type_no_of_drums }}</p>
             <p><strong>Weight Per Drum(kg):</strong> {{ requirement.weight_per_drum }}</p>
             <p><strong>Approx Material Wait (Mt):</strong> {{ requirement.approx_mat_mt}}</p>
-            <p><strong>Types:</strong> {{ requirement.types }}</p>
-                      <hr>
-            <h3> Bidding Strategy:</h3>
-            <p><strong>Ceiling Price:</strong> {{ requirement.cel_price }}</p>
-            <p><strong>Minimal Decremental value:</strong> {{ requirement.min_dec_val }}</p>
-                        </div>
+            <p><strong>Requirement Date:</strong> {{ requirement.req_date}}</p><hr>
+<!--                          <p><strong>Requirement Date:</strong> {{ requirement.req_date|date:"d M Y" }}</p>-->
+
+<!--            {% if requirement.cel_price %}<p style="margin-bottom:0;padding:bottom:0;"><strong>Ceiling Price:</strong> {{ requirement.cel_price }}</p>{% endif %}-->
+<!--            {% if requirement.min_dec_val %}<p style="margin-bottom:0;padding:bottom:0;"><strong>Minimal Decremental value:</strong> {{ requirement.min_dec_val }}</p>{% endif %}-->
+
+<div style="margin: 0;">{% if requirement.cel_price %}<strong>Ceiling Price:</strong> {{ requirement.cel_price }}{% endif %}</div>
+<div style="margin: 0;">{% if requirement.min_dec_val %}<strong>Minimal Decremental value:</strong> {{ requirement.min_dec_val }}{% endif %}</div>
+
+<!--    <button style="width: 100%; margin-top: auto; padding: 0.25rem 0; border-radius: 1px; line-height: 1; display: block;"-->
+<!--        onclick="delReq({{ requirement.id }})"-->
+<!--        class="btn btn-sm btn-danger">-->
+<!--    Delete-->
+<!--</button>-->
+                           <button style="width: 100%; margin-top: auto; padding: 0.25rem 0; border-radius: 1px; line-height: 1;"
+                        onclick="delReq({{ requirement.id }})"
+                        class="btn btn-sm btn-danger">
+                    Delete
+                </button>
 
 
 
-                    <button style="width: 100%; margin-top: auto; border-radius: 1px; margin-bottom: 0; padding-bottom: 0;"
-        onclick="delReq({{ requirement.id }})"
-        class="btn btn-sm btn-danger">Delete</button>
+<!--                    </div>-->
 
                     <!-- other fields here -->
                 </div>
 
             </div>
-<!--          <button-->
-<!--    id="delAllReq"-->
-<!--    onclick="delReq('delAll')"-->
-<!--    class="btn btn-danger "-->
-<!--    style="width: 100%; margin-top: 1rem;">-->
-<!--    Delete All Requirements-->
-<!--        </button>-->
+
 
         </div>
 
@@ -642,10 +758,14 @@ input:checked + .slider:before {
 
 
         <!-- RIGHT: Empty bid card (hidden until JS fills it) -->
-        <div class="col-md-6">
-            <div id="bid-card-{{ requirement.id }}"
-                 class="bid-card h-100"
-                 style="background-color:#f1f1f1; border-radius:8px; padding:1rem; display:none;">
+<!--        <div class="col-6" >-->
+              <div class="col-md-6 d-flex">
+<!--            <div id="bid-card-{{ requirement.id }}"-->
+<!--                 class="bid-card"-->
+<!--                 style="background-color:#28414D; border-radius:8px; color:white; padding:1rem; display:none;">-->
+                   <div id="bid-card-{{ requirement.id }}"
+             class="bid-card flex-grow-1"
+             style="background-color:#28414D; border-radius:8px; color:white; padding:1rem; display:none;">
                 <!-- JS will insert bids here -->
             </div>
         </div>
@@ -656,28 +776,6 @@ input:checked + .slider:before {
 
 
 </div>
-
-<!--            <div style="text-align:right">-->
-<!--                <form method="POST" action="{% url 'delete_all_bids' %}"-->
-<!--                          onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
-<!--                        {% csrf_token %}-->
-<!--                        <button id="del_bids_btn" type="submit"  style="display:none">-->
-<!--                            Delete All Bids-->
-<!--                        </button>-->
-<!--                    </form>-->
-
-
-<!--            </div>-->
-
-<!--    <div class="d-flex justify-content-end">-->
-<!--      <form method="POST" action="{% url 'delete_all_bids' %}"-->
-<!--            onsubmit="return confirm('⚠️ Are you sure you want to delete ALL bids? This action cannot be undone!');">-->
-<!--          {% csrf_token %}-->
-<!--          <button id="del_bids_btn" type="submit" class="btn btn-danger mt-3 mb-0" style="display:none;">-->
-<!--              Delete All Bids-->
-<!--          </button>-->
-<!--      </form>-->
-<!--    </div>-->
 
 
 <div class="row">
@@ -709,11 +807,18 @@ input:checked + .slider:before {
 
 
 
-
-
-
-
 <script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+  document.getElementById("start_time").value = local;
+  document.getElementById("minute").value = 60;
+  document.getElementById("interval").value = 0;
+});
+
     const req_len="{{requirements|length}}";
     if(req_len>0){
     let delAllReq=document.getElementById("delAllReq");
@@ -729,17 +834,7 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
 
     socket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-<!--          if (data.type === 'timer_update') {-->
-<!--        console.log("Update Timer:", data.minutes);-->
 
-<!--        // Loop over all requirements and update each timer-->
-<!--       Object.keys(bidGroups).forEach(reqId => {-->
-<!--        const timerEl = document.getElementById(`remaining-time-${reqId}`);-->
-<!--        if (timerEl) {-->
-<!--            timerEl.textContent = `Remaining Time: ${data.minutes}`;-->
-<!--        }-->
-<!--    });-->
-<!--    }-->
   if (data.type === 'timer_update') {
 <!--        console.log("Update Timer:", data.minutes);-->
 
@@ -762,42 +857,49 @@ const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room
         // Calculate percentage for progress bar
         const percent = Math.max(0, (remainingSeconds / totalSeconds) * 100);
 
-        Object.keys(bidGroups).forEach(reqId => {
-            const timerEl = document.getElementById(`remaining-time-${reqId}`);
-            if (timerEl) {
-                timerEl.textContent = `Remaining Time: ${data.minutes}`;
-            }
 
-            const progressEl = document.getElementById(`progress-bar-${reqId}`);
-            if (progressEl) {
-                progressEl.style.width = `${percent}%`;
-            }
-        });
+
+    document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {
+        timerEl.textContent = `Remaining Time: ${data.minutes}`;
+    });
+
+    document.querySelectorAll('[id^="progress-bar-"]').forEach(progressEl => {
+        progressEl.style.width = `${percent}%`;
+               });
+
+
     }
 
      if (data.type === 'timer_update' && data.auction_started === false) {
+<!--      console.log("Auction  not Started")-->
 
 
-    let timer = document.getElementById("start_status");
-    timer.innerText = `Auction will start in: ${data.minutes}`;
+
+let timer = document.getElementById("start_status");
+timer.innerHTML= data.minutes
+    ? `<span style="color:white; font-weight:400;">AUCTION WILL STARTS IN: ${data.minutes}</span>`
+    : "\u00A0";   // keeps empty space when no text
+
+
+
 
 let current_time_div = document.getElementById("current_time_div");
   current_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">CURRENT TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.clt}</span>
+    <span style="color:white; font-weight:400;">CURRENT TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.clt}</span>
   `;
 
  let start_time_div = document.getElementById("start_time_div");
   start_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">AUCTION START TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
+    <span style="color:white; font-weight:400;">AUCTION START TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
   `;
 
 
  let end_time_div = document.getElementById("end_time_div");
   end_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">AUCTION END TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
+    <span style="color:white; font-weight:400;">AUCTION END TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
   `;
 
 
@@ -806,29 +908,34 @@ let current_time_div = document.getElementById("current_time_div");
 }
 
     else if (data.type === 'timer_update' && data.auction_started === true) {
+<!--    console.log("Auction Started")-->
 
 
-   let timer = document.getElementById("start_status");
-  timer.innerHTML = `Auction Started Time Left <br>  ${data.minutes}`;
+
+let timer = document.getElementById("start_status");
+timer.innerHTML = data.minutes
+    ? `  <span style="color:white; font-weight:400;">AUCTION STARTED TIME LEFT: ${data.minutes}</span><br>
+   `
+    : "\u00A0";   // keeps empty space when no text
 
 
 let current_time_div = document.getElementById("current_time_div");
   current_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">CURRENT TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.clt}</span>
+    <span style="color:white; font-weight:400;">CURRENT TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.clt}</span>
   `;
 
  let start_time_div = document.getElementById("start_time_div");
   start_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">AUCTION START TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
+    <span style="color:white; font-weight:400;">AUCTION START TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.start_time}</span>
   `;
 
 
  let end_time_div = document.getElementById("end_time_div");
   end_time_div.innerHTML = `
-    <span style="color:#262729; font-weight:400;">AUCTION END TIME:</span><br>
-    <span style="color:blue; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
+    <span style="color:white; font-weight:400;">AUCTION END TIME:</span><br>
+    <span style="color:green; font-size:0.8 em; font-weight:600;">${data.end_time}</span>
   `;
 
 
@@ -838,32 +945,24 @@ let current_time_div = document.getElementById("current_time_div");
 
 
 else   {
-    let timer = document.getElementById("start_status");
-    timer.innerText = `Auction Ended !`;
+<!--    let timer = document.getElementById("start_status");-->
+<!--    timer.innerText = `Auction Ended !`;-->
+
+let timer = document.getElementById("start_status");
+timer.innerHTML= ` <span style="color:white; font-weight:400;">AUCTION ENDED</span><br>` || "\u00A0";
+
 }
-        if (data.type === 'bids_per_requirement') {
-            const bidReq = data.bid_req;
-            const reqId = bidReq.id;
-            const bidder = data.bids_by;
-            const bidRate = data.bid_rate;
 
-            if (!bidGroups[reqId]) {
-                bidGroups[reqId] = {
-                    info: bidReq,
-                    bidders: {}
-                };
-            }
 
-            if (!bidGroups[reqId].bidders[bidder]) {
-<!--            console.log("Bid is not present");-->
-                bidGroups[reqId].bidders[bidder] = [];
-            }
+if (data.type === 'bids_per_requirement') {
+console.log("Bid data:",data)
+console.log("Bid Requirement:",data.bid_req)
+<!--console.log("Bid  Top Bidders :",data.top_bidders)-->
 
-            bidGroups[reqId].bidders[bidder].push(bidRate);
-<!--             console.log("Bid is present");-->
+renderBids(data);
 
-            renderBids();
-        }
+}
+
 
  if (data.type === "bid_report_graph") {
         document.getElementById("bidGraph").src =
@@ -894,90 +993,165 @@ else   {
     };
 
 
-
-function renderBids() {
-    Object.keys(bidGroups).forEach(reqId => {
-        const group = bidGroups[reqId];
-        const req = group.info;
-
-        // Find the matching bid div
+function renderBids(data) {
+        let req=data.bid_req;
         const bidDiv = document.getElementById(`bid-card-${req.id}`);
-        if (!bidDiv) return; // No matching requirement
-        let del_bid_btn=document.getElementById("del_bids_btn");
-        del_bid_btn.style.display="block";
-        let download_bid_div=document.getElementById("download_bids_div");
-        download_bid_div.style.display="block";
-
-
-<!--        del_bid_btn.classList.add("btn", "btn-danger", "align-right","w-50", "mt-3", "mb-0");-->
-
-<!--        del_bid_btn.className="btn btn-danger w-50 mt-3 mb-0";-->
-
-        // Start fresh
+        if (!bidDiv) return;
+        let del_bid_btn = document.getElementById("del_bids_btn");
+        let download_bid_div = document.getElementById("download_bids_div");
+        if (del_bid_btn) del_bid_btn.style.display = "block";
+        if (download_bid_div) download_bid_div.style.display = "block";
         bidDiv.innerHTML = `
-            <h1>RECEIVED BIDS:</h1>
+            <h2>RECEIVED BIDS:</h2>
             <hr>
+<!--            <div style="height: 45px; display: flex; background-color: transparent;">-->
+<!--                <h4 id="remaining-time-${req.id}"></h4>-->
+<!--            </div>-->
 
-           <h4 id="remaining-time-${req.id}"></h4>
-           <div class="progress" style="height: 20px;">
-        <div id="progress-bar-${req.id}"
-             class="progress-bar bg-success"
-             role="progressbar"
-             style="width: 100%;"
-             aria-valuenow="100"
-             aria-valuemin="0"
-             aria-valuemax="100">
-        </div>
-    </div>
-    <hr>
-             <hr>
-            <p><strong>Bid Req ID:</strong> ${req.id}</p>
-            <p><strong>1.Loading:</strong> ${req.loading_point}</p>
-            <p><strong>2.Unloading:</strong> ${req.unloading_point}</p>
+<!--            <div class="progress" style="height: 25px;">-->
+<!--                <div id="progress-bar-${req.id}" class="progress-bar bg-success"-->
+<!--                    role="progressbar" style="width: 100%;" aria-valuenow="100"-->
+<!--                    aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--            </div>-->
+
+<div class="progress" style="height: 25px; position: relative;">
+  <!-- Shrinking green bar -->
+  <div id="progress-bar-${req.id}"
+       class="progress-bar bg-success"
+       role="progressbar"
+       style="width: 100%;"
+       aria-valuenow="100"
+       aria-valuemin="0"
+       aria-valuemax="100">
+  </div>
+
+  <!-- Fixed text overlay -->
+  <div class="progress-text"
+       style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; font-weight:bold; color:#000;">
+    <span id="remaining-time-${req.id}"></span>
+  </div>
+</div>
+
+            <hr>
+            <p><strong>Bid Req ID:</strong> ${req.id} |
+            <strong>Loading:</strong> ${req.loading_point} |
+            <strong>Unloading:</strong> ${req.unloading_point}</p>
             <hr>
         `;
 
-        const biddersArray = Object.entries(group.bidders);
 
-        // Sort by lowest rate
-        biddersArray.sort((a, b) => {
-            const minA = Math.min(...a[1]);
-            const minB = Math.min(...b[1]);
-            return minA - minB;
-        });
+<!--        data.top_bidders.forEach(top_bidder=>{-->
 
-        // Show top 3 bidders
-        biddersArray.slice(0, 3).forEach(([bidder, rates], i) => {
-            const rateStr = rates.join(" >> ₹");
-            bidDiv.innerHTML += `
-                <p><strong>1.Rank: L${i + 1}</strong></p>
-                <p><strong>2.Bidder:</strong> ${bidder}</p>
-                <p><strong>3.Rate:</strong> ₹${rateStr}</p>
-                <hr>
+<!--            bidDiv.innerHTML += `-->
+<!--                <p>-->
+<!--                <strong>L${top_bidder.rank}</strong>-->
+<!--                <strong>Bidder:</strong> ${top_bidder.username}-->
+<!--                   </p>-->
+<!--                   <p><strong>Rate:</strong> ₹${top_bidder.rate}</p>-->
 
+<!--            `;-->
+<!--             })-->
 
-<!--                <h3>Approve Bid</h3>-->
-<!--                <label for ="bid-approve" class="switch">-->
-<!--                  <input  id="bid-approve"  name="bid-approve" type="checkbox" checked>-->
-<!--                  <span class="slider round"></span>-->
-<!--                </label>-->
+data.top_bidders.forEach(top_bidder => {
+  // Define color mapping by rank
+  const rankColors = {
+    L1: '#130FF2',
+    L2: '#245C82',
+    L3: '#2B7575',
+    L4: '#94318C'
+  };
 
-            `;
-        });
+  // Get color for current rank (default gray if rank not found)
+  const color = rankColors[`L${top_bidder.rank}`] || '#ccc';
 
-        // Show the bid card
+  bidDiv.innerHTML += `
+    <div style="border: 2px solid ${color};background-color:${color}; border-radius: 5px; padding: 8px; margin-bottom: 6px;">
+<!--      <p style="color:${color}; font-weight:bold;">-->
+        <strong>L${top_bidder.rank}</strong> - <strong>Bidder:</strong> ${top_bidder.username}
+      </p>
+      <p><strong>Rate:</strong> ₹${top_bidder.rate}</p>
 
+    <!-- Admin Feedback UI -->
+      <div style="background:#fff; padding:8px; border-radius:6px;">
+        <label>Status: </label>
+        <select id="status-${req.id}-${top_bidder.username}" class="form-control form-control-sm" style="display:inline-block; width:auto;">
+          <option value=" " selected>No MSG</option>
+          <option value="Approved">Approved</option>
+          <option value="Higher Price">Higher Price</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Pending">Pending</option>
+        </select>
+        <input id="message-${req.id}-${top_bidder.username}" class="form-control form-control-sm"
+               type="text" placeholder="Enter message..." style="display:inline-block; width:60%; margin-left:8px;">
+        <button class="btn btn-sm btn-primary"
+                onclick="sendBidderMessage('${top_bidder.username}', ${req.id})"
+                style="margin-left:6px;">Send</button>
 
+      </div>
+    </div>
+  `;
+});
+
+<!--        });-->
 
         bidDiv.style.display = "block";
-    });
+<!--    });-->
 }
+
+function sendBidderMessage(top_bidder, req_id) {
+  console.log("top_bidder:", top_bidder);
+
+  // Define element IDs
+  const msg_id = `message-${req_id}-${top_bidder}`;
+  const status_msg_id = `status-${req_id}-${top_bidder}`;
+
+  // Get input values
+  const msgElement = document.getElementById(msg_id);
+  const statusElement = document.getElementById(status_msg_id);
+
+  const msg = msgElement?.value.trim() || "";
+  const status_msg = statusElement?.value || "";
+
+  // Construct message payload
+  const payload = {
+    type: 'submit_msg',
+    top_bidder: top_bidder,
+    msg: msg,
+    req_id: req_id,
+    status_msg: status_msg
+  };
+
+  // Send through WebSocket
+  socket.send(JSON.stringify(payload));
+<!--  console.log("📤 Sent message:", payload);-->
+
+
+  msgElement.value = "";
+  statusElement.value = "";
+
+  const toast = document.createElement("div");
+  toast.textContent = "✅ Message sent successfully!";
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.right = "20px";
+  toast.style.background = "#4caf50";
+  toast.style.color = "white";
+  toast.style.padding = "10px 15px";
+  toast.style.borderRadius = "8px";
+  toast.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  toast.style.zIndex = "9999";
+  document.body.appendChild(toast);
+
+  // Remove the toast after 2 seconds
+  setTimeout(() => toast.remove(), 2000);
+}
+
+
 
 
    socket.onopen = function(event) {
 <!--            console.log("WebSocket is open now.");-->
 <!--            socket.send(JSON.stringify({ type: 'grouped_bid' }));-->
-
         };
 
     socket.onclose = () => console.log("WebSocket closed.");
@@ -1096,6 +1270,7 @@ document.getElementById("bulk-upload-btn").addEventListener("click", () => {
         })
         .then(response => response.json())
         .then(result => {
+        console.log("result:",result)
             const modal = document.getElementById("upload-modal");
             const output = document.getElementById("upload-result");
 
@@ -1137,13 +1312,6 @@ document.getElementById("bulk-upload-btn").addEventListener("click", () => {
 
 
 <script>
-<!--function loadPost() {-->
-<!--    if (socket.readyState === WebSocket.OPEN) {-->
-<!--        socket.send(JSON.stringify({ action: "load_requirements" }));-->
-<!--    } else {-->
-<!--        alert("WebSocket not ready");-->
-<!--    }-->
-<!--}-->
 
 function closeModal() {
     document.getElementById("upload-modal").style.display = "none";
@@ -1152,19 +1320,13 @@ function closeModal() {
 </script>
 
 
-<!--<script>-->
-<!--    $(document).ready(function () {-->
-<!--        $('.selectpicker').selectpicker();-->
-<!--    });-->
-<!--</script>-->
-
-
 <script>
 document.querySelectorAll(".toggle-btn").forEach(btn => {
     btn.addEventListener("click", function() {
         document.querySelectorAll(".toggle-btn").forEach(b => b.classList.remove("active"));
         this.classList.add("active");
         document.getElementById("accessInput").value = this.dataset.value;
+
     });
 });
 
@@ -1175,6 +1337,14 @@ document.querySelectorAll(".toggle-btn").forEach(btn => {
         document.getElementById("useCelPrice").value = this.dataset.value;
     });
 });
+
+<!-- document.querySelectorAll(".toggle-btn-cel").forEach(btn => {-->
+<!--    btn.addEventListener("click", function() {-->
+<!--        document.querySelectorAll(".toggle-btn-cel").forEach(b => b.classList.remove("active"));-->
+<!--        this.classList.add("active");-->
+<!--        document.getElementById("accessNewReq").value = this.dataset.value;-->
+<!--    });-->
+<!--});-->
 
     document.querySelectorAll(".toggle-btn-dec").forEach(btn => {
     btn.addEventListener("click", function() {

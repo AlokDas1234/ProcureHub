@@ -11,19 +11,19 @@
             font-family: Arial, sans-serif;
             background-color: #111;
             color: white;
-            margin: 20px;
+            margin: 2px;
         }
         .container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+<!--            gap: 2px;-->
         }
         .row {
             display: flex;
-            gap: 20px;
+<!--            gap: 5px;-->
             border: 1px solid #555;
-            border-radius: 6px;
-            padding: 10px;
+            border-radius: 5px;
+            padding-bottom: 5px;
             align-items: stretch;
         }
         .no-border {
@@ -31,26 +31,32 @@
     padding: 0;   /* optional, removes extra spacing */
 }
 
-        .col {
-            flex: 1;
-            background-color: #222;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .col p {
-            margin: 4px 0;
-        }
-        button {
-            background-color: #05aafc;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #1dde8a;
-        }
+
+
+
+
+/* Desktop layout */
+.col-left {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+}
+
+body {
+  word-wrap: break-word;
+  overflow-x: hidden; /* ✅ no sideways scrollbars */
+}
+input[type="number"] {
+  padding: 4px;
+  width: 100%; /* ✅ take full width on mobile */
+  box-sizing: border-box;
+}
+
+button {
+  flex: 1; /* ✅ makes buttons scale properly */
+}
+
         input {
             padding: 4px;
             width: 80%;
@@ -70,9 +76,9 @@
     justify-content: center; /* Center text horizontally in strip */
 <!--    padding: 0 10px;-->
     height: 100%;           /* Take full height of parent */
-    min-width: 50px;        /* Consistent strip width */
+<!--    min-width: 50px;        /* Consistent strip width */-->
     margin:0px;
-    font-size: 30px;
+    font-size: 20px;
 }
         .progress {
     background-color: #333;
@@ -88,13 +94,98 @@
 .progress-bar.green { background-color: green; }
 .progress-bar.orange { background-color: orange; }
 .progress-bar.red { background-color: red; }
+  .submit-btn {
+        flex: 1;
+        padding: 10px;
+        background-color: #007bff; /* Bootstrap blue */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .submit-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .submit-btn:active {
+        transform: scale(0.97);
+        background-color: #00408d;
+    }
+@media (max-width: 768px) {
+
+    /* Stack rows vertically */
+    .row {
+        flex-direction: column;   /* stack vertically */
+        align-items: stretch;
+        margin-bottom: 2px;       /* minimal spacing between rows */
+        padding: 1px;             /* reduce internal padding */
+        border-radius: 3px;
+    }
+
+    /* Vertical label: narrow and smaller */
+    .vertical-label {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        font-size: 12px;      /* smaller font */
+        width: 20px;          /* narrow strip */
+        height: auto;
+        padding: 1px 1px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Progress bar smaller */
+    .progress {
+        height: 15px;
+        margin-bottom: 2px;
+    }
+
+    .progress-bar {
+        height: 100%;
+    }
+
+    /* Requirement details smaller */
+    .row p, .row strong {
+        font-size: 11px;
+        margin: 0 0 1px 0;   /* tight spacing */
+    }
+
+    /* Inputs and buttons smaller and full width */
+    input[type="number"], .submit-btn {
+        font-size: 10px;
+        padding: 3px;
+        width: 100%;
+        box-sizing: border-box;
+    }
 
 
-    </style>
+    .submit-btn {
+        line-height: 1.2;      /* reduce line height to shrink button */
+    }
+}
+
+    /* Optional: reduce spacing in inner containers */
+    .row .p-1 {
+        padding: 2px 0 2px 0;
+    }
+
+    /* Optional: reduce horizontal gaps inside flex containers */
+    .row > div > div {
+        gap: 2px;
+    }
+}
+</style>
 </head>
 <body>
 
-<h1 style="text-align:center"><strong>PROCURE HUB</strong></h1>
+<!--<h1 style="text-align:center"><strong>PROCURE HUB</strong></h1>-->
+
+<h1 style="text-align:center;"><span style="background-color:#1a1714;color:#1bd4fb">PROCURE </span> <span style="background-color:#1bd4fb;color:#1a1714;">HUB</span></h1>
    <style>
 .gradient-hr {
     height: 4px;
@@ -125,15 +216,17 @@
 
     <div class="container-fluid">
          <h1 style="text-align:center;">BIDDER DASHBOARD</h1>
-        <h2 id="start_status" style="text-align:center;"></h2>
+       <h2 id="start_status" style="text-align:center; height:60px;"></h2>
+
         <h3 id="auction_status" class="text-align:left;"></h3>
         <h3 id="current_time_div" style="text-align:left;"></h3>
         <h3 id="start_time_div" style="text-align:left;"></h3>
         <h3 id="end_time_div" style="text-align:left;"></h3>
         <h3 id="total_req_div" style="text-align:left;"></h3>
 
-            <div id="refresh-container" style="text-align:center;">
+            <div id="refresh-container" style="text-align:center;display:none;">
               <button id="refreshBtn" style="width:30%;">Refresh</button>
+                &nbsp &nbsp &nbsp
             </div>
     </div>
 
@@ -155,6 +248,11 @@
   location.reload();
 });
 
+const username = "{{ request.user.username }}";
+
+<!--console.log("Logged-in user:", username);-->
+
+<!--window.visibleReqs = window.visibleReqs || [];-->
 
     let allGroupedBids = {};
     let latestUserRanks = [];
@@ -167,479 +265,688 @@
 let wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
 const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/chat/room1/`);
 
-    socket.onopen = () => {
-<!--        console.log("WebSocket connected");-->
-        socket.send(JSON.stringify({ action: "load_requirements" }));
-        socket.send(JSON.stringify({ type: "grouped_bid" }));
+<!--    socket.onopen = () => {-->
+<!--&lt;!&ndash;        console.log("WebSocket connected");&ndash;&gt;-->
+<!--        socket.send(JSON.stringify({ action: "load_requirements" }));-->
+<!--        socket.send(JSON.stringify({ type: "grouped_bid" }));-->
 
-    };
-
-    function submitBid(reqId) {
-        const button = document.querySelector(`#submitbid_${reqId}`);
-        const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);
-
-        if (bidAmtInput && bidAmtInput.value.trim()) {
-            button.disabled = true;
-            socket.send(JSON.stringify({
-                type: 'submit_bid',
-                req_id: reqId,
-                bid_amt: bidAmtInput.value.trim()
-            }));
-
-            setTimeout(() => {
-                button.disabled = false;
-                bidAmtInput.value = "";
-                socket.send(JSON.stringify({ type: 'grouped_bid' }));
-            }, 300);
-        }
-    }
-
-
-
-    socket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-<!--        console.log("From server:", data);-->
-
-if(data.type==='valid_bid')
-{
-<!--console.log("valid_bid",data.valid_bid)-->
-alert(data.valid_bid);
-
-}
-
-if (data.type === 'timer_update' && data.auction_started===true) {
-
-<!-- if (data.seconds === 0) {-->
-<!--        console.log("Auction Ended");-->
-<!--        window.location.reload();-->
-<!--    } else {-->
-<!--        console.log("Auction Ended");-->
-<!--    }-->
-<!--    console.log("Update Timer:", data.minutes);-->
-<!--    console.log("Minutes value:", data.minutes, "Type:", typeof data.minutes);-->
-<!--    console.log("clt:", data.clt);-->
-<!--    console.log("start_time:", data.start_time);-->
-<!--    console.log("end_time:", data.end_time);-->
-<!--    if(data.seconds===0){-->
-<!--    window.location.reload();-->
-<!--    }-->
-
-
-
-<!--     console.log("Auction Status:", data.auction_started);-->
-
-  let timer = document.getElementById("start_status");
- timer.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">REMAINING TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.minutes}</span>
-  `;
-
-  let auction_status = document.getElementById("auction_status");
- auction_status.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Started</span>
-  `;
-
-
-let current_time_div = document.getElementById("current_time_div");
-  current_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>
-  `;
-
- let start_time_div = document.getElementById("start_time_div");
-  start_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>
-  `;
-
-
- let end_time_div = document.getElementById("end_time_div");
-  end_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>
-  `;
-
-
-
-
-
-
-
-    // Convert HH:MM:SS to seconds
-    function parseTimeToSeconds(timeStr) {
-        const parts = timeStr.split(':').map(Number);
-        if (parts.length === 3) { // HH:MM:SS
-            return parts[0] * 3600 + parts[1] * 60 + parts[2];
-        } else if (parts.length === 2) { // MM:SS
-            return parts[0] * 60 + parts[1];
-        }
-        return 0;
-    }
-
-
-
-    const remainingSeconds = parseTimeToSeconds(data.minutes);
-    const totalSeconds = window.totalAuctionSeconds || 600; // default 10 min
-    const percent = Math.max(0, (remainingSeconds / totalSeconds) * 100);
-
-    // Update all timers
-    document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {
-        timerEl.textContent = `Remaining Time: ${data.minutes}`;
-    });
-
-    // Update all progress bars
-    document.querySelectorAll('[id^="progress-bar-"]').forEach(progressEl => {
-        progressEl.style.width = `${percent}%`;
-
-        // Remove old color classes
-        progressEl.classList.remove('green', 'orange', 'red');
-
-        // Add new color based on percentage
-        if (percent > 50) {
-            progressEl.classList.add('green');
-        } else if (percent > 20) {
-            progressEl.classList.add('orange');
-        } else {
-            progressEl.classList.add('red');
-        }
-    });
-}
-// Inside your onmessage
-else if (data.type === 'timer_update' && data.auction_started === false) {
-      let timer = document.getElementById("start_status");
-  timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;
-
-<!--    console.log("Auc not started will starts in:", data.minutes);-->
-     if(data.seconds===0){
-    window.location.reload();
-               }
-
-
-  let auction_status = document.getElementById("auction_status");
- auction_status.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION STATUS:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">Will Start Soon....!</span>
-  `;
-
-
-let current_time_div = document.getElementById("current_time_div");
-  current_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">CURRENT TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.clt}</span>
-  `;
-
- let start_time_div = document.getElementById("start_time_div");
-  start_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION START TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.start_time}</span>
-  `;
-
-
- let end_time_div = document.getElementById("end_time_div");
-  end_time_div.innerHTML = `
-    <span style="color:#007BFF; font-weight:500;">AUCTION END TIME:</span><br>
-    <span style="color:#FAFAFA; font-size:1.2em; font-weight:600;">${data.end_time}</span>
-  `;
-
-
-
-
-}
-else  {
-<!--        console.log("Auction Ended");-->
-        let timer_ = document.getElementById("start_status");
-        timer_.innerHTML = `Auction Ended`;
-
-
-}
-
-        if (data.type === 'requirements') {
-
-        let total_req_div = document.getElementById("total_req_div");
-         total_req_div.innerHTML = `
-        <span style="color:#007BFF;font-size:1.3em; font-weight:500;">Total Requirements:</span><br>
-        <span style="color:#FAFAFA; font-size:1.3em; font-weight:600;">${data.data.length}</span>`;
-
-<!--        console.log("Auction Start Status:", data.auction_start_status);-->
-            renderRequirements(data.data,data.auction_start_status);
-        }
-
-<!--         if (data.type === 'grouped_bid') {-->
-<!--            latestUserRanks = data.bid_group_data.user_ranks;-->
-<!--            console.log("LatestUserRanks:",latestUserRanks);-->
-<!--            allGroupedBids = {};-->
-<!--            data.bid_group_data.bids.forEach(bid => {-->
-<!--                if (!allGroupedBids[bid.id]) {-->
-<!--                    allGroupedBids[bid.id] = [];-->
-<!--                }-->
-<!--                allGroupedBids[bid.id].push(bid.rate);-->
-<!--            });-->
-<!--            updateBids();-->
-<!--        }-->
 <!--    };-->
 
-           if (data.type === "grouped_bid") {
-                    latestUserRanks = data.bid_group_data.user_ranks; // user’s best ranks
-                    len_bids = data.bid_group_data.len_bids; // total no of bids
-                    console.log("len_bids:",len_bids);
+
+function submitBid(reqId) {
+    const button = document.querySelector(`#submitbid_${reqId}`);
+    const bidAmtInput = document.getElementById(`bid_amt_${reqId}`);
+
+    if (bidAmtInput && bidAmtInput.value.trim()) {
+        button.disabled = true;
+        try {
+            localStorage.removeItem("bid_amt_" + reqId);
+            localStorage.removeItem("last_focused_input");
+            localStorage.removeItem("last_cursor_position");
+        } catch (e) {
+            console.error("Failed to clear localStorage:", e);
+        }
+
+        socket.send(JSON.stringify({
+            type: 'submit_bid',
+            req_id: reqId,
+            bid_amt: bidAmtInput.value.trim()
+        }));
+
+        // ✅ Don’t clear value (keeps keyboard open)
+        // Instead, auto-select so new input replaces old
+
+        bidAmtInput.focus();
+        bidAmtInput.value = "";
+        bidAmtInput.select();
+
+        setTimeout(() => {
+            button.disabled = false;
+        }, 300);
+    }
+}
+
+  const currentUser = "{{ request.user.username }}";
+<!--  console.log("Current User:", currentUser);-->
 
 
-                    userBids = data.bid_group_data.bids; // only this user’s bids
-                    console.log("latestUserRanks:",latestUserRanks);
-                    console.log("userBids:",userBids);
-                    updateBids();
+let allRequirements = [];
+let visibleReqIds = [];
+let lastReqIdsJSON = "";
+<!--  const lastMessageIds = {};-->
+auction_start_status=true;
 
-                    if (len_bids>0){
-                    let download_bids_div=document.getElementById("download_bids_div");
-                    download_bids_div.style.display="block";
+socket.addEventListener("message", function(event) {
+    const data = JSON.parse(event.data);
 
-                    }
+    // 1️⃣ Valid bid alert
+    if (data.type === "valid_bid") {
+        alert(data.valid_bid);
+    }
+
+
+if (data.type === "send_bid_msg") {
+    const bid_msg = data.bid_msg;
+    const reqId = bid_msg.req_id;
+    const msgText = bid_msg.msg;
+    const statusText = bid_msg.status_msg;
+    const sender = bid_msg.sender;
+
+<!--     console.log("sender:",sender);-->
+<!--      console.log("reqId:",reqId);-->
+<!--      console.log("msgText:",msgText);-->
+<!--      console.log("statusText:",statusText);-->
+
+    if (sender === currentUser) {
+        displayBidMessage(reqId, msgText, statusText);
+    }
+}
+
+
+
+
+    // 2️⃣ Auction timer updates
+    if (data.type === "timer_update") {
+        console.log("Auction End Status:",data.auction_end_status);
+        const timer = document.getElementById("start_status");
+        const auction_status = document.getElementById("auction_status");
+        const current_time_div = document.getElementById("current_time_div");
+        const start_time_div = document.getElementById("start_time_div");
+        const end_time_div = document.getElementById("end_time_div");
+
+        current_time_div.innerHTML = `<span style="color:#007BFF;font-weight:500;">CURRENT TIME:</span><br>
+            <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.clt}</span>`;
+        start_time_div.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION START TIME:</span><br>
+            <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.start_time}</span>`;
+        end_time_div.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION END TIME:</span><br>
+            <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.end_time}</span>`;
+
+        if (data.auction_started) {
+<!--        To show input field after auction start-->
+            document.querySelectorAll(".submit-bid-section")
+             .forEach(el => el.style.display = "block");
+
+            timer.innerHTML = `<span style="color:#007BFF;font-weight:500;">REMAINING TIME:</span><br>
+                <span style="color:#FAFAFA;font-size:1.2em;font-weight:600;">${data.minutes}</span>`;
+            auction_status.innerHTML = `<span style="color:#007BFF;font-weight:500;">AUCTION STATUS:</span><br>
+                <span style="color:#FAFAFA;font-weight:600;">Started</span>`;
+            document.getElementById("refresh-container").style.display = "none";
+
+                        // Convert HH:MM:SS to seconds
+            function parseTimeToSeconds(timeStr) {
+                const parts = timeStr.split(':').map(Number);
+                if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+                if (parts.length === 2) return parts[0] * 60 + parts[1];
+                return 0;
+            }
+
+            const remainingSeconds = parseTimeToSeconds(data.minutes);
+            const totalSeconds = window.totalAuctionSeconds || 600; // default 10 min
+            const percent = Math.max(0, (remainingSeconds / totalSeconds) * 100);
+
+            // ✅ Update all progress bars
+            document.querySelectorAll('[id^="progress-bar-"]').forEach(progressEl => {
+                progressEl.style.width = `${percent}%`;
+
+                // Remove old color classes
+                progressEl.classList.remove('green', 'orange', 'red');
+
+                // Add new color based on percentage
+                if (percent > 50) {
+                    progressEl.classList.add('green');
+                } else if (percent > 20) {
+                    progressEl.classList.add('orange');
+                } else {
+                    progressEl.classList.add('red');
                 }
-        };
+            });
+
+            // ✅ Update remaining-time text inside progress bar
+            document.querySelectorAll('[id^="remaining-time-"]').forEach(timerEl => {
+                timerEl.textContent = `${data.minutes}`;
+            });
 
 
- function renderRequirements(requirements,auction_start_status) {
+        } else {
+            timer.innerHTML = `Auction Will Start In:<br>${data.minutes}`;
+            auction_status.innerHTML =`<span style="color:#007BFF;font-weight:500;">AUCTION STATUS:</span><br>
+                <span style="color:#FAFAFA;font-weight:600;">Will Start Soon....!</span>`;
+            document.getElementById("refresh-container").style.display = "block";
+            if (data.seconds === 0) location.reload();
+        }
+    }
+
+    // 3️⃣ All requirements (once)
+<!--    if (data.type === "one_by_one_req") {-->
+<!--        console.log("📦 All requirements received:", data.data);-->
+<!--        window.allRequirements = data.data;-->
+<!--    }-->
+ // Get current logged-in username from Django
+
+
+<!--  socket.onmessage = function (e) {-->
+<!--    const data = JSON.parse(e.data);-->
+
+<!--    if (data.type === "send_bid_msg") {-->
+<!--      const bid_msg = data.bid_msg;-->
+<!--      console.log("Received bid message:", bid_msg);-->
+
+<!--      const reqId = bid_msg.req_id;-->
+<!--      const msgText = bid_msg.msg;-->
+<!--      const statusText = bid_msg.status_msg;-->
+<!--      const sender = bid_msg.sender;-->
+
+<!--      // ✅ Show message only if current user is the sender-->
+<!--      if (sender === currentUser) {-->
+<!--        console.log(`✅ Message belongs to current user (${currentUser})`);-->
+<!--        displayBidMessage(reqId, msgText, statusText);-->
+<!--      } else {-->
+<!--        console.log(`🚫 Ignored message from ${sender}`);-->
+<!--      }-->
+<!--    }-->
+<!--  };-->
+
+  // Function to display bid message
+  function displayBidMessage(reqId, msg, status) {
+    function tryDisplay(attempts = 0) {
+      const msgElement = document.getElementById(`msg_${reqId}`);
+      const statusElement = document.getElementById(`status_msg_${reqId}`);
+<!--      console.log("msgElement:",msgElement);-->
+<!--      console.log("statusElement:",statusElement);-->
+<!--      console.log("Message:",msg);-->
+<!--      console.log("Status:",status);-->
+
+      if (msgElement && statusElement) {
+        msgElement.textContent = `Message: ${msg}`;
+        statusElement.textContent = `Status: ${status}`;
+<!--        console.log(`✅ Displayed message for req_id=${reqId}`);-->
+      } else if (attempts < 20) {  // retry for ~2 seconds
+        console.log(`⏳ Waiting for elements of req_id=${reqId}...`);
+        setTimeout(() => tryDisplay(attempts + 1), 100);
+      } else {
+        console.warn(`⚠️ Elements for req_id=${reqId} not found after waiting.`);
+      }
+    }
+
+    tryDisplay();
+  }
+// Store requirements that should be visible
+window.visibleReqs = window.visibleReqs || {};
+
+// Store active timers to avoid duplicates
+window.reqTimers = window.reqTimers || {};
+
+
+if (data.type === "one_by_one_req") {
+    const reqs = data.data;
+    const postSchedule = data.post_interval_lst;
+    const auction_start_status = data.auction_start_status;
+    const now = new Date(data.current_local_time).getTime();
+
+    reqs.forEach(req => {
+        const reqId = String(req.id);
+        const showTime = new Date(postSchedule[reqId]).getTime();
+
+        if (!showTime) return;  // skip if missing
+
+        // Already visible → do nothing
+        if (window.visibleReqs[reqId]) return;
+
+        // Requirement should show immediately
+        if (showTime <= now) {
+            window.visibleReqs[reqId] = req;
+        }
+        else {
+            // Future requirement: schedule ONLY ONCE
+            if (!window.reqTimers[reqId]) {
+
+                const delay = showTime - now;
+
+                window.reqTimers[reqId] = setTimeout(() => {
+
+                    window.visibleReqs[reqId] = req;
+
+                    renderRequirements(Object.values(window.visibleReqs), auction_start_status);
+
+                }, delay);
+            }
+        }
+    });
+    // Render visible ones immediately
+    renderRequirements(Object.values(window.visibleReqs), auction_start_status);
+}
+
+    // 5️⃣ Requirements refresh (interval broadcast)
+    if (data.type === "requirements") {
+<!--        console.log("✅ Requirements received:", data.data);-->
+
+        let total_req_div = document.getElementById("total_req_div");
+        total_req_div.innerHTML = `
+            <span style="color:#007BFF;font-size:1.3em;font-weight:500;">Total Requirements:</span><br>
+            <span style="color:#FAFAFA;font-size:1.3em;font-weight:600;">${data.len_reqs}</span>`;
+
+        renderRequirements(data.data, data.auction_start_status);
+    }
+
+    // 6️⃣ Grouped bids
+    if (data.type === "grouped_bid") {
+        latestUserRanks = data.bid_group_data.user_ranks;
+        userBids = data.bid_group_data.bids;
+
+        if (data.bid_group_data.len_bids > 0) {
+            document.getElementById("download_bids_div").style.display = "block";
+        }
+        updateBids();
+    }
+});
 
 
 
-<!--        console.log("requirements:", requirements);-->
 
-        const container = document.getElementById('main-container');
-<!--        const container = document.getElementById('main-container');-->
-        container.innerHTML = ` `;
+function getCurrentInputValues() {
+    const values = {};
+    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
+        values[input.id] = input.value;
+    });
+    return values;
+    }
 
-        requirements.forEach((req, index) => {  // <-- index is here
-            const row = document.createElement('div');
-            row.className = 'row';
-            row.id = `req_row_${req.id}`;
 
-            const leftCol = document.createElement('div');
-            leftCol.className = 'col';
-            leftCol.innerHTML = `
-                <div style="display: flex; align-items: stretch;">
-                    <div class="vertical-label">
-                        <span>#REQUIREMENT ${index + 1}</span>
+function renderRequirements(requirements, auction_start_status) {
+<!--    console.log("Requirements:",requirements);-->
+    const savedInputs = getCurrentInputValues();
+<!--    console.log("SavedInputs:",savedInputs);-->
+    const scrollY = window.scrollY;
+    const container = document.getElementById('main-container');
+    const activeElement = document.activeElement;
+    const activeId = activeElement && activeElement.id;
+    const fragment = document.createDocumentFragment();
+
+    requirements.forEach((req, index) => {
+        const inputId = `bid_amt_${req.id}`;
+        const inputValue = savedInputs[inputId] || '';
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.id = `req_row_${req.id}`;
+
+        const leftCol = document.createElement('div');
+        leftCol.className = 'col col-left';
+
+        leftCol.innerHTML = `
+            <div style="display: flex; align-items: stretch;">
+                <div class="vertical-label">
+                    <span>#REQUIREMENT ${index + 1}</span>
+                </div>
+                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; margin:0; padding:0;">
+                    <!-- ✅ your existing progress bar + requirement details -->
+                    <div class="progress" style="height: 27px; margin-bottom: 10px;font-size:12px;position: relative; border-radius: 5px; overflow: hidden;">
+                        <div id="progress-bar-${req.id}" class="progress-bar green" style="width: 100%; height: 100%;"></div>
+                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                    display: flex; align-items: center; justify-content: center;
+                                    font-weight: bold; color: white; pointer-events: none;">
+                            REQUIREMENT ID: ${req.id} | <span id="remaining-time-${req.id}"></span>
+                        </div>
                     </div>
-                <div class="p-0 d-flex flex-column" style="flex: 1 1 auto; padding-bottom: 0; padding-top: 0;">
-                    <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">
-                        <h2 style="margin: 0;"><strong>REQUIREMENT ID:</strong> ${req.id}</h2>
-                    </div>
-                    <div class="p-1" style="margin-left:0.25rem;">
 
-                           <div class="row no-border">
+                    <!-- rest of your details exactly as you have them -->
+                    <div class="p-1" style="margin-left:0.5rem;">
+
+                        <!-- keep your other fields here (unloading, product, truck type, etc.) -->
+
+                        <div class="row no-border">
                            <div class="col-md-6">
+                             <div style="display: flex; gap: 10px;">
 
-                        <p><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
-                        <p>
-                          <strong style="color: ${!req.loading_point_full_address ? '#EFADF0' : ''};">
+                        <p style="margin:0;"><strong style="color: ${req.loading_point ?  '#05ACFA' : '#EFADF0'};">Loading:</strong> ${req.loading_point || ''}</p>
 
-                          </strong>
-                          ${req.loading_point_full_address || ''}
-                        </p>
-                        <p>
+                      <p style="margin:0;">
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">
-                                📍 View Loading Address on Map
+                             ${ req.loading_point_full_address}
+                            </a>
+                        </p>
+                                                </div>
+                        </div>
+
+                         <div class="col-md-6">
+
+
+                          </div>
+                          </div>
+                              <div style="display: flex; gap: 10px;">
+                            <p style="margin:0;"><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>
+
+
+                        <p style="margin:0;">
+                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">
+                               ${req.unloading_point_full_address}
                             </a>
                         </p>
                         </div>
-                         <div class="col-md-6">
-
-                        &nbsp
-                          </div>
-                          </div>
-                            <p><strong style="color: ${req.unloading_point ?  '#05ACFA' : '#EFADF0'};">Unloading:</strong> ${req.unloading_point || ''}</p>
-
-                          <p>
-                          <strong style="color: ${!req.unloading_point_full_address ? '#EFADF0' : ''};">
-
-                          </strong>
-                          ${req.unloading_point_full_address || ''}
-                        </p>
-<!--                       <p>-->
-<!--                          <strong style="color: ${!req.loading_point_full_address ? '#EFADF0' : ''};">-->
-<!--                            3. Loading Point Full Address:-->
-<!--                          </strong>-->
-<!--                          ${req.loading_point_full_address || ''}-->
-<!--                        </p>-->
-<!--                        <p>-->
-<!--                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.loading_point_full_address || '')};" target="_blank">-->
-<!--                                📍 View Loading Address on Map-->
-<!--                            </a>-->
-<!--                        </p>-->
-
-                        <p>
-                            <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(req.unloading_point_full_address || '')};" target="_blank">
-                                📍 View Unloading Address on Map
-                            </a>
-                        </p>
 
                         <hr>
-                        <h3>Requirements:</h3>
-                        <p><strong style="color: ${req.truck_type ?  '#05ACFA' : '#EFADF0'};">Truck:</strong> ${req.truck_type || ''}</p>
-                        &nbsp
+                        <div style="display: flex; gap: 5px;">
+                                          <p style="margin:0;">
+                                            <strong style="color: ${req.truck_type ? '#05ACFA' : '#EFADF0'};">Truck:</strong>
+                                            ${req.truck_type || ''}
+                                          </p>
 
-                        <p><strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong> ${req.no_of_trucks || ''}</p>
-                        &nbsp
 
-<!--                        <p><strong style="color: ${req.qty ? '#05ACFA' : '#EFADF0'};">Qty:</strong> ${req.qty || ''}</p>-->
-<!--                        &nbsp-->
-                          <p>
+                                          <p style="margin:0;">
                               <strong style="color: ${req.product ? '#05ACFA' : '#EFADF0'};">
                                 Product Type:
                               </strong>
                               ${req.product || ''} with ${req.drum_type_no_of_drums || ''} Drums
                             </p>
-                        &nbsp
-                        <p>
-                              <strong style="color: ${req.approx_mat_mt ? '#05ACFA' : '#EFADF0'};">
-                                Approx Material Wait (MT):
-                              </strong>
-                              ${req.approx_mat_mt || ''}
-                            </p>
-                        &nbsp
-                       <p>
-                      <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">
-                        Notes:
-                      </strong>
-                      ${req.notes || ''}
-                    </p>
-                    <br>
-                        <p>
-                          <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
-                            Weight Per Drum:
-                          </strong>
-                          ${req.weight_per_drum || ''}
-                        </p>
-                        &nbsp
-                       <p>
+                               <p style="margin:0;">
+                                            <strong style="color: ${req.no_of_trucks ? '#05ACFA' : '#EFADF0'};">No of Truck:</strong>
+                                            ${req.no_of_trucks || ''}
+                                          </p>
+
+
+
+                            <p style="margin:0;">
                           <strong style="color: ${req.types ? '#05ACFA' : '#EFADF0'};">
                             Types:
                           </strong>
                           ${req.types || ''}
                         </p>
-                           <hr>
-                        <h3>Bidding Strategy:</h3>
-                       <p>
-                          <strong style="color: ${req.cel_price ? '#05ACFA' : '#EFADF0'};">
-                            Ceiling Price:
+                                        </div>
+
+
+
+
+                       <div style="display: flex; gap: 5px; margin:2;">
+                        <p style="margin:0;">
+                              <strong style="color: ${req.approx_mat_mt ? '#05ACFA' : '#EFADF0'};">
+                                Approx Material Wait (MT):
+                              </strong>
+                              ${req.approx_mat_mt || ''}
+                            </p>
+
+                             <p style="margin:0;">
+                          <strong style="color: ${req.weight_per_drum ? '#05ACFA' : '#EFADF0'};">
+                            Weight Per Drum(Kg):
                           </strong>
-                          ${req.cel_price || ''}
+                          ${req.weight_per_drum || ''}
                         </p>
 
-                          &nbsp
-                       <p>
-                          <strong style="color: ${req.min_dec_val ? '#05ACFA' : '#EFADF0'};">
-                            Minimal Decremental Value:
+                        <p style="margin:0;">
+                          <strong style="color: ${req.req_date ? '#05ACFA' : '#EFADF0'};">
+                            Requirement Date:
                           </strong>
-                          ${req.min_dec_val || ''}
+                          ${req.req_date || ''}
                         </p>
+                                              <p style="margin:0;">
+                      <strong style="color: ${req.notes ? '#05ACFA' : '#EFADF0'};">
+                        Notes:
+                      </strong>
+                      ${req.notes || ''}
+                    </p>
+                        </div>
+
+ <hr>
+${(req.cel_price || req.min_dec_val) ? `
+  <div style="display: flex; gap: 4px;">
+
+    ${req.cel_price ? `
+      <p style="margin:0;">
+        <strong style="color:#05ACFA;">Ceiling Price:</strong>
+        ${req.cel_price}
+      </p>` : ''}
+
+    ${req.min_dec_val ? `
+      <p style="margin:0;">
+        <strong style="color:#05ACFA;">Minimal Decremental Value:</strong>
+        ${req.min_dec_val}
+      </p>` : ''}
+
+  </div>
+  <hr>
+` : ''}
+
+                    </div>
+                       <div style="margin:0; padding:0;">
+                            <p id="previous_bids_${req.id}" style="margin:0; font-weight:bold;"></p>
+                            <p id="user_rank_${req.id}" style="margin:0; color: lightgreen;"></p>
+
+
+                        <div id="bid_info_${req.id }" style="display: flex; gap: 10px;">
+                              <p id="msg_${req.id }" style="font-weight: bold; margin: 0;"></p>
+                              <p id="status_msg_${req.id}" style="color: lightgreen; margin: 0;"></p>
+                        </div>
+
+                       </div>
+                        <div class="submit-bid-section" id="submit_bid_amt_${req.id}" style="${auction_start_status ? 'display:block' : 'display:none;'}">
+                            <div style="display: flex; gap: 2px; align-items: center;">
+                                <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount"
+                                       style="flex: 1; padding: 5px; font-size: 12px;"   value="${inputValue}">
+                                    <button id="submitbid_${req.id}" onclick="submitBid(${req.id})" class="submit-btn"
+                                            style="flex: 2; padding: 5px; font-size: 14px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        Submit Bid
+                                  </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                </div>
-            `;
+            </div>
+        `;
 
-            const rightCol = document.createElement('div');
-            rightCol.className = 'col';
-            rightCol.innerHTML = `
-            <div style="background-color: white; color: black; border-radius: 1px; margin-top: 0; padding: 0.2rem;">
-                        <h2 style="margin: 0;"><strong>BIDDER REQUIREMENT ID:</strong> ${req.id}</h2>
-                    </div>
-
-                  <h3 id="remaining-time-${req.id}"></h3>
-                  <div class="progress" style="height: 20px; margin-bottom: 10px;">
-                   <div id="progress-bar-${req.id}"
-                     class="progress-bar green"
-
-                         role="progressbar"
-                         style="width: 100%;"
-                         aria-valuenow="100"
-                         aria-valuemin="0"
-                         aria-valuemax="100">
-                    </div>
-                </div>
-                <hr>
-
-                <p id="previous_bids_${req.id}" style="color: yellow;"></p>
-                <p id="user_rank_${req.id}" style="color: lightgreen;"></p>
+        row.appendChild(leftCol);
+        fragment.appendChild(row);
+    });
 
 
-               <div style="margin-top: 5px; display: flex; gap: 2px;">
-                 <input type="number" id="bid_amt_${req.id}" placeholder="Enter bid amount">
-                    <button id="submitbid_${req.id}" onclick="submitBid(${req.id})">Submit Bid</button>
-                    <button onclick="window.location.reload();">Refresh</button>
-<!--                    <button onclick="load_rank()">Send Grouped Bid</button>-->
 
-                </div>
+   // ✅ Instead of replaceChildren (kills focus), patch manually
+    if (container.children.length !== requirements.length) {
+        container.replaceChildren(fragment);
+    } else {
+        // Update row-by-row
+        requirements.forEach((req, i) => {
+            const existing = container.children[i];
+            const newRow = fragment.children[i];
+             if (!newRow) return;
+<!--            if (!existing || existing.id !== newRow.id || existing.innerHTML !== newRow.innerHTML) {-->
+<!--                container.replaceChild(newRow, existing);-->
+<!--            }-->
+             if (!existing) {
+                    container.appendChild(newRow);
+                    return;
+                }
 
-            `;
+                if (!existing.contains(document.activeElement)) {
+        // Safe to replace when no active input inside
+        if (existing.id !== newRow.id || existing.innerHTML !== newRow.innerHTML) {
+            container.replaceChild(newRow, existing);
+        }}
 
-            row.appendChild(leftCol);
-<!--            If auction is started then only append the right column-->
+               else{
+        // Just update dynamic parts instead of replacing the whole row
+        // Example: update progress bar + text fields
+        const newProgress = newRow.querySelector(`#progress-bar-${req.id}`);
+        const oldProgress = existing.querySelector(`#progress-bar-${req.id}`);
+        if (oldProgress && newProgress) {
+            oldProgress.className = newProgress.className;
+            oldProgress.style.width = newProgress.style.width;
+        }
 
-            if (auction_start_status===true){
-            row.appendChild(rightCol);
-            }
+        const newRemain = newRow.querySelector(`#remaining-time-${req.id}`);
+        const oldRemain = existing.querySelector(`#remaining-time-${req.id}`);
+        if (oldRemain && newRemain) {
+            oldRemain.textContent = newRemain.textContent;
+        }
 
-            container.appendChild(row);
+         const newRank = newRow.querySelector(`#user_rank_${req.id}`);
+        const oldRank = existing.querySelector(`#user_rank_${req.id}`);
+        if (oldRank && newRank) {
+            oldRank.textContent = newRank.textContent;
+        }
+
+        // (you can add more patching here as needed)
+    }
         });
-
-        updateBids();
     }
 
+    // ✅ If user was typing, re-focus only that input (keyboard stays open)
+    if (activeId) {
+        const stillThere = document.getElementById(activeId);
+        if (stillThere) {
+            stillThere.focus();
+            // put cursor at end if it’s a number input
+            if (stillThere.type === "number") {
+                const val = stillThere.value;
+                stillThere.value = "";
+                stillThere.value = val;
+            }
+        }
+    }
 
-<!--    function updateBids() {-->
-<!--        Object.keys(allGroupedBids).forEach(reqId => {-->
-<!--            const field = document.getElementById(`previous_bids_${reqId}`);-->
-<!--            if (field) {-->
-<!--                field.textContent = `Previous Bids: ${allGroupedBids[reqId].join(' >> ')}`;-->
-<!--            }-->
-<!--        });-->
+    requestAnimationFrame(() => {
+        window.scrollTo(0, scrollY);
+    });
 
-<!--        latestUserRanks.forEach(rank => {-->
-<!--            const field = document.getElementById(`user_rank_${rank.bid_id}`);-->
-<!--            if (field) {-->
-<!--                field.textContent = `Your Rank: ${rank.rank} (Bid: ₹${rank.bid_rate})`;-->
-<!--            }-->
-<!--        });-->
-<!--    }-->
+    updateBids();
+}
+
+
+
+
+
+<!--}-->
+function restoreInputs() {
+    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
+        const savedVal = localStorage.getItem(input.id);
+        if (savedVal !== null) input.value = savedVal;
+    });
+
+    // ❌ Remove auto-focus → prevents unwanted scroll jump
+    // const lastFocusedId = localStorage.getItem("last_focused_input");
+    // if (lastFocusedId) {
+    //     const focusedInput = document.getElementById(lastFocusedId);
+    //     if (focusedInput) focusedInput.focus();
+    // }
+}
+
+
+let keyboardOpen = false;
+
+window.addEventListener("resize", () => {
+    // Mobile trick: viewport height shrinks when keyboard opens
+    keyboardOpen = window.innerHeight < screen.height - 100;
+});
+
+function restoreInputs() {
+    document.querySelectorAll('[id^="bid_amt_"]').forEach(input => {
+        const savedVal = localStorage.getItem(input.id);
+        if (savedVal !== null) input.value = savedVal;
+    });
+
+    if (keyboardOpen) {
+        const lastFocusedId = localStorage.getItem("last_focused_input");
+        if (lastFocusedId) {
+            const focusedInput = document.getElementById(lastFocusedId);
+            if (focusedInput) focusedInput.focus();
+        }
+    }
+}
+
+
+// Call this after rendering your inputs
+
+
+
+// Track toggle states for each requirement locally
+const toggleState = {}; // { reqId: "all" | "less" }
+
 function updateBids() {
-
-
-    // Group this user’s bids by requirement
     const bidsByReq = {};
     userBids.forEach(bid => {
-        if (!bidsByReq[bid.id]) {   // ✅ use `id` instead of `req_id`
+        if (!bidsByReq[bid.id]) {
             bidsByReq[bid.id] = [];
         }
         bidsByReq[bid.id].push(bid.rate);
     });
 
-    // Show bid history
     Object.keys(bidsByReq).forEach(reqId => {
         const field = document.getElementById(`previous_bids_${reqId}`);
-        if (field) {
-            field.textContent = `Rates History: ${bidsByReq[reqId].join(" >> ")}`;
+        if (!field) return;
+        const allRates = bidsByReq[reqId];
+        const showLimit = 5;
+
+        // Decide what to render based on saved state
+        let visibleRates;
+        if (toggleState[reqId] === "all") {
+            visibleRates = allRates;
+        } else {
+            visibleRates = allRates.slice(-showLimit);
         }
+
+        // Render
+        field.innerHTML = `
+            <span class="visible-rates">${visibleRates.join(" > ")}</span>
+            ${allRates.length > showLimit ?
+              `<button class="toggle-rates" data-req="${reqId}" style="margin-left:5px; font-size:12px;">
+                  ${toggleState[reqId] === "all" ? "Show Less" : "Show All"}
+               </button>`
+              : ''}
+        `;
     });
 
-    // Show rank
+    // Add listeners
+    document.querySelectorAll(".toggle-rates").forEach(btn => {
+        btn.onclick = () => {
+            const reqId = btn.getAttribute("data-req");
+            const allRates = bidsByReq[reqId];
+
+            if (toggleState[reqId] === "all") {
+                // Switch to "less"
+                toggleState[reqId] = "less";
+                btn.textContent = "Show All";
+                btn.previousElementSibling.textContent = allRates.slice(-5).join(" > ");
+            } else {
+                // Switch to "all"
+                toggleState[reqId] = "all";
+                btn.textContent = "Show Less";
+                btn.previousElementSibling.textContent = allRates.join(" > ");
+            }
+        };
+    });
+
+
+
+    // Show rank as before
     latestUserRanks.forEach(rank => {
-        const field = document.getElementById(`user_rank_${rank.bid_id}`);  // ✅ use bid_id
+        const field = document.getElementById(`user_rank_${rank.bid_id}`);
         if (field) {
-            field.textContent = `Rank: ${rank.rank} (Best Bid: ₹${rank.bid_rate})`;
+            field.textContent = `Rank: ${rank.rank} (Last Bid: ₹${rank.bid_rate})`;
         }
     });
 }
 
 
 
-<!--function load_rank(){-->
+// Save input values in localStorage whenever user types
+document.addEventListener("input", (e) => {
+    if (e.target.id.startsWith("bid_amt_")) {
+        localStorage.setItem(e.target.id, e.target.value);
+    }
+});
 
-<!--    socket.send(JSON.stringify({ type: "grouped_bid" }));-->
-<!--    console.log("Sent grouped_bid to server");-->
 
-<!--}-->
+document.addEventListener("focusin", (e) => {
+    if (e.target.tagName === "INPUT" && e.target.id.startsWith("bid_amt_")) {
+        localStorage.setItem("last_focused_input", e.target.id);
+        // Save cursor only if input type is text (number type doesn't support it)
+        if (e.target.type === "text") {
+            localStorage.setItem("last_cursor_position", e.target.selectionStart || 0);
+        }
+    }
+});
+
+
+
+
+
 </script>
 
 </body>

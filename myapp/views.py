@@ -1,16 +1,24 @@
 # myapp/views.py
 from django.contrib.auth import authenticate, login, logout
 import csv
-
+from datetime import datetime
+from datetime import datetime, timedelta
+import uuid
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 from .models import Requirements
 from django.views.decorators.csrf import csrf_exempt
 import json
 # views.py
+import random
 from django.shortcuts import redirect
 from django.contrib import messages
-from .models import Bid
+from .models import Bid,BidMsg
+from .gmail_service import get_gmail_service, send_email
+
 def index(request):
     # If logged in, go to dashboard
     if request.user.is_authenticated:
@@ -28,24 +36,6 @@ def index(request):
         else:
             return render(request, 'myapp/index.html')
     return redirect('login')  # Otherwise show login
-
-#
-# def register_view(request):
-#     if request.method == 'POST':
-#         username = request.POST['username']
-#         password = request.POST['password']
-#
-#         if User.objects.filter(username=username).exists():
-#             messages.error(request, 'Username already exists.')
-#             return redirect('register')
-#
-#
-#         user = User.objects.create_user(username=username, password=password)
-#         login(request, user)
-#         return redirect('index')
-#
-#     return render(request, 'myapp/register.html')
-
 
 from django.contrib.auth.models import User
 from .models import Profile
@@ -75,6 +65,7 @@ def register_view(request):
             company_name=company_name,
             address=address,
             gst_no=gst_no,
+            email=email,
             pan_no=pan_no
         )
 
@@ -107,6 +98,31 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
+
+def account_recover(request):
+    if request.method == 'POST' and request.POST.get('mail_id'):
+        email = request.POST['mail_id']
+        user_file=Profile.objects.filter(email=email)
+        otp = random.randint(1000, 9999)
+        print(otp)
+
+        for user_file in user_file:
+            user_mail=user_file.email
+            if user_mail == email:
+                service = get_gmail_service()
+                subject = "Your OTP Code"
+                body_text = f"Your OTP is: {otp}. It will expire in 2 minutes."
+                send_email(service, user_mail, subject, body_text)
+                print("Email matched")
+        print("User Profile",user_file)
+
+
+    if request.method == 'POST' and request.POST.get('otp'):
+        otp = request.POST['opt']
+
+    return render(request, 'myapp/forget_account.html')
+
+
 @login_required(login_url='/login/')
 def create_requirement(request):
     if request.method == "POST":
@@ -114,7 +130,6 @@ def create_requirement(request):
         unloading_point = request.POST.get("unloading_point")
         loading_point_full_address = request.POST.get("loading_point_full_address")
         unloading_point_full_address = request.POST.get("unloading_point_full_address")
-
         truck_type = request.POST.get("truck_type")
         no_of_trucks=request.POST.get("no_of_trucks")
         # qty = request.POST.get("qty")
@@ -126,8 +141,10 @@ def create_requirement(request):
         types = request.POST.get("types")
         cel_price= request.POST.get("cel_price")
         min_dec_val= request.POST.get("min_dec_val")
+        req_date= request.POST.get('req_date')
+        req_date=datetime.strptime(str(req_date), "%Y-%m-%d")
         Requirements.objects.create(loading_point=loading_point, unloading_point=unloading_point,loading_point_full_address=loading_point_full_address,unloading_point_full_address=unloading_point_full_address, truck_type=truck_type,no_of_trucks=no_of_trucks,
-                                     product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,approx_mat_mt=approx_mat_mt,types=types,cel_price=cel_price,min_dec_val=min_dec_val)
+                                     product=product,notes=notes, drum_type_no_of_drums=drum_type_no_of_drums,weight_per_drum=weight_per_drum,approx_mat_mt=approx_mat_mt,types=types,cel_price=cel_price,min_dec_val=min_dec_val,req_date=str(req_date))
         return redirect('requirements')  # <-- Redirect to avoid re-submission on refresh
 
     requirements = Requirements.objects.all()
@@ -165,7 +182,7 @@ You're calling this from JavaScript fetch(), not through a form submission. So y
 @login_required(login_url='/login/')
 def download_template(request):
     # Get all field names from the Requirements model (excluding auto fields like id)
-    field_names = [field.name for field in Requirements._meta.fields if not field.auto_created]
+    field_names = [field.name for field in Requirements._meta.fields[2:] if not field.auto_created]
 
     # Create HTTP response with CSV content
     response = HttpResponse(content_type='text/csv')
@@ -173,37 +190,14 @@ def download_template(request):
 
     writer = csv.writer(response)
     writer.writerow(field_names)  # Write header only
-
     return response
 
 
 import pandas as pd
 from django.http import HttpResponse
-# @login_required(login_url='/login/')
-# def download_requirements(request):
-#     all_bids = Bid.objects.all().values(
-#         "id", "user__username", "req__id", "req__loading_point","req__unloading_point","req__product","req__truck_type", "rate", "created_at"
-#     )
-#     rank_df = pd.DataFrame(list(all_bids))  # ✅ now it's
-#     # Pick the lowest rate per user per requirement
-#     lowest_bids = rank_df.sort_values("rate").groupby(
-#         ["req__id", "user__username"], as_index=False
-#     ).first()
-#     # Rank them within each requirement
-#     lowest_bids["Rank"] = lowest_bids.groupby("req__id")["rate"].rank(
-#         ascending=True, method="dense"
-#     )
-#     # Keep only ranks 1 to 4
-#     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
-#     # Generate CSV in memory instead of saving file on server
-#     response = HttpResponse(content_type='text/csv')
-#     response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
-#     rank_df.to_csv(path_or_buf=response, index=False)
-#     return response
 
 @login_required(login_url='/login/')
 def download_requirements(request):
-
     all_bids = Bid.objects.all().values(
         # "id", "user__username", "req__id",
         # "req__loading_point", "req__unloading_point",
@@ -213,7 +207,7 @@ def download_requirements(request):
         "req__loading_point", "req__unloading_point",
         "req__product", "req__truck_type", "req__no_of_trucks", "req__notes", "req__drum_type_no_of_drums",
         "req__approx_mat_mt", "req__weight_per_drum",
-        "rate", "created_at"
+        "rate", "created_at",'req__req_date'
     )
     rank_df = pd.DataFrame(list(all_bids))
 
@@ -237,68 +231,66 @@ def download_requirements(request):
     response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
     rank_df.to_csv(path_or_buf=response, index=False)
     return response
-#
-# @login_required(login_url='/login/')
-# def get_bid_report(request):
-#     user=request.user.username
-#     # user_id=User.objects.get(username=user)
-#     all_bids = Bid.objects.all().values(
-#         "id", "user__username", "req__id", "req__loading_point","req__unloading_point","req__product","req__truck_type", "rate", "created_at"
-#     )
-#     rank_df = pd.DataFrame(list(all_bids))  # ✅ now it's
-#     # Pick the lowest rate per user per requirement
-#     lowest_bids = rank_df.sort_values("rate").groupby(
-#         ["req__id", "user__username"], as_index=False
-#     ).first()
-#     # Rank them within each requirement
-#     lowest_bids["Rank"] = lowest_bids.groupby("req__id")["rate"].rank(
-#         ascending=True, method="dense"
-#     )
-#     # Keep only ranks 1 to 4
-#     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
-#     print("Rank_df before:", rank_df)
-#     rank_df=rank_df[rank_df["user__username"]==user]
-#     print("Rank_df after:",rank_df)
-#     # Generate CSV in memory instead of saving file on server
-#     response = HttpResponse(content_type='text/csv')
-#     response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
-#     rank_df.to_csv(path_or_buf=response, index=False)
-#     return response
+
 
 @login_required(login_url='/login/')
 def get_bid_report(request):
-    user = request.user.username
+    user = request.user
+    print("Current user:", user.username)
 
+    # ✅ Fetch latest BidMsg for this user (if any)
+    bid_msg = (
+        BidMsg.objects.filter(sender=user)
+        .order_by('-id')
+        .values('msg', 'status_msg')
+        .first()
+    )
+
+    # ✅ Fetch bids
     all_bids = Bid.objects.all().values(
         "id", "user__username", "req__id",
         "req__loading_point", "req__unloading_point",
-        "req__product", "req__truck_type","req__no_of_trucks","req__notes","req__drum_type_no_of_drums","req__approx_mat_mt","req__weight_per_drum",
-        "rate", "created_at"
+        "req__product", "req__truck_type", "req__no_of_trucks",
+        "req__notes", "req__drum_type_no_of_drums",
+        "req__approx_mat_mt", "req__weight_per_drum",
+        "req__req_date", "rate", "created_at"
     )
-    rank_df = pd.DataFrame(list(all_bids))
 
-    # make sure created_at is datetime
+    # Create DataFrame
+    rank_df = pd.DataFrame(list(all_bids))
+    if rank_df.empty:
+        return HttpResponse("No bids available.", content_type='text/plain')
+
     rank_df["created_at"] = pd.to_datetime(rank_df["created_at"])
 
-    # Pick the lowest rate per user per requirement, tie-break by earliest created_at
+    # ✅ Pick lowest bid per user per requirement
     lowest_bids = rank_df.sort_values(["req__id", "rate", "created_at"]).groupby(
         ["req__id", "user__username"], as_index=False
     ).first()
 
-    # Rank them within each requirement (rate first, created_at as tiebreaker)
+    # ✅ Rank within each requirement
     lowest_bids = lowest_bids.sort_values(["req__id", "rate", "created_at"])
     lowest_bids["Rank"] = lowest_bids.groupby("req__id").cumcount() + 1
 
-    # Keep only ranks 1 to 4
+    # ✅ Keep only top 4
     rank_df = lowest_bids[lowest_bids["Rank"].between(1, 4)]
 
-    # Filter for this user only
-    rank_df = rank_df[rank_df["user__username"] == user]
+    # ✅ Filter for logged-in user
+    rank_df = rank_df[rank_df["user__username"] == user.username]
 
-    # Generate CSV response
+    # ✅ Add message info (same for all rows)
+    if bid_msg:
+        rank_df["Message"] = bid_msg["msg"]
+        rank_df["Status_Message"] = bid_msg["status_msg"]
+    else:
+        rank_df["Message"] = "N/A"
+        rank_df["Status_Message"] = "N/A"
+
+    # ✅ Generate CSV response
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Bid.csv"'
+    response['Content-Disposition'] = f'attachment; filename="{user.username}_Bid_Report.csv"'
     rank_df.to_csv(path_or_buf=response, index=False)
+
     return response
 
 
@@ -308,6 +300,8 @@ def delete_all_bids(request):
         Bid.objects.all().delete()
         messages.success(request, "All bids have been deleted successfully.")
     return redirect("requirements")  # redirect wherever you want
+#
+
 
 @login_required(login_url='/login/')
 @csrf_exempt
@@ -316,38 +310,60 @@ def bulk_upload_requirements(request):
         data = json.loads(request.body).get("data", [])
         objs = []
         bulk_upload_exception = []
+        batch_unique_id = str(uuid.uuid4())
 
         for index, row in enumerate(data, start=1):
             try:
+                raw_date = row.get("req_date", "")
+                parsed_date = None
+
+                # --- 🧠 Smart Date Handling ---
+                if raw_date:
+                    # Case 1: Excel float date (e.g. 45678.0)
+                    if isinstance(raw_date, (int, float)):
+                        # Excel's day 1 is 1899-12-30
+                        parsed_date = datetime(1899, 12, 30) + timedelta(days=float(raw_date))
+                        parsed_date = parsed_date.date()
+
+                    # Case 2: String date
+                    elif isinstance(raw_date, str):
+                        raw_date = raw_date.strip()
+                        for fmt in ("%Y-%m-%d", "%d-%b-%y", "%d/%m/%Y", "%Y/%m/%d"):
+                            try:
+                                parsed_date = datetime.strptime(raw_date, fmt).date()
+                                break
+                            except ValueError:
+                                continue
+
                 objs.append(Requirements(
+                    unique_id=batch_unique_id,
                     loading_point=row.get("loading_point", ""),
                     unloading_point=row.get("unloading_point", ""),
                     loading_point_full_address=row.get("loading_point_full_address", ""),
                     unloading_point_full_address=row.get("unloading_point_full_address", ""),
                     product=row.get("product", ""),
                     truck_type=row.get("truck_type", ""),
-                    # qty=int(row.get("qty") or 0),
                     no_of_trucks=int(row.get("no_of_trucks") or 0),
                     notes=row.get("notes", ""),
                     drum_type_no_of_drums=row.get("drum_type_no_of_drums", ""),
                     weight_per_drum=float(row.get("weight_per_drum") or 0),
                     approx_mat_mt=float(row.get("approx_mat_mt") or 0),
                     types=row.get("types", ""),
-                    cel_price=int(row.get("cel_price")or 0),
-                    min_dec_val=int(row.get("min_dec_val")or 0)
+                    cel_price=int(row.get("cel_price") or 0),
+                    min_dec_val=int(row.get("min_dec_val") or 0),
+                    req_date=str(parsed_date),  # ✅ proper Python date
                 ))
             except Exception as e:
                 bulk_upload_exception.append({"index": index, "Exception": str(e)})
                 continue
 
-        Requirements.objects.bulk_create(objs)
-        new_requirements = [model_to_dict(obj) for obj in objs]
+        if objs:
+            Requirements.objects.bulk_create(objs)
 
         return JsonResponse({
             "status": "success",
             "count": len(objs),
-            "bulk_upload_exception": bulk_upload_exception,
-            "new_requirements": new_requirements
+            "bulk_upload_exception": bulk_upload_exception
         })
 
     return JsonResponse({"error": "Invalid method"}, status=400)
@@ -379,9 +395,10 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from .models import UserAccess
 from .models import GeneralAccess
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
 import pytz
+
 
 
 @login_required(login_url='/login/')
@@ -389,21 +406,49 @@ def admin_dashboard(request):
     if request.method == "POST":
         start_time_str=request.POST.get("start_time")
         minute=request.POST.get("minute")
-        # print("Start_time Time:", start_time_str)
+        interval=request.POST.get("interval")
+        # print("Auction duration in minutes:", minute)
+        int_dict = {}
+        if not  interval:
+            total_interval=0
+        else:
+            all_req=Requirements.objects.all()
+            len_all_req=len(all_req)
+            total_interval=int(len_all_req)*int(interval)
+            # print("total_interval:",total_interval)
 
-        if start_time_str:
+            all_ids = []
+            for r in all_req:
+                req_id = r.id
+                all_ids.append(req_id)
+            start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M")
+            india_tz = pytz.timezone('Asia/Kolkata')
+            start_time = india_tz.localize(start_time)
+
+            for index,id in enumerate(all_ids):
+                increamental_interval=int(index) * int(interval)
+                increamental_interval=timedelta(seconds=increamental_interval)
+                int_dict[id]=increamental_interval+start_time
+
+            # print("base_interval:",all_ids)
+
+        if start_time_str and minute:
+            # print("int_dict:",int_dict )
             # Parse the datetime-local string into a datetime object
             start_time = datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M")
 
             # Make it timezone-aware in Asia/Kolkata
             india_tz = pytz.timezone('Asia/Kolkata')
             start_time = india_tz.localize(start_time)
-
             # Store only the time part in the DB
             access, _ = GeneralAccess.objects.get_or_create(id=1)
             access.minutes = minute
             access.start_time = start_time
+            access.interval = total_interval
+            import json
+            access.post_interval_lst = json.dumps(int_dict, default=str)
             access.save()
+            # print("Int Dict:",int_dict)
 
             # print("Bidding End  Time:", end_time.strftime("%H:%M"))
         selected_usernames = request.POST.getlist("user")
@@ -452,6 +497,7 @@ def admin_dashboard(request):
             print("No access option selected for ceiling price")
 
 
+
         # access, _ = GeneralAccess.objects.get_or_create(id=1)
         # access.minutes = minute
         # access.end_time = end_time
@@ -494,6 +540,49 @@ def admin_dashboard(request):
     # users = User.objects.filter(is_superuser=False,is_staff=False)
     return render(request, "myapp/admin_dashboard.html")
 
+from datetime import datetime, timedelta
+india_tz = pytz.timezone('Asia/Kolkata')
+clt = datetime.now(india_tz)
+def stop_bid(request):
+    access, _ = GeneralAccess.objects.get_or_create(id=1)
+    access.start_time=clt
+    access.minutes = 0
+    access.save()
+    return redirect("/")
 
-def extend_page():
-    return None
+
+def extend_page(request):
+    if request.method=="POST":
+        extend_=request.POST.get("extend_")
+        if extend_:
+            access, _ = GeneralAccess.objects.get_or_create(id=1)
+            access.minutes += int(extend_)
+            access.save()
+            return redirect("/")
+
+
+
+
+# from django.contrib import messages
+# def biddermsg(request):
+#     if request.method == "POST":
+#         msg = request.POST.get("msg")
+#         status_msg = request.POST.get("status_msg")
+#         req_id = request.POST.get("req_id")
+#         top_bidder = request.POST.get("top_bidder")
+#         # print("msg:",msg)
+#         # print("status_msg:",status_msg)
+#         # print("req_id:",req_id)
+#         # print("top_bidder:",top_bidder)
+#         user=User.objects.get(username=top_bidder)
+#         req = Requirements.objects.get(id=req_id)
+#         # ✅ create a new BidMsg instead of overwriting id=1
+#         BidMsg.objects.create(
+#             sender=user,
+#             msg=msg,
+#             status_msg=status_msg,
+#             req=req
+#         )
+#         messages.success(request, "Bid message saved successfully!")
+#
+#     return render(request, "myapp/admin_dashboard.html")

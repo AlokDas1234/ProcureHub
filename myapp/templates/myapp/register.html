@@ -1,47 +1,286 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <title>Register</title>-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container-fluid mt-4">-->
+<!--<h1 style="text-align:center;"><span style="background-color:#1a1714;color:#1bd4fb">PROCURE </span> <span style="background-color:#1bd4fb;">HUB</span></h1>-->
+<!--        <style>-->
+<!--.gradient-hr {-->
+<!--    height: 4px;-->
+<!--    border: none;-->
+<!--    background: linear-gradient(to right, #0d6efd, #6610f2);-->
+<!--    border-radius: 2px;-->
+<!--}-->
+<!--</style>-->
+
+<!--<hr class="gradient-hr">-->
+<!--<form method="post" class="col-5 mx-auto card p-4 shadow-lg border-0">-->
+<!--    <h3 class="mb-4">REGISTER</h3>-->
+<!--       <hr class="mt-0">-->
+<!--    {% csrf_token %}-->
+<!--    <input type="text" name="username" placeholder="Username" required><br>-->
+<!--        <input type="tel" name="mobile_no" placeholder="Mobile No" pattern="[0-9]{10}" title="Enter 10-digit mobile number" required><br>-->
+<!--        <input type="text" name="company_name" placeholder="Company Name" required><br>-->
+<!--        <input type="text" name="address" placeholder="Company Address" required><br>-->
+<!--        <input type="email" name="email" placeholder="Email Address" required><br>-->
+<!--        <input type="text" name="gst_no" placeholder="GST Number"-->
+<!--               pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}"-->
+<!--               title="Enter valid GST number"-->
+<!--               required><br>-->
+<!--        <input type="text" name="pan_no" placeholder="PAN Number"-->
+<!--               pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"-->
+<!--               title="Enter valid PAN number (e.g., ABCDE1234F)"-->
+<!--               required><br>-->
+<!--        <input type="password" name="password" placeholder="Password" required><br>-->
+
+<!--    <button type="submit" class="btn btn-primary w-100 mb-2">Submit</button>-->
+
+<!--    &nbsp-->
+<!--    <a href="{% url 'login' %}">Already have an account? Login</a>-->
+<!--</form>-->
+
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Register</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container-fluid mt-4">
-<h1 style="text-align:center"><strong>PROCURE HUB</strong></h1>
-        <style>
-.gradient-hr {
-    height: 4px;
+<meta charset="UTF-8">
+<title>Register | Procure Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: #0f172a;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+    background: #020617;
+    padding: 25px 0;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.site-header h1 {
+    font-size: 2.6rem;
+    font-weight: 900;
+    margin: 0;
+}
+
+.procure {
+    background: linear-gradient(90deg, #1bd4fb, #0d6efd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hub {
+    background: linear-gradient(90deg, #6610f2, #1bd4fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ===== MAIN ===== */
+.main-content {
+    padding: 60px 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* ===== FEATURES GRID ===== */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;  /* reduced vertical + horizontal gap */
+    margin-bottom: 45px;
+}
+
+.feature-card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 20px 18px;  /* reduced padding */
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.feature-card h4 {
+    margin-bottom: 6px;   /* tighter spacing */
+    font-size: 1.1rem;    /* slightly smaller */
+    color: #1bd4fb;
+}
+
+.feature-card p {
+    color: #cbd5f5;
+    margin: 0;
+    font-size: 0.85rem;   /* slightly smaller */
+    line-height: 1.4;     /* tighter line height */
+}
+
+/* ===== REGISTER SECTION ===== */
+.register-section {
+    max-width: 600px;
+    margin: auto;
+    background: #1e293b;
+    border-radius: 18px;
+    padding: 45px 40px;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+}
+
+.register-section h3 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-control {
+    border-radius: 50px;
+    padding: 12px 20px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+.form-control:focus {
+    background: #0f172a;
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(29, 78, 216, 0.5);
+    border-color: #1bd4fb;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #0d6efd, #1bd4fb);
     border: none;
-    background: linear-gradient(to right, #0d6efd, #6610f2);
-    border-radius: 2px;
+    border-radius: 50px;
+    padding: 12px;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #1bd4fb, #0d6efd);
+}
+
+.login-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #1bd4fb;
+    text-decoration: none;
+}
+
+.login-link:hover {
+    color: #0d6efd;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #94a3b8;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .site-header h1 {
+        font-size: 2.2rem;
+    }
+
+    .register-section {
+        padding: 35px 25px;
+    }
 }
 </style>
+</head>
 
-<hr class="gradient-hr">
-<form method="post" class="col-5 mx-auto card p-4 shadow-lg border-0">
-    <h3 class="mb-4">REGISTER</h3>
-       <hr class="mt-0">
-    {% csrf_token %}
-    <input type="text" name="username" placeholder="Username" required><br>
-        <input type="tel" name="mobile_no" placeholder="Mobile No" pattern="[0-9]{10}" title="Enter 10-digit mobile number" required><br>
-        <input type="text" name="company_name" placeholder="Company Name" required><br>
-        <input type="text" name="address" placeholder="Company Address" required><br>
-        <input type="email" name="email" placeholder="Email Address" required><br>
-        <input type="text" name="gst_no" placeholder="GST Number"
-               pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}"
-               title="Enter valid GST number"
-               required><br>
-        <input type="text" name="pan_no" placeholder="PAN Number"
-               pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}"
-               title="Enter valid PAN number (e.g., ABCDE1234F)"
-               required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
+<body>
 
-    <button type="submit" class="btn btn-primary w-100 mb-2">Submit</button>
+<!-- HEADER -->
+<header class="site-header">
+    <h1>
+        <span class="procure">PROCURE</span>
+        <span class="hub">HUB</span>
+    </h1>
+</header>
 
-    &nbsp
-    <a href="{% url 'login' %}">Already have an account? Login</a>
-</form>
+<!-- MAIN -->
+<main class="main-content">
 
-</div>
+    <!-- FEATURES -->
+    <section class="features-grid">
+        <div class="feature-card">
+            <h4>Real-time Bidding</h4>
+            <p>Transporters compete live to offer the best freight rates.</p>
+        </div>
+
+        <div class="feature-card">
+            <h4>Lowest Cost Discovery</h4>
+            <p>Reverse auction mechanism ensures minimum logistics cost.</p>
+        </div>
+
+        <div class="feature-card">
+            <h4>Auto L1 Ranking</h4>
+            <p>Bidders are ranked automatically as prices change.</p>
+        </div>
+
+        <div class="feature-card">
+            <h4>Transparent Process</h4>
+            <p>Complete visibility with secure and auditable bidding.</p>
+        </div>
+    </section>
+
+    <!-- REGISTER -->
+    <section class="register-section">
+        <h3>Register</h3>
+
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" required class="form-control">
+            <input type="tel" name="mobile_no" placeholder="Mobile Number" pattern="[0-9]{10}" required class="form-control">
+            <input type="text" name="company_name" placeholder="Company Name" required class="form-control">
+            <input type="text" name="address" placeholder="Company Address" required class="form-control">
+            <input type="email" name="email" placeholder="Email Address" required class="form-control">
+            <input type="text" name="gst_no" placeholder="GST Number" required class="form-control">
+            <input type="text" name="pan_no" placeholder="PAN Number" required class="form-control">
+            <input type="password" name="password" placeholder="Password" required class="form-control">
+
+            <button type="submit" class="btn btn-primary w-100 mt-2">Register</button>
+            <a href="{% url 'login' %}" class="login-link">Already have an account? Login</a>
+        </form>
+    </section>
+
+</main>
+
+<footer>
+    &copy; Laser Power Infra Pvt Ltd.
+</footer>
+
 </body>
 </html>

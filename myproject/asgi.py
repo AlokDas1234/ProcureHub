@@ -39,3 +39,26 @@ application = ProtocolTypeRouter({
         )
     ),
 })
+
+# myproject/asgi.py
+
+# import os
+# import django
+# from channels.routing import ProtocolTypeRouter, URLRouter
+# from channels.sessions import SessionMiddlewareStack
+# from django.core.asgi import get_asgi_application
+#
+# # ✅ Set Django settings module BEFORE importing routing or models
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myproject.settings")
+#
+# # ✅ Initialize Django
+# django.setup()
+#
+# from myapp import routing  # Import AFTER setup
+#
+# application = ProtocolTypeRouter({
+#     "http": get_asgi_application(),
+#     "websocket": SessionMiddlewareStack(
+#         URLRouter(routing.websocket_urlpatterns)
+#     ),
+# })
