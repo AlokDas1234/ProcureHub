@@ -13,9 +13,12 @@ from .models import Requirements
 from django.views.decorators.csrf import csrf_exempt
 import json
 # views.py
+import random
 from django.shortcuts import redirect
 from django.contrib import messages
 from .models import Bid,BidMsg
+from .gmail_service import get_gmail_service, send_email
+
 def index(request):
     # If logged in, go to dashboard
     if request.user.is_authenticated:
@@ -62,6 +65,7 @@ def register_view(request):
             company_name=company_name,
             address=address,
             gst_no=gst_no,
+            email=email,
             pan_no=pan_no
         )
 
@@ -93,6 +97,31 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+
+def account_recover(request):
+    if request.method == 'POST' and request.POST.get('mail_id'):
+        email = request.POST['mail_id']
+        user_file=Profile.objects.filter(email=email)
+        otp = random.randint(1000, 9999)
+        print(otp)
+
+        for user_file in user_file:
+            user_mail=user_file.email
+            if user_mail == email:
+                service = get_gmail_service()
+                subject = "Your OTP Code"
+                body_text = f"Your OTP is: {otp}. It will expire in 2 minutes."
+                send_email(service, user_mail, subject, body_text)
+                print("Email matched")
+        print("User Profile",user_file)
+
+
+    if request.method == 'POST' and request.POST.get('otp'):
+        otp = request.POST['opt']
+
+    return render(request, 'myapp/forget_account.html')
+
 
 @login_required(login_url='/login/')
 def create_requirement(request):
@@ -530,6 +559,8 @@ def extend_page(request):
             access.minutes += int(extend_)
             access.save()
             return redirect("/")
+
+
 
 
 # from django.contrib import messages

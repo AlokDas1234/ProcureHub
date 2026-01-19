@@ -1,44 +1,417 @@
-<html>
-<head>
-    <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-<div class="container-fluid mt-4">
+<!--<html>-->
+<!--<head>-->
+<!--    <title>Login</title>-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--</head>-->
+<!--<body>-->
 
-   <h1 style="text-align:center;"><span style="background-color:#1a1714;color:#1bd4fb">PROCURE </span> <span style="background-color:#1bd4fb;">HUB</span></h1>
-    <style>
-.gradient-hr {
-    height: 4px;
+<!--<div class="container-fluid mt-4">-->
+
+<!--   <h1 style="text-align:center;"><span style="background-color:#1a1714;color:#1bd4fb">PROCURE </span> <span style="background-color:#1bd4fb;">HUB</span></h1>-->
+<!--    <style>-->
+<!--.gradient-hr {-->
+<!--    height: 4px;-->
+<!--    border: none;-->
+<!--    background: linear-gradient(to right, #0d6efd, #6610f2);-->
+<!--    border-radius: 2px;-->
+<!--}-->
+<!--</style>-->
+
+<!--<hr class="gradient-hr">-->
+<!--    {% if messages %}-->
+<!--  <div class="mb-3">-->
+<!--    {% for message in messages %}-->
+<!--      <div class="alert alert-danger">{{ message }}</div>-->
+<!--    {% endfor %}-->
+<!--  </div>-->
+<!--{% endif %}-->
+
+
+<!--   <form method="post" class="col-5 mx-auto card p-4 shadow-lg border-0">-->
+<!--    <h3 class="mb-4">LOGIN</h3>-->
+<!--       <hr class="mt-0">-->
+<!--    {% csrf_token %}-->
+<!--    <input type="text" name="username" placeholder="Username" required class="form-control mb-3">-->
+<!--    <input type="password" name="password" placeholder="Password" required class="form-control mb-3">-->
+<!--    <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>-->
+
+<!--        <a href="{% url 'register' %}">Create a new account</a>-->
+<!--</form>-->
+
+
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Login | Procure Hub</title>-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">-->
+<!--    <style>-->
+<!--        body {-->
+<!--            background: #0f172a; /* Dark background */-->
+<!--            color: #fff;-->
+<!--            min-height: 100vh;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            font-family: 'Segoe UI', sans-serif;-->
+<!--        }-->
+
+<!--        .login-container {-->
+<!--            background: #1e293b; /* Card background */-->
+<!--            padding: 40px 30px;-->
+<!--            border-radius: 15px;-->
+<!--            box-shadow: 0 10px 30px rgba(0,0,0,0.5);-->
+<!--            width: 100%;-->
+<!--            max-width: 400px;-->
+<!--        }-->
+
+<!--        .login-container h1 {-->
+<!--            text-align: center;-->
+<!--            font-weight: 800;-->
+<!--            font-size: 2rem;-->
+<!--            margin-bottom: 15px;-->
+<!--        }-->
+
+<!--        .login-container h1 span.procure {-->
+<!--            background: linear-gradient(90deg, #1bd4fb, #0d6efd);-->
+<!--            -webkit-background-clip: text;-->
+<!--            -webkit-text-fill-color: transparent;-->
+<!--        }-->
+
+<!--        .login-container h1 span.hub {-->
+<!--            background: linear-gradient(90deg, #6610f2, #1bd4fb);-->
+<!--            -webkit-background-clip: text;-->
+<!--            -webkit-text-fill-color: transparent;-->
+<!--        }-->
+
+<!--        .gradient-hr {-->
+<!--            height: 3px;-->
+<!--            border: none;-->
+<!--            background: linear-gradient(to right, #0d6efd, #6610f2);-->
+<!--            border-radius: 2px;-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+
+<!--        .form-control {-->
+<!--            border-radius: 50px;-->
+<!--            padding: 12px 20px;-->
+<!--            background: #0f172a;-->
+<!--            border: 1px solid #334155;-->
+<!--            color: #fff;-->
+<!--        }-->
+
+<!--        .form-control:focus {-->
+<!--            background: #0f172a;-->
+<!--            color: #fff;-->
+<!--            box-shadow: 0 0 0 0.2rem rgba(29, 78, 216, 0.5);-->
+<!--            border-color: #1bd4fb;-->
+<!--        }-->
+
+<!--        .btn-primary {-->
+<!--            background: linear-gradient(90deg, #0d6efd, #1bd4fb);-->
+<!--            border: none;-->
+<!--            border-radius: 50px;-->
+<!--            padding: 10px;-->
+<!--            font-weight: 600;-->
+<!--            transition: 0.3s ease;-->
+<!--        }-->
+
+<!--        .btn-primary:hover {-->
+<!--            background: linear-gradient(90deg, #1bd4fb, #0d6efd);-->
+<!--        }-->
+
+<!--        .register-link {-->
+<!--            display: block;-->
+<!--            text-align: center;-->
+<!--            margin-top: 15px;-->
+<!--            color: #1bd4fb;-->
+<!--            text-decoration: none;-->
+<!--        }-->
+
+<!--        .register-link:hover {-->
+<!--            color: #0d6efd;-->
+<!--        }-->
+
+<!--        .alert {-->
+<!--            border-radius: 10px;-->
+<!--        }-->
+
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <div class="login-container">-->
+
+<!--        <h1>-->
+<!--            <span class="procure">PROCURE</span>-->
+<!--            <span class="hub">HUB</span>-->
+<!--        </h1>-->
+<!--        <hr class="gradient-hr">-->
+
+<!--        {% if messages %}-->
+<!--        <div class="mb-3">-->
+<!--            {% for message in messages %}-->
+<!--                <div class="alert alert-danger">{{ message }}</div>-->
+<!--            {% endfor %}-->
+<!--        </div>-->
+<!--        {% endif %}-->
+
+<!--        <form method="post">-->
+<!--            {% csrf_token %}-->
+<!--            <div class="mb-3">-->
+<!--                <input type="text" name="username" placeholder="Username" required class="form-control">-->
+<!--            </div>-->
+<!--            <div class="mb-3">-->
+<!--                <input type="password" name="password" placeholder="Password" required class="form-control">-->
+<!--            </div>-->
+<!--            <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>-->
+
+<!--            <a href="{% url 'register' %}" class="register-link">Create a new account</a>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</body>-->
+<!--</html>-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Procure Hub | Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: #0f172a;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+    background: #020617;
+    padding: 25px 0;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.site-header h1 {
+    font-size: 2.6rem;
+    font-weight: 900;
+    margin: 0;
+}
+
+.procure {
+    background: linear-gradient(90deg, #1bd4fb, #0d6efd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hub {
+    background: linear-gradient(90deg, #6610f2, #1bd4fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+    padding: 60px 20px;
+}
+
+.layout {
+    max-width: 1100px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: stretch;
+}
+
+/* ===== COMMON CARD HEIGHT ===== */
+.card-box {
+    background: #1e293b;
+    border-radius: 15px;
+    padding: 40px 35px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== FEATURES ===== */
+.features h2 {
+    font-size: 2rem;
+    margin-bottom: 25px;
+}
+
+.features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.features li {
+    background: #0f172a;
+    padding: 16px 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    border: 1px solid #334155;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.features li::before {
+    content: "✔";
+    color: #1bd4fb;
+    font-weight: bold;
+    margin-right: 12px;
+}
+
+.features li:hover {
+    transform: translateX(6px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* ===== LOGIN ===== */
+.login-container h3 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.form-control {
+    border-radius: 50px;
+    padding: 12px 20px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.form-control::placeholder {
+    color: #94a3b8;
+}
+
+.form-control:focus {
+    background: #0f172a;
+    color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(29, 78, 216, 0.5);
+    border-color: #1bd4fb;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #0d6efd, #1bd4fb);
     border: none;
-    background: linear-gradient(to right, #0d6efd, #6610f2);
-    border-radius: 2px;
+    border-radius: 50px;
+    padding: 10px;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #1bd4fb, #0d6efd);
+}
+
+.register-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #1bd4fb;
+    text-decoration: none;
+}
+
+.register-link:hover {
+    color: #0d6efd;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    text-align: center;
+    padding: 15px;
+    color: #94a3b8;
+}
+
+/* ===== MOBILE VIEW ===== */
+@media (max-width: 768px) {
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .features-section {
+        order: 1;
+    }
+
+    .login-section {
+        order: 2;
+    }
+
+    .site-header h1 {
+        font-size: 2.2rem;
+    }
+
+    .features h2 {
+        font-size: 1.6rem;
+    }
 }
 </style>
+</head>
 
-<hr class="gradient-hr">
-    {% if messages %}
-  <div class="mb-3">
-    {% for message in messages %}
-      <div class="alert alert-danger">{{message}}</div>
-    {% endfor %}
-  </div>
-{% endif %}
+<body>
 
+<!-- HEADER -->
+<header class="site-header">
+    <h1>
+        <span class="procure">PROCURE</span>
+        <span class="hub">HUB</span>
+    </h1>
+</header>
 
-   <form method="post" class="col-5 mx-auto card p-4 shadow-lg border-0">
-        {% csrf_token %}
-    <h3 class="mb-4">LOGIN</h3>
-       <hr class="mt-0">
+<!-- MAIN -->
+<main class="main-content">
+    <div class="layout">
 
-    <input type="text" name="username" placeholder="Username" required class="form-control mb-3">
-    <input type="password" name="password" placeholder="Password" required class="form-control mb-3">
-    <button type="submit" class="btn btn-primary w-100 mb-2">Login</button>
+        <!-- FEATURES -->
+        <section class="card-box features features-section">
+            <h2>Platform Highlights</h2>
+            <ul>
+                <li>Transporters place bids in real time</li>
+                <li>Reverse auction ensures lowest freight cost</li>
+                <li>Instant L1 bidder visibility</li>
+                <li>Seamless & transparent procurement</li>
+                <li>Faster decision-making with live updates</li>
+            </ul>
+        </section>
 
-        <a href="{% url 'register' %}">Create a new account</a>
-</form>
+        <!-- LOGIN -->
+        <section class="card-box login-container login-section">
+            <h3>Login</h3>
 
+            {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
 
-</div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="Username" required class="form-control">
+                <input type="password" name="password" placeholder="Password" required class="form-control">
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <a href="{% url 'register' %}" class="register-link">Create a new account</a>
+            </form>
+        </section>
+
+    </div>
+</main>
+
+<footer>
+    &copy; 2026 Laser Power Infra Pvt Ltd.
+</footer>
+
 </body>
 </html>

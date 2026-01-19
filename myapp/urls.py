@@ -28,6 +28,7 @@ urlpatterns = [
     path("extend_page/", views.extend_page, name="extend_page"),
     path("stop-bid/", views.stop_bid, name="stop_bid"),
     path("extend-page/", views.extend_page, name="extend_page"),
+    path("recover-account/", views.account_recover, name="recover-account"),
 
 
 ]
