@@ -42,7 +42,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             """Timer Access end"""
             general_access, minutes, start_time,g_access,use_cel,dec_val_vi,interval= await self.get_general_access()
             clt, start_time, end_times, remaining,remaining_interval = await self.time_calculation(general_access, minutes, start_time,interval)
-            print("user connect:",user)
+            # print("user connect:",user)
 
             auction_start = True
             if clt <= start_time:

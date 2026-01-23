@@ -40,3 +40,5 @@ class BidAdmin(admin.ModelAdmin):
     def get_unloading_point(self, obj):
         return obj.req.unloading_point
     get_unloading_point.short_description = 'Unloading Point'
+
+

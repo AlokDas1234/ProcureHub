@@ -30,4 +30,5 @@ urlpatterns = [
     path("extend-page/", views.extend_page, name="extend_page"),
     path("biddermsg/", views.biddermsg, name="biddermsg"),
 
+
 ]

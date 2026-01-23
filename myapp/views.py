@@ -591,3 +591,4 @@ def biddermsg(request):
         messages.success(request, "Bid message saved successfully!")
 
     return render(request, "myapp/admin_dashboard.html")
+

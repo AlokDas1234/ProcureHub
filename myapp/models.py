@@ -96,3 +96,5 @@ class BidMsg(models.Model):
     sender=models.ForeignKey(User,on_delete=models.CASCADE,null=True, blank=True)
     msg=models.CharField(max_length=100,null=True,blank=True)
     status_msg=models.CharField(max_length=100,null=True,blank=True)
+
+
